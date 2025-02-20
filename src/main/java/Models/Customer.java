@@ -9,6 +9,7 @@ package Models;
  * @author Nhat_Anh
  */
 public class Customer {
+
     private String customerID;
     private String userName;
     private String passWord;
@@ -24,7 +25,6 @@ public class Customer {
 
     public Customer() {
     }
-    
 
     public Customer(String customerID, String userName, String passWord, String fullName, String email, String googleID, String accessToken, String address, int phoneNumber, String zip, String state, boolean isVerified) {
         this.customerID = customerID;
@@ -40,7 +40,7 @@ public class Customer {
         this.state = state;
         this.isVerified = isVerified;
     }
-    
+
     public String getCustomerID() {
         return customerID;
     }

@@ -35,7 +35,6 @@ public class CustomerDAO {
         
         String query = "SELECT * FROM Customer WHERE customerName = ? AND password = ?";
         Object[] params = {username, hashedPassword};
-        
         try ( ResultSet rs = dbContext.execSelectQuery(query, params)) {
             if (rs.next()) {
                 customer = new Customer(
