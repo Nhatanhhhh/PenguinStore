@@ -8,6 +8,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +27,7 @@ public class DBContext {
             try {
                 String user = "nhatanh";
                 String pass = "123";
-                String url = "jdbc:sqlserver://localhost:1433;databaseName=EbookApp;encrypt=false";
+                String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB;encrypt=false";
 
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                 conn = DriverManager.getConnection(url, user, pass);
@@ -35,6 +37,33 @@ public class DBContext {
             }
         }
         return conn;
+    }
+
+    public ResultSet execSelectQuery(String query, Object[] params) throws SQLException {
+        Connection connection = getConn();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+
+        if (params != null) {
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+        }
+        return preparedStatement.executeQuery();
+    }
+
+    public ResultSet execSelectQuery(String query) throws SQLException {
+        return this.execSelectQuery(query, null);
+    }
+
+    public int execQuery(String query, Object[] params) throws SQLException {
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+
+        if (params != null) {
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+        }
+        return preparedStatement.executeUpdate();
     }
 
     /**
@@ -61,4 +90,5 @@ public class DBContext {
         }
         return hashedPassword;
     }
+
 }

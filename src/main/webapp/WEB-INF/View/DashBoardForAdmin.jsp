@@ -1,9 +1,3 @@
-<%-- 
-    Document   : DoashBoard.jsp
-    Created on : Feb 20, 2025, 5:10:48 PM
-    Author     : Nhat_Anh
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -12,6 +6,6 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <h1>Hello Admin!</h1>
     </body>
 </html>
