@@ -12,7 +12,6 @@
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>Controller.LogoutServlet</servlet-class>
     </servlet>
-<<<<<<< HEAD
     <servlet>
         <servlet-name>CustomerServlet</servlet-name>
         <servlet-class>Controller.CustomerServlet</servlet-class>
@@ -37,8 +36,6 @@
         <servlet-name>OrderHistory</servlet-name>
         <url-pattern>/OrderHistory</url-pattern>
     </servlet-mapping>
-=======
->>>>>>> fc0abdb (Gộp nhiều commit lại thành một)
     <servlet-mapping>
         <servlet-name>CustomerServlet</servlet-name>
         <url-pattern>/CustomerServlet</url-pattern>
@@ -62,7 +59,6 @@
         <error-code>500</error-code>
         <location>/View/error/500.jsp</location>
     </error-page>-->
-<<<<<<< HEAD
     <servlet-mapping>
         <servlet-name>ProductController</servlet-name>
         <url-pattern>/Product</url-pattern>
@@ -74,11 +70,4 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
-=======
-    
-    <session-config>
-        <session-timeout>30</session-timeout> 
-    </session-config>
-
->>>>>>> fc0abdb (Gộp nhiều commit lại thành một)
 </web-app>

@@ -75,7 +75,6 @@ public class OrderHistory extends HttpServlet {
 
         OrderDAO orderDAO = new OrderDAO();
         List<Order> orders = orderDAO.getOrdersByCustomerID(customerID);
-
         request.setAttribute("orders", orders);
         request.getRequestDispatcher("View/OrderHistory.jsp").forward(request, response);
     }
