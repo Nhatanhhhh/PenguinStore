@@ -69,16 +69,16 @@ public class OrderHistory extends HttpServlet {
         // Gi? s? customerID ðý?c lýu trong session sau khi ðãng nh?p
         String customerID = (String) session.getAttribute("customerID");
 
-        if (customerID == null) {
-            response.sendRedirect("../login.jsp");
-            return;
-        }
+//        if (customerID == null) {
+//            response.sendRedirect("../login.jsp");
+//            return;
+//        }
 
         OrderDAO orderDAO = new OrderDAO();
         List<Order> orders = orderDAO.getOrdersByCustomerID(customerID);
 
-        request.setAttribute("orderHistory", orders);
-        request.getRequestDispatcher("../OrderHistory.jsp").forward(request, response);
+        request.setAttribute("orders", orders);
+        request.getRequestDispatcher("View/OrderHistory.jsp").forward(request, response);
     }
     
     /**
