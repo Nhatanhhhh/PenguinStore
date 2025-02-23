@@ -6,26 +6,29 @@ package Models;
 
 /**
  *
- * @author PC
+ * @author Huynh Cong Nghiem - CE181351
  */
-import java.io.Serializable;
+public class Product {
 
-public class Product implements Serializable {
     private String productID;
     private String productName;
     private String description;
     private double price;
-    private String typeID;
+    private String categoryName;
+    private String imgName;
+    private String typeName;
 
-    public Product() {
-    }
-
-    public Product(String productID, String productName, String description, double price, String typeID) {
+    public Product(String productID, String productName, String description, double price, String typeName, String categoryName, String imgName) {
         this.productID = productID;
         this.productName = productName;
         this.description = description;
         this.price = price;
-        this.typeID = typeID;
+        this.typeName = typeName;
+        this.categoryName = categoryName;
+        this.imgName = imgName;
+    }
+
+    public Product() {
     }
 
     public String getProductID() {
@@ -60,12 +63,28 @@ public class Product implements Serializable {
         this.price = price;
     }
 
-    public String getTypeID() {
-        return typeID;
+    public String getTypeName() {
+        return typeName;
     }
 
-    public void setTypeID(String typeID) {
-        this.typeID = typeID;
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getImgName() {
+        return imgName;
+    }
+
+    public void setImgName(String imgName) {
+        this.imgName = imgName;
+    }
+
 }
-

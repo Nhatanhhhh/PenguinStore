@@ -89,12 +89,10 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
         String rememberMe = request.getParameter("remember-me");
 
-
         // Mã hóa m?t kh?u
         String hashedPassword = DBContext.hashPasswordMD5(password);
         HttpSession session = request.getSession(true);
 
-        
         try {
             Object user = null;
 
@@ -115,6 +113,17 @@ public class LoginServlet extends HttpServlet {
             if (user != null) {
                 session.setAttribute("user", user);
                 setRememberMeCookies(response, username, hashedPassword, rememberMe);
+                if (user instanceof Customer) {
+                    Customer customerUser = (Customer) user;
+                    session.setAttribute("customerID", customerUser.getCustomerID());
+                }
+
+                String checkCustomerID = (String) session.getAttribute("customerID");
+//                if (checkCustomerID != null) {
+//                    System.out.println("customerID ?ã ???c l?u vào session: " + checkCustomerID);
+//                } else {
+//                    System.out.println("L?i: customerID không ???c l?u vào session!");
+//                }
 
                 if (user instanceof Manager) {
                     Manager manager = (Manager) user;
