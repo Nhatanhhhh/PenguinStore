@@ -8,6 +8,6 @@ package DAOs;
  *
  * @author Nhat_Anh
  */
-public class CustomerDAO {
+public class AdminDAO {
     
 }
