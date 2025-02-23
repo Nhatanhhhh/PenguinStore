@@ -65,7 +65,7 @@ public class OrderHistory extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        
+
         // Gi? s? customerID ðý?c lýu trong session sau khi ðãng nh?p
         String customerID = (String) session.getAttribute("customerID");
 
@@ -80,7 +80,7 @@ public class OrderHistory extends HttpServlet {
         request.setAttribute("orderHistory", orders);
         request.getRequestDispatcher("View/OrderHistory.jsp").forward(request, response);
     }
-    
+
     /**
      * Handles the HTTP <code>POST</code> method.
      *
