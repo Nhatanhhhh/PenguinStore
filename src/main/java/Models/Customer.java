@@ -22,6 +22,10 @@ public class Customer {
     private String state;
     private boolean isVerified;
 
+    public Customer() {
+    }
+    
+
     public Customer(String customerID, String userName, String passWord, String fullName, String email, String googleID, String accessToken, String address, int phoneNumber, String zip, String state, boolean isVerified) {
         this.customerID = customerID;
         this.userName = userName;

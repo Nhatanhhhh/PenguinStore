@@ -6,28 +6,25 @@ package Models;
 
 /**
  *
- * @author PC
+ * @author Huynh Cong Nghiem - CE181351
  */
-import java.io.Serializable;
+public class ProductVariants {
 
-public class ProductVariants implements Serializable {
     private String proVariantID;
-    private String status;
+    private boolean status;
     private int stockQuantity;
-    private String productID;
-    private String sizeID;
-    private String colorID;
+    private String sizeName;
+    private String colorName;
 
     public ProductVariants() {
     }
 
-    public ProductVariants(String proVariantID, String status, int stockQuantity, String productID, String sizeID, String colorID) {
+    public ProductVariants(String proVariantID, boolean status, int stockQuantity, String colorName, String sizeName) {
         this.proVariantID = proVariantID;
         this.status = status;
         this.stockQuantity = stockQuantity;
-        this.productID = productID;
-        this.sizeID = sizeID;
-        this.colorID = colorID;
+        this.sizeName = sizeName;
+        this.colorName = colorName;
     }
 
     public String getProVariantID() {
@@ -38,11 +35,11 @@ public class ProductVariants implements Serializable {
         this.proVariantID = proVariantID;
     }
 
-    public String getStatus() {
+    public boolean isStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(boolean status) {
         this.status = status;
     }
 
@@ -54,27 +51,20 @@ public class ProductVariants implements Serializable {
         this.stockQuantity = stockQuantity;
     }
 
-    public String getProductID() {
-        return productID;
+    public String getSizeName() {
+        return sizeName;
     }
 
-    public void setProductID(String productID) {
-        this.productID = productID;
+    public void setSizeName(String sizeName) {
+        this.sizeName = sizeName;
     }
 
-    public String getSizeID() {
-        return sizeID;
+    public String getColorName() {
+        return colorName;
     }
 
-    public void setSizeID(String sizeID) {
-        this.sizeID = sizeID;
+    public void setColorName(String colorName) {
+        this.colorName = colorName;
     }
 
-    public String getColorID() {
-        return colorID;
-    }
-
-    public void setColorID(String colorID) {
-        this.colorID = colorID;
-    }
 }

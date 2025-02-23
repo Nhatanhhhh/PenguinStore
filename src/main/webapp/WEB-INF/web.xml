@@ -12,6 +12,30 @@
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>Controller.LogoutServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CustomerServlet</servlet-name>
+        <servlet-class>Controller.CustomerServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ProductController</servlet-name>
+        <servlet-class>Controller.ProductController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrderHistory</servlet-name>
+        <servlet-class>Controller.OrderHistory</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>NewServlet</servlet-name>
+        <servlet-class>Controller.OrderDetail</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>TypeController</servlet-name>
+        <servlet-class>Controller.TypeController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OrderHistory</servlet-name>
+        <url-pattern>/OrderHistory</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CustomerServlet</servlet-name>
         <url-pattern>/CustomerServlet</url-pattern>
@@ -35,9 +59,15 @@
         <error-code>500</error-code>
         <location>/View/error/500.jsp</location>
     </error-page>-->
-    
+    <servlet-mapping>
+        <servlet-name>ProductController</servlet-name>
+        <url-pattern>/Product</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TypeController</servlet-name>
+        <url-pattern>/Type</url-pattern>
+    </servlet-mapping>
     <session-config>
-        <session-timeout>30</session-timeout> 
+        <session-timeout>30</session-timeout>
     </session-config>
-
 </web-app>

@@ -69,7 +69,7 @@
         </header>
 
         <nav class="nav-menu">
-            <a href="#">Product</a>
+            <a href="<c:url value="/Product"></c:url>">Product</a>
             <a class="menu-down" href="#">Trousers <span class="mdi mdi-menu-down-outline"></span></a>
             <a class="menu-down" href="#">Accessories <span class="mdi mdi-menu-down-outline"></span></a>
             <a class="menu-down" href="#">New <span class="mdi mdi-menu-down-outline"></span></a>
