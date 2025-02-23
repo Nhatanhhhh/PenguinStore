@@ -8,6 +8,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,9 +25,9 @@ public class DBContext {
     public static Connection getConn() {
         if (conn == null) {
             try {
-                String user = "nhatanh";
-                String pass = "123";
-                String url = "jdbc:sqlserver://localhost:1433;databaseName=EbookApp;encrypt=false";
+                String user = "sa";
+                String pass = "23032004";
+                String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB;encrypt=false";
 
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                 conn = DriverManager.getConnection(url, user, pass);
@@ -35,6 +37,37 @@ public class DBContext {
             }
         }
         return conn;
+    }
+
+    // Ph??ng th?c cho các l?nh SELECT (có params)
+    public ResultSet execSelectQuery(String query, Object[] params) throws SQLException {
+        Connection conn = getConn(); // ??m b?o k?t n?i
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+
+        if (params != null) {
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+        }
+        return preparedStatement.executeQuery();
+    }
+
+    // Ph??ng th?c cho các l?nh SELECT không có params 
+    public ResultSet execSelectQuery(String query) throws SQLException {
+        return this.execSelectQuery(query, null);
+    }
+
+    //Ph??ng th?c cho các l?nh INSERT, UPDATE, DELETE 
+    public int execQuery(String query, Object[] params) throws SQLException {
+        Connection conn = getConn();
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+
+        if (params != null) {
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+        }
+        return preparedStatement.executeUpdate();
     }
 
     /**
@@ -61,4 +94,5 @@ public class DBContext {
         }
         return hashedPassword;
     }
+
 }

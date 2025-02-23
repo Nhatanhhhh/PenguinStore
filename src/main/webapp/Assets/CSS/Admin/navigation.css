@@ -1,0 +1,75 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 22, 2025, 6:08:28 PM
+    Author     : Do Van Luan - CE180457
+*/
+
+/* Sidebar container */
+.sidebar {
+    margin-top: 0px; 
+    width: 250px;
+    height: 100vh; /* Full height */
+    background-color: #111; /* Dark background */
+    color: white; /* White text */
+    padding: 20px;
+    position: fixed;
+    overflow-y: auto; /* Scroll if needed */
+}
+
+/* Main headers (Manage, Statistical) */
+.sidebar h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* Remove default list styles */
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Main list items */
+.sidebar ul > li {
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+/* Dropdown list */
+.sidebar ul .dropdown {
+    list-style: none;
+    padding-left: 15px; /* Indentation */
+    display: none; /* Hide initially */
+}
+
+/* Dropdown links */
+.sidebar ul .dropdown li {
+    font-size: 14px;
+    font-weight: normal;
+    margin: 5px 0;
+}
+
+/* Dropdown links styling */
+.sidebar ul .dropdown li a {
+    text-decoration: none;
+    color: #ddd; /* Lighter gray */
+    display: block;
+    padding: 5px 0;
+}
+
+/* Hover effects */
+.sidebar ul .dropdown li a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* Show dropdown when hovering */
+.sidebar ul > li:hover .dropdown {
+    display: block;
+}

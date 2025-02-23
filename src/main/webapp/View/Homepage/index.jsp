@@ -6,7 +6,7 @@
         <title>Home Page</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="Assets/CSS/Guest/styles.css"/>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Assets/CSS/Guest/styles.css"/>
         
     </head>
     <body>
