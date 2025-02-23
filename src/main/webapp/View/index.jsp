@@ -12,6 +12,8 @@
     <body>
         <%@include file="Header.jsp"%>
         <a href="<%= request.getContextPath() %>/error/404.jsp">Test 404 Page</a>
+        <a href="<%= request.getContextPath() %>../error/500.jsp">Test 500 Page</a>
+        <a href="<%= request.getContextPath() %>/OrderHistory">My Order</a>
 
         
         

@@ -23,9 +23,9 @@ public class DBContext {
     public static Connection getConn() {
         if (conn == null) {
             try {
-                String user = "nhatanh";
-                String pass = "123";
-                String url = "jdbc:sqlserver://localhost:1433;databaseName=EbookApp;encrypt=false";
+                String user = "sa";
+                String pass = "Leminhvip1";
+                String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB;encrypt=false";
 
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                 conn = DriverManager.getConnection(url, user, pass);
