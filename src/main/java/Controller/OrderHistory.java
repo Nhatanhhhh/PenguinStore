@@ -79,7 +79,6 @@ public class OrderHistory extends HttpServlet {
         request.setAttribute("orders", orders);
         request.getRequestDispatcher("View/OrderHistory.jsp").forward(request, response);
     }
-
     /**
      * Handles the HTTP <code>POST</code> method.
      *

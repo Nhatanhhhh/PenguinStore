@@ -6,6 +6,7 @@ package Models;
 
 /**
  *
+<<<<<<< HEAD
  * @author Huynh Cong Nghiem - CE181351
  */
 public class ProductVariants {
@@ -14,7 +15,6 @@ public class ProductVariants {
     private int stockQuantity;
     private String sizeName;
     private String colorName;
-
     public ProductVariants() {
     }
 
