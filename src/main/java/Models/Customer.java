@@ -9,7 +9,6 @@ package Models;
  * @author Nhat_Anh
  */
 public class Customer {
-
     private String customerID;
     private String userName;
     private String passWord;
