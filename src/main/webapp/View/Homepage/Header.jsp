@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -5,7 +6,6 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Header Example</title>
-
         <link rel="stylesheet" href="Assets/CSS/Guest/styles.css"/>
     </head>
     <body>
@@ -15,7 +15,10 @@
                 <span>PENGUIN</span>
             </div>
             <div class="search-bar col-md-5 d-flex justify-content-center">
-                <input type="text" placeholder="" />
+                <form action="Product?action=search" method="POST" style="width: 500px">
+                    <input type="text" placeholder="" name="searchQuery"/>
+                </form>
+                
             </div>
             <div class="header-icons col-md-4 d-flex justify-content-end">
                 <button class="icon cart-icon"><span class="mdi mdi-cart-outline"></span></button>
@@ -25,7 +28,7 @@
 
         </header>
         <nav class="nav-menu">
-            <a href="#">Product</a>
+            <a href="<c:url value="/Product"></c:url>">Product</a>
             <a class="menu-down" href="#">Trousers <span class="mdi mdi-menu-down-outline"></span></a>
             <a class="menu-down" href="#">Accessories <span class="mdi mdi-menu-down-outline"></span></a>
             <a class="menu-down" href="#">New <span class="mdi mdi-menu-down-outline"></span></a>

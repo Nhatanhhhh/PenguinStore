@@ -4,19 +4,27 @@
         <servlet-name>CustomerServlet</servlet-name>
         <servlet-class>Controller.CustomerServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ProductController</servlet-name>
+        <servlet-class>Controller.ProductController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>CustomerServlet</servlet-name>
         <url-pattern>/CustomerServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProductController</servlet-name>
+        <url-pattern>/Product</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>View/Homepage/index.jsp</welcome-file>
     </welcome-file-list>
-    <error-page>
+<!--    <error-page>
         <error-code>404</error-code>
         <location>/View/error/404.jsp</location>
     </error-page>
     <error-page>
         <error-code>500</error-code>
         <location>/View/error/500.jsp</location>
-    </error-page>
+    </error-page>-->
 </web-app>

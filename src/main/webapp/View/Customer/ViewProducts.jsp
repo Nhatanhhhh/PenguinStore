@@ -1,0 +1,57 @@
+<%-- 
+    Document   : ViewProducts
+    Created on : Feb 22, 2025, 1:56:41 PM
+    Author     : Huynh Cong Nghiem - CE181351
+--%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page contentType="text/html" pageEncoding="windows-1252"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>ViewProducts</title>
+        <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
+        <%@include file="/Assets/CSS/icon.jsp"%>
+        <link rel="stylesheet" href="Assets/CSS/Guest/styles.css"/>
+        <link rel="stylesheet" href="Assets/CSS/Guest/styleViewProduct.css"/>
+    </head>
+    <body>
+        <%@include file="/View/Homepage/Header.jsp"%>
+        <div class="body-product">
+            <div class="filter-product">Filter Product</div>
+            <div class="container mt-5 mb-5">
+                <div class="container">
+                    <nav class="back-homepage" style="text-align: center; font-size: 20px; margin-bottom: 20px;">
+                        <a href="/PenguinStore/Homepage" style="text-decoration: none; color: gray;">Home </a> &gt;
+                        <span style="color: lightgray;"> All Product</span>
+                    </nav>
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                        <c:forEach var="product" items="${listProduct}">
+                            <a href="Product?id=${product.productID}" class="text-decoration-none">
+                                <div class="col mt-3">
+                                    <div class="card product-item">
+                                        <c:if test="${not empty product.imgName}">
+                                            <c:set var="imgList" value="${fn:split(product.imgName, ',')}" />
+                                            <c:forEach var="img" items="${imgList}">
+                                                <img src="Image/Product/${product.imgName}" class="card-img-top" alt="Product Image">
+                                            </c:forEach>
+                                        </c:if>
+                                        <div class="card-body">
+                                            <p class="card-title">${product.productName}</p>
+                                            <p class="card-text text-muted">$${product.price}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </c:forEach>
+                    </div>
+                </div>
+                <c:if test="${empty listProduct}">
+                    <p class="text-center text-danger mt-3">No products available.</p>
+                </c:if>
+            </div>
+        </div>
+        <%@include file="/View/Homepage/Footer.jsp"%>
+    </body>
+</html>
