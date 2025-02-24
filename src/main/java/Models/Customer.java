@@ -24,7 +24,6 @@ public class Customer {
 
     public Customer() {
     }
-    
 
     public Customer(String customerID, String userName, String passWord, String fullName, String email, String googleID, String accessToken, String address, int phoneNumber, String zip, String state, boolean isVerified) {
         this.customerID = customerID;
@@ -141,5 +140,4 @@ public class Customer {
     public String toString() {
         return "Customer{" + "customerID=" + customerID + ", userName=" + userName + ", passWord=" + passWord + ", fullName=" + fullName + ", email=" + email + ", googleID=" + googleID + ", accessToken=" + accessToken + ", address=" + address + ", phoneNumber=" + phoneNumber + ", zip=" + zip + ", state=" + state + ", isVerified=" + isVerified + '}';
     }
-    
 }

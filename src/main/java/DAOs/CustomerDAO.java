@@ -22,18 +22,17 @@ public class CustomerDAO {
     }
 
     /**
-     * L?y thông tin khách hàng t? username và m?t kh?u (?ã hash)
+     * L?y th?ng tin kh?ch h?ng t? username v? m?t kh?u (?? hash)
      *
-     * @param username Tên ng??i dùng
-     * @param password M?t kh?u ch?a mã hóa (s? ???c mã hóa trong hàm này)
-     * @return ??i t??ng Customer n?u tìm th?y, ng??c l?i tr? v? null
+     * @param username T?n ng??i d?ng
+     * @param password M?t kh?u ch?a m? h?a (s? ???c m? h?a trong h?m n?y)
+     * @return ??i t??ng Customer n?u t?m th?y, ng??c l?i tr? v? null
      */
     public Customer getCustomerByUsernameAndPassword(String username, String hashedPassword) {
         Customer customer = null;
 
         String query = "SELECT * FROM Customer WHERE customerName = ? AND password = ?";
         Object[] params = {username, hashedPassword};
-
         try ( ResultSet rs = dbContext.execSelectQuery(query, params)) {
             if (rs.next()) {
                 customer = new Customer(
@@ -59,16 +58,16 @@ public class CustomerDAO {
     }
 
     /**
-     * ??ng ký ng??i dùng m?i
+     * ??ng k? ng??i d?ng m?i
      *
-     * @param customer ??i t??ng Customer ch?a thông tin ng??i dùng
-     * @return True n?u ??ng ký thành công, ng??c l?i False
+     * @param customer ??i t??ng Customer ch?a th?ng tin ng??i d?ng
+     * @return True n?u ??ng k? th?nh c?ng, ng??c l?i False
      */
     public boolean registerCustomer(Customer customer) {
         String query = "INSERT INTO Customer (customerID, customerName, password, fullName, email, address, phoneNumber, state, zip, isVerified) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        // Mã hóa m?t kh?u tr??c khi l?u vào DB
+        // M? h?a m?t kh?u tr??c khi l?u v?o DB
         String hashedPassword = DBContext.hashPasswordMD5(customer.getPassWord());
 
         Object[] params = {
@@ -91,5 +90,4 @@ public class CustomerDAO {
         }
         return false;
     }
-
 }

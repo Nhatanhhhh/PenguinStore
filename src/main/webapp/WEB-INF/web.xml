@@ -41,13 +41,12 @@
         <url-pattern>/CustomerServlet</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
-        <welcome-file>View/Homepage/index.jsp</welcome-file>
+        <welcome-file>View/index.jsp</welcome-file>
     </welcome-file-list>
     <!--<error-page>
         <error-code>404</error-code>
         <location>/View/error/404.jsp</location>
     </error-page>
-
     <error-page>
         <error-code>500</error-code>
         <location>/View/error/500.jsp</location>
@@ -63,5 +62,4 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
-
 </web-app>
