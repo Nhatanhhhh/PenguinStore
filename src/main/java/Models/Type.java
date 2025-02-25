@@ -15,7 +15,7 @@ public class Type {
     private String categoryID;
     private String categoryName;
 
-    public Type(String typeID, String typeName, String categoryID,String categoryName) {
+    public Type(String typeID, String typeName, String categoryID, String categoryName) {
         this.typeID = typeID;
         this.typeName = typeName;
         this.categoryID = categoryID;

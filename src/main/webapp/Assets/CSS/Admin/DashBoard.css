@@ -1,3 +1,39 @@
+/* ?i?u ch?nh container ch?nh ?? tr?nh b? che */
+.container {
+    margin-top: 80px; /* ??y n?i dung xu?ng ?? tr?nh header */
+    margin-left: 260px; /* ??y n?i dung sang ph?i ?? tr?nh menu */
+    padding: 20px;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px; /* ??m b?o menu kh?ng qu? r?ng */
+    height: 100vh; /* Chi?u cao to?n m?n h?nh */
+    background: black;
+    color: white;
+    padding-top: 20px;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* N?u menu c? th? thu g?n */
+.sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+/* Header */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px; /* ?i?u ch?nh theo header */
+    background: #f1f1f1;
+    z-index: 1000;
+}
 /* ?i?u ch?nh container chính ?? tránh b? che */
 .container {
     margin-top: 80px; /* ??y n?i dung xu?ng ?? tránh header */

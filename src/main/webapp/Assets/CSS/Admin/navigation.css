@@ -9,7 +9,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
 
 /* Sidebar container */
 .sidebar {
-    margin-top: 0px; 
+    margin-top: 0px;
     width: 250px;
     height: 100vh; /* Full height */
     background-color: #111; /* Dark background */

@@ -28,7 +28,7 @@ public class TypeDAO extends DBContext {
                 ));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(TypeDAO.class.getName()).log(Level.SEVERE, "L?i khi l?y d? li?u t? TypeProduct", ex);
+            Logger.getLogger(TypeDAO.class.getName()).log(Level.SEVERE, "Error when get TypeProduct data", ex);
         }
         return types;
     }
@@ -62,7 +62,7 @@ public class TypeDAO extends DBContext {
         };
 
         try {
-            return execQuery(sql, params); // ??m b?o ph??ng th?c này tr? v? s? dòng b? ?nh h??ng
+            return execQuery(sql, params); 
         } catch (SQLException ex) {
             Logger.getLogger(TypeDAO.class.getName()).log(Level.SEVERE, "Error inserting new type", ex);
             return 0;

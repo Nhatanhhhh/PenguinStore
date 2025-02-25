@@ -41,7 +41,7 @@ public class DBContext {
 
     // Ph??ng th?c cho các l?nh SELECT (có params)
     public ResultSet execSelectQuery(String query, Object[] params) throws SQLException {
-        Connection conn = getConn(); // ??m b?o k?t n?i
+        Connection conn = getConn();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
 
         if (params != null) {
