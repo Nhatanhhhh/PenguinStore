@@ -20,8 +20,6 @@
     }
 %>
 
-
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -53,7 +51,11 @@
             <!-- Nếu user đã đăng nhập -->
             <c:if test="${not empty userObj}">
                 <div class="header-icons col-md-4 d-flex justify-content-end">
-                    <a href="#" class="icon cart-icon"><span class="mdi mdi-cart-outline"></span></a>
+                    <a href="#" class="cart-icon">
+                        <span class="mdi mdi-cart-outline"></span>
+                        <span class="cart-badge" id="cart-count">0</span>
+                    </a>
+                    <button onclick="addToCart()">Thêm sản phẩm</button>
                     <a href="#" class="icon user-icon"><span class="mdi mdi-account"></span></a>
                     <a href="<%= request.getContextPath() %>/Logout" class="logout-button">Logout</a>
                 </div>

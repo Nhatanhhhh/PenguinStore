@@ -32,6 +32,10 @@
         <servlet-name>TypeController</servlet-name>
         <servlet-class>Controller.TypeController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CartController</servlet-name>
+        <servlet-class>Controller.CartController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>OrderHistory</servlet-name>
         <url-pattern>/OrderHistory</url-pattern>
@@ -66,6 +70,10 @@
     <servlet-mapping>
         <servlet-name>TypeController</servlet-name>
         <url-pattern>/Type</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CartController</servlet-name>
+        <url-pattern>/Cart</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
