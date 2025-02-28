@@ -40,13 +40,13 @@ public class ProductController extends HttpServlet {
         if (id == null || id.isEmpty()) {
             ArrayList<Product> listProduct = productDAO.readAll();
             request.setAttribute("listProduct", listProduct);
-            request.getRequestDispatcher("/View/Customer/ViewProducts.jsp").forward(request, response);
+            request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
         } else {
             ArrayList<ProductVariant> listDetail = productVariantDAO.viewProductDetail(id);
             Product product = productDAO.getOneProduct(id);
             request.setAttribute("productDetail", listDetail);
             request.setAttribute("product", product);
-            request.getRequestDispatcher("/View/Customer/ProductDetail.jsp").forward(request, response);
+            request.getRequestDispatcher("/View/ProductDetail.jsp").forward(request, response);
         }
 
     }
@@ -68,7 +68,7 @@ public class ProductController extends HttpServlet {
             String searchQuery = request.getParameter("searchQuery");
             ArrayList<Product> listProduct = productDAO.searchProduct(searchQuery);
             request.setAttribute("listProduct", listProduct);
-            request.getRequestDispatcher("/View/Customer/ViewProducts.jsp").forward(request, response);
+            request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
         }
     }
 }

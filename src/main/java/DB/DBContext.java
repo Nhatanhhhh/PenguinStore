@@ -4,6 +4,8 @@
  */
 package DB;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,33 +16,32 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Vo The Vinh - CE567889
+ * @author Nhat_Anh
  */
 public class DBContext {
 
-    private Connection conn;
+    private static Connection conn;
 
-    // Phuong thuc khoi tao
-    public DBContext() {
-        try {
-            String user = "sa";
-            String url = "jdbc:sqlserver://127.0.0.1:1433;databaseName=PenguinDB;encrypt=false";
-            String pass = "12345";
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            conn = DriverManager.getConnection(url, user, pass);
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
+    public static Connection getConn() {
+        if (conn == null) {
+            try {
+                String user = "sa";
+                String pass = "12345";
+                String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB;encrypt=false";
+
+                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+                conn = DriverManager.getConnection(url, user, pass);
+
+            } catch (SQLException | ClassNotFoundException ex) {
+                Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-
-    }
-
-    // Lay connection
-    public Connection getConnection() {
         return conn;
     }
 
     // Ph??ng th?c cho các l?nh SELECT (có params)
     public ResultSet execSelectQuery(String query, Object[] params) throws SQLException {
+        Connection conn = getConn(); // ??m b?o k?t n?i
         PreparedStatement preparedStatement = conn.prepareStatement(query);
 
         if (params != null) {
@@ -58,6 +59,7 @@ public class DBContext {
 
     //Ph??ng th?c cho các l?nh INSERT, UPDATE, DELETE 
     public int execQuery(String query, Object[] params) throws SQLException {
+        Connection conn = getConn();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
 
         if (params != null) {
@@ -67,4 +69,29 @@ public class DBContext {
         }
         return preparedStatement.executeUpdate();
     }
+
+    /**
+     * Hashes a password using MD5 algorithm
+     *
+     * @param password - The plain text password to hash
+     * @return A string representing the MD5 hashed password
+     */
+    public static String hashPasswordMD5(String password) {
+        String hashedPassword = null;
+        if (password != null) {
+            try {
+                MessageDigest md = MessageDigest.getInstance("MD5");
+                md.update(password.getBytes());
+                byte[] digest = md.digest();
+                StringBuilder sb = new StringBuilder();
+                for (byte b : digest) {sb.append(String.format("%02x", b & 0xff));
+                }
+                hashedPassword = sb.toString();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+        }
+        return hashedPassword;
+    }
+
 }

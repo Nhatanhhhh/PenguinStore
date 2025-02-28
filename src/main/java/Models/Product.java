@@ -9,13 +9,15 @@ package Models;
  * @author Huynh Cong Nghiem - CE181351
  */
 public class Product {
+
     private String productID;
     private String productName;
     private String description;
     private double price;
-    private String typeName;
     private String categoryName;
     private String imgName;
+    private String typeName;
+    private String typeID;
 
     public Product(String productID, String productName, String description, double price, String typeName, String categoryName, String imgName) {
         this.productID = productID;
@@ -25,9 +27,26 @@ public class Product {
         this.typeName = typeName;
         this.categoryName = categoryName;
         this.imgName = imgName;
+        
     }
 
+    public Product(String productName, String description, double price, String typeID) {
+        this.productName = productName;
+        this.description = description;
+        this.price = price;
+        this.typeID = typeID;
+    }
+
+   
     public Product() {
+    }
+
+    public String getTypeID() {
+        return typeID;
+    }
+
+    public void setTypeID(String typeID) {
+        this.typeID = typeID;
     }
 
     
@@ -62,7 +81,6 @@ public class Product {
     public void setPrice(double price) {
         this.price = price;
     }
-
     public String getTypeName() {
         return typeName;
     }
@@ -86,5 +104,5 @@ public class Product {
     public void setImgName(String imgName) {
         this.imgName = imgName;
     }
-    
+
 }

@@ -1,0 +1,96 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 23, 2025, 12:13:33 AM
+    Author     : Huynh Cong Nghiem - CE181351
+*/
+
+
+
+.product-container {
+    display: flex;
+    max-width: 1000px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    margin-bottom: 20px;
+    align-items: center; /* C?n gi?a các ph?n t? */
+}
+
+.product-images {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.thumbnail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.thumbnail-container img {
+    width: 60px;
+    height: 60px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: 0.3s;
+}
+
+.thumbnail-container img:hover,
+.thumbnail-container img.active {
+    border-color: #ff5a5f;
+}
+
+.product-main-img {
+    width: 400px;
+    height: 300px;
+    border-radius: 10px;
+    object-fit: cover;
+    transition: opacity 0.3s ease-in-out;
+}
+
+
+.product-info {
+    flex: 1;
+    padding-left: 40px;
+}
+
+.product-info h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.product-info p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.price {
+    font-size: 20px;
+    color: #ff5a5f;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.add-to-cart {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: 1px solid black;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.add-to-cart:hover {
+    background-color: black;
+    color: white;
+}
