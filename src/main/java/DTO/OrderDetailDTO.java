@@ -9,6 +9,7 @@ package DTO;
  * @author PC
  */
 public class OrderDetailDTO {
+
     private int quantity;
     private String productName;
     private double price;
@@ -25,10 +26,27 @@ public class OrderDetailDTO {
         this.status = status;
     }
 
-    public int getQuantity() { return quantity; }
-    public String getProductName() { return productName; }
-    public double getPrice() { return price; }
-    public String getImgName() { return imgName; }
-    public String getSizeName() { return sizeName; }
-    public String getStatus() { return status; }
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public String getImgName() {
+        return imgName;
+    }
+
+    public String getSizeName() {
+        return sizeName;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }

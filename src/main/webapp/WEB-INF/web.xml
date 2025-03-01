@@ -28,6 +28,14 @@
         <servlet-name>TypeController</servlet-name>
         <servlet-class>Controller.TypeController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ManageProductController</servlet-name>
+        <servlet-class>Controller.ManageProductController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RestockController</servlet-name>
+        <servlet-class>Controller.RestockController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>OrderHistory</servlet-name>
         <url-pattern>/OrderHistory</url-pattern>
@@ -54,6 +62,14 @@
     <servlet-mapping>
         <servlet-name>TypeController</servlet-name>
         <url-pattern>/Type</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageProductController</servlet-name>
+        <url-pattern>/ManageProduct</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RestockController</servlet-name>
+        <url-pattern>/Restock</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

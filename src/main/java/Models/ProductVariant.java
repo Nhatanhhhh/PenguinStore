@@ -6,19 +6,20 @@ package Models;
 
 /**
  *
-<<<<<<< HEAD
  * @author Huynh Cong Nghiem - CE181351
  */
-public class ProductVariants {
+public class ProductVariant {
+
     private String proVariantID;
     private boolean status;
     private int stockQuantity;
     private String sizeName;
     private String colorName;
-    public ProductVariants() {
+
+    public ProductVariant() {
     }
 
-    public ProductVariants(String proVariantID, boolean status, int stockQuantity, String colorName, String sizeName) {
+    public ProductVariant(String proVariantID, boolean status, int stockQuantity, String colorName, String sizeName) {
         this.proVariantID = proVariantID;
         this.status = status;
         this.stockQuantity = stockQuantity;
@@ -65,4 +66,5 @@ public class ProductVariants {
     public void setColorName(String colorName) {
         this.colorName = colorName;
     }
+
 }

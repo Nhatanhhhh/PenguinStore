@@ -7,7 +7,7 @@ package Controller;
 import DAOs.ProductDAO;
 import DAOs.ProductVariantDAO;
 import Models.Product;
-import Models.ProductVariants;
+import Models.ProductVariant;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -42,7 +42,7 @@ public class ProductController extends HttpServlet {
             request.setAttribute("listProduct", listProduct);
             request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
         } else {
-            ArrayList<ProductVariants> listDetail = productVariantDAO.viewProductDetail(id);
+            ArrayList<ProductVariant> listDetail = productVariantDAO.viewProductDetail(id);
             Product product = productDAO.getOneProduct(id);
             request.setAttribute("productDetail", listDetail);
             request.setAttribute("product", product);

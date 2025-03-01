@@ -10,7 +10,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>ViewProducts</title>
+        <title>View Products</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/base.css"/>
@@ -34,9 +34,8 @@
                                     <div class="card product-item">
                                         <c:if test="${not empty product.imgName}">
                                             <c:set var="imgList" value="${fn:split(product.imgName, ',')}" />
-                                            <c:forEach var="img" items="${imgList}">
-                                                <img src="Image/Product/${product.imgName}" class="card-img-top" alt="Product Image">
-                                            </c:forEach>
+                                            <c:set var="firstImg" value="${imgList[0]}" />
+                                            <img src="Image/Product/${firstImg}" class="card-img-top" alt="Product Image">
                                         </c:if>
                                         <div class="card-body">
                                             <p class="card-title">${product.productName}</p>

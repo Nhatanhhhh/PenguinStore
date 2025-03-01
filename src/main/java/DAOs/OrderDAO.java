@@ -8,7 +8,6 @@ package DAOs;
  *
  * @author PC
  */
-
 import DB.DBContext;
 import Models.Order;
 import java.sql.Connection;
@@ -19,6 +18,7 @@ import java.util.List;
 
 /**
  * DAO class for Order
+ *
  * @author Nhat_Anh
  */
 public class OrderDAO {
@@ -26,12 +26,11 @@ public class OrderDAO {
     public List<Order> getOrdersByCustomerID(String customerID) {
         List<Order> orderList = new ArrayList<>();
         String query = "SELECT orderID, totalAmount, discountAmount, finalAmount, orderDate, statusOID, voucherID FROM [Order] WHERE customerID = ?";
-        
-        try (Connection conn = DBContext.getConn();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, customerID);
             ResultSet rs = ps.executeQuery();
-            
+
             while (rs.next()) {
                 Order order = new Order();
                 order.setOrderID(rs.getString("orderID"));
@@ -42,7 +41,7 @@ public class OrderDAO {
                 order.setStatusOID(rs.getString("statusOID"));
                 order.setVoucherID(rs.getString("voucherID"));
                 order.setCustomerID(customerID);
-                
+
                 orderList.add(order);
             }
         } catch (Exception e) {

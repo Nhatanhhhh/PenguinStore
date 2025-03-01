@@ -24,8 +24,8 @@
                 </li>
                 <li>Product
                     <ul class="dropdown">
-                        <li><a href="#">View Products</a></li>
-                        <li><a href="#">Create Product</a></li>
+                        <li><a href="<c:url value='/ManageProduct?action=view'/>">View Products</a></li>
+                        <li><a href="<c:url value='/ManageProduct?action=create'/>">Create Product</a></li>
                     </ul>
                 </li>
                 <li>Staff
@@ -41,7 +41,7 @@
                 </li>
                 <li>Voucher
                     <ul class="dropdown">
-                        <li><a href="<c:url value='/Voucher?action=list'/>">View Vouchers</a></li>
+                        <li><a href="<c:url value='/Voucher?action=view'/>">View Vouchers</a></li>
                         <li><a href="<c:url value='/Voucher?action=create'/>">Create Vouchers</a></li>
                     </ul>
                 </li>
@@ -60,7 +60,7 @@
             <h2>Statistic</h2>
             <ul>
                 <li><a href="#">Revenue</a></li>
-                <li><a href="#">Warehouse</a></li>
+                <li><a href="<c:url value='/Restock?action=restockHistory'/>">Restock History</a></li>
                 <li><a href="#">Profit</a></li>
                 <li><a href="#">Product</a></li>
             </ul>
