@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <filter>
+        <filter-name>LoginFilter</filter-name>
+        <filter-class>Filters.LoginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LoginFilter</filter-name>
+        <url-pattern>/Cart</url-pattern>
+        <url-pattern>/ViewProfile</url-pattern>
+        <url-pattern>/Order</url-pattern>
+        <url-pattern>/EditProfile</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>CustomerServlet</servlet-name>
         <servlet-class>Controller.CustomerServlet</servlet-class>
@@ -11,10 +22,6 @@
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>Controller.LogoutServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CustomerServlet</servlet-name>
-        <servlet-class>Controller.CustomerServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ProductController</servlet-name>
@@ -32,6 +39,34 @@
         <servlet-name>TypeController</servlet-name>
         <servlet-class>Controller.TypeController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ForgetPasswordController</servlet-name>
+        <servlet-class>Controller.ForgetPasswordController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChangePasswordController</servlet-name>
+        <servlet-class>Controller.ChangePasswordController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ResetPasswordController</servlet-name>
+        <servlet-class>Controller.ResetPasswordController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ViewProfileController</servlet-name>
+        <servlet-class>Controller.ViewProfileController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>VVCustomerController</servlet-name>
+        <servlet-class>Controller.VVCustomerController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/Logout</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/Login</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>OrderHistory</servlet-name>
         <url-pattern>/OrderHistory</url-pattern>
@@ -58,6 +93,22 @@
     <servlet-mapping>
         <servlet-name>TypeController</servlet-name>
         <url-pattern>/Type</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ForgetPasswordController</servlet-name>
+        <url-pattern>/ForgetPassword</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ResetPasswordController</servlet-name>
+        <url-pattern>/ResetPassword</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ViewProfileController</servlet-name>
+        <url-pattern>/ViewProfile</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>VVCustomerController</servlet-name>
+        <url-pattern>/VVCustomer</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

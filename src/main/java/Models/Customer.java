@@ -6,7 +6,7 @@ package Models;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Nguyen Nhat Anh - CE181843
  */
 public class Customer {
     private String customerID;
@@ -17,7 +17,7 @@ public class Customer {
     private String googleID;
     private String accessToken;
     private String address;
-    private int phoneNumber;
+    private String phoneNumber;
     private String zip;
     private String state;
     private boolean isVerified;
@@ -25,7 +25,7 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(String customerID, String userName, String passWord, String fullName, String email, String googleID, String accessToken, String address, int phoneNumber, String zip, String state, boolean isVerified) {
+    public Customer(String customerID, String userName, String passWord, String fullName, String email, String googleID, String accessToken, String address, String phoneNumber, String zip, String state, boolean isVerified) {
         this.customerID = customerID;
         this.userName = userName;
         this.passWord = passWord;
@@ -104,11 +104,11 @@ public class Customer {
         this.address = address;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 

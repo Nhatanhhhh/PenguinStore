@@ -1,25 +1,27 @@
-<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page isELIgnored="false"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="Models.Customer, Models.Manager"%>
 
 <%
-    Object user = session.getAttribute("user");
+    if (session != null) {
+        Object user = session.getAttribute("user");
 
-    Customer customer = null;
-    Manager manager = null;
+        Customer customer = null;
+        Manager manager = null;
 
-    if (user instanceof Customer) {
-        customer = (Customer) user;
-    } else if (user instanceof Manager) {
-        manager = (Manager) user;
-    }
+        if (user instanceof Customer) {
+            customer = (Customer) user;
+        } else if (user instanceof Manager) {
+            manager = (Manager) user;
+        }
 
-    if (customer != null || manager != null) {
-        session.setAttribute("userObj", customer != null ? customer : manager);
+        if (customer != null || manager != null) {
+            session.setAttribute("userObj", customer != null ? customer : manager);
+            pageContext.setAttribute("userObj", customer != null ? customer : manager);
+        }
     }
 %>
-
 
 
 <!DOCTYPE html>
@@ -41,7 +43,7 @@
     <body>
         <header class="header container-fuild row">
             <div class="logo col-md-3">
-                <a href="<%= request.getContextPath() %>">
+                <a href="<%= request.getContextPath()%>">
                     <span class="mdi mdi-penguin"></span>
                     <span>PENGUIN</span>
                 </a>
@@ -50,22 +52,24 @@
                 <input type="text" placeholder=""/>
             </div>
 
+
+            <!-- Nếu user chưa đăng nhập -->
+            <c:if test="${sessionScope.userObj == null}">
+                <div class="col-md-4 d-flex justify-content-end">
+                    <a href="<%= request.getContextPath()%>/Register" class="button button-dark ml-2 mr-2">REGISTER</a>
+                    <a href="<%= request.getContextPath()%>/Login" class="button button-dark ml-2 mr-2">LOGIN</a>
+                </div>
+            </c:if> 
+
             <!-- Nếu user đã đăng nhập -->
-            <c:if test="${not empty userObj}">
+            <c:if test="${sessionScope.userObj != null}">
                 <div class="header-icons col-md-4 d-flex justify-content-end">
-                    <a href="#" class="icon cart-icon"><span class="mdi mdi-cart-outline"></span></a>
-                    <a href="#" class="icon user-icon"><span class="mdi mdi-account"></span></a>
-                    <a href="<%= request.getContextPath() %>/Logout" class="logout-button">Logout</a>
+                    <a href="#" class="icon cart-icon" style="margin: 0 15px;"><span class="mdi mdi-cart-outline button button-dark" style="border-radius: 4px;"></span></a>
+                    <a href="<%= request.getContextPath()%>/ViewProfile" class="icon user-icon" style="margin: 0 15px;"><span class="mdi mdi-account button button-dark" style="border-radius: 4px;"></span></a>
+                    <a href="<%= request.getContextPath()%>/Logout" class="button button-dark ml-2 mr-2">Logout</a>
                 </div>
             </c:if>
 
-            <!-- Nếu user chưa đăng nhập -->
-            <c:if test="${empty userObj}">
-                <div class="col-md-4 d-flex justify-content-end">
-                    <a href="<%= request.getContextPath() %>/View/Register.jsp" class="button button-dark ml-2 mr-2">REGISTER</a>
-                    <a href="<%= request.getContextPath() %>/View/LoginCustomer.jsp" class="button button-dark ml-2 mr-2">LOGIN</a>
-                </div>
-            </c:if>   
         </header>
 
         <nav class="nav-menu">

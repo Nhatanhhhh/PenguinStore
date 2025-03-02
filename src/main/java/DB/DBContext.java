@@ -16,25 +16,20 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Nguyen Nhat Anh - CE181843
  */
 public class DBContext {
 
     private static Connection conn;
 
     public static Connection getConn() {
-        if (conn == null) {
-            try {
-                String user = "nhatanh";
-                String pass = "123";
-                String url = "jdbc:sqlserver://localhost:1433;databaseName=EbookApp;encrypt=false";
-
-                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-                conn = DriverManager.getConnection(url, user, pass);
-
-            } catch (SQLException | ClassNotFoundException ex) {
-                Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        Connection conn;
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB;user=nhatanh;password=123;encrypt=false";
+            conn = DriverManager.getConnection(url);
+        } catch (Exception ex) {
+            conn = null;
         }
         return conn;
     }

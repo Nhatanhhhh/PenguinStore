@@ -3,6 +3,10 @@ package Utils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ *
+ * @author Nguyen Nhat Anh - CE181843
+ */
 public class CookieUtils {
 
     public static void setRememberMeCookies(HttpServletResponse response, String username, String hashedPassword, String rememberMe) {

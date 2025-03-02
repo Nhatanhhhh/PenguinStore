@@ -6,12 +6,14 @@ package DAOs;
 
 import DB.DBContext;
 import Models.Manager;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Nguyen Nhat Anh - CE181843
  */
 public class ManagerDAO {
 
@@ -22,22 +24,29 @@ public class ManagerDAO {
     }
 
     /**
-     * L?y thông tin qu?n lı t? username và m?t kh?u (?ã hash)
+     * L?y thï¿½ng tin qu?n lï¿½ t? username vï¿½ m?t kh?u (?ï¿½ hash)
      *
-     * @param username Tên ng??i dùng
-     * @param password M?t kh?u ch?a mã hóa (s? ???c mã hóa trong hàm này)
-     * @return ??i t??ng Manager n?u tìm th?y, ng??c l?i tr? v? null
+     * @param username Tï¿½n ng??i dï¿½ng
+     * @param password M?t kh?u ch?a mï¿½ hï¿½a (s? ???c mï¿½ hï¿½a trong hï¿½m nï¿½y)
+     * @return ??i t??ng Manager n?u tï¿½m th?y, ng??c l?i tr? v? null
      */
     public Manager getManagerByUsernameAndPassword(String username, String hashedPassword) {
         Manager manager = null;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
+        try {
+            // **Láº¤Y Káº¾T Ná»I Tá»ª DBContext**
+            conn = dbContext.getConn();
 
-        String query = "SELECT * FROM Manager WHERE managerName = ? AND password = ?";
-        Object[] params = {username, hashedPassword};
-        
-        System.out.println("Hashed Password:" + hashedPassword);
+            // **Sá»¬A QUERY Äá»‚ CHá»ˆ Láº¤Y CÃC Cá»˜T Cáº¦N THIáº¾T**
+            String query = "SELECT managerID, managerName, password, fullName, email, phoneNumber, address, dateOfBirth, role FROM Manager WHERE managerName = ? AND password = ?";
+            ps = conn.prepareStatement(query);
+            ps.setString(1, username);
+            ps.setString(2, hashedPassword);
 
-        try ( ResultSet rs = dbContext.execSelectQuery(query, params)) {
+            rs = ps.executeQuery();
             if (rs.next()) {
                 manager = new Manager(
                         rs.getString("managerID"),
@@ -53,10 +62,24 @@ public class ManagerDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            // **ÄÃ“NG TÃ€I NGUYÃŠN**
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
 
         return manager;
     }
-
 
 }

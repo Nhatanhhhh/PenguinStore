@@ -6,7 +6,6 @@ package Models;
 
 /**
  *
-<<<<<<< HEAD
  * @author Huynh Cong Nghiem - CE181351
  */
 public class ProductVariants {
