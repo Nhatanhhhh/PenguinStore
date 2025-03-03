@@ -113,12 +113,6 @@ public class LoginServlet extends HttpServlet {
             if (user != null) {
                 session.setAttribute("user", user);
                 setRememberMeCookies(response, username, hashedPassword, rememberMe);
-                if (user instanceof Customer) {
-                    Customer customerUser = (Customer) user;
-                    session.setAttribute("customerID", customerUser.getCustomerID());
-                }
-
-                String checkCustomerID = (String) session.getAttribute("customerID");
 
                 if (user instanceof Manager) {
                     Manager manager = (Manager) user;

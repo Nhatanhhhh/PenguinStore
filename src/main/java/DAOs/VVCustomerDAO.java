@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Nhat Anh - CE181843
  */
 public class VVCustomerDAO {
     private Connection conn;

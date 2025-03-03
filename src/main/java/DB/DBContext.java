@@ -36,7 +36,7 @@ public class DBContext {
 
     public ResultSet execSelectQuery(String query, Object[] params) throws SQLException {
         Connection connection = getConn();
-        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         if (params != null) {
             for (int i = 0; i < params.length; i++) {

@@ -5,7 +5,7 @@
 --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="windows-1252"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -13,26 +13,23 @@
         <title>Product Detail</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/base.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/style.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/styleViewProductDetail.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/styleViewProductDetail.css"/>
     </head>
     <body>
         <%@include file="Header.jsp"%>
         <c:choose>
             <c:when test="${not empty productDetail and not empty productDetail[0].proVariantID}">
+                <c:set var="imgList" value="${fn:split(product.imgName, ',')}" />
                 <div class="product-container">
-                    <div class="product-gallery">
-                        <c:if test="${not empty product.imgName}">
-                            <c:set var="imgList" value="${fn:split(product.imgName, ',')}" />
+                    <div class="product-images">
+                        <div class="thumbnail-container">
                             <c:forEach var="img" items="${imgList}">
-                                <img src="Image/Product/${img}" alt="Product Image" width="300">
+                                <img src="Image/Product/${fn:replace(img, ' ', '')}" alt="Thumbnail">
                             </c:forEach>
-                        </c:if>
-
-                        <c:if test="${empty product.imgName}">
-                            <img src="image/Product/notimage.png" alt="No Image Available" width="300">
-                        </c:if>
+                        </div>
+                        <img src="Image/Product/${imgList[0]}" class="product-main-img" alt="Product Image">
                     </div>
 
                     <div class="product-info">
@@ -47,12 +44,12 @@
 
                         <c:if test="${not empty productDetail}">
                             <c:set var="hasSize" value="false"/>
-                            <c:set var="sizeSet" value="<%= new java.util.TreeSet<String>() %>" scope="request"/>
+                            <c:set var="sizeSet" value="<%= new java.util.TreeSet<String>()%>" scope="request"/>
 
                             <c:forEach var="variant" items="${productDetail}">
                                 <c:if test="${not empty variant.sizeName}">
                                     <c:set var="hasSize" value="true"/>
-                                    <% ((java.util.TreeSet<String>) request.getAttribute("sizeSet")).add(pageContext.getAttribute("variant").getClass().getMethod("getSizeName").invoke(pageContext.getAttribute("variant")).toString()); %>
+                                    <% ((java.util.TreeSet<String>) request.getAttribute("sizeSet")).add(pageContext.getAttribute("variant").getClass().getMethod("getSizeName").invoke(pageContext.getAttribute("variant")).toString());%>
                                 </c:if>
                             </c:forEach>
 
@@ -93,7 +90,6 @@
                                 <button type="submit" class="add-to-cart">Add to cart</button>
                             </form>
                         </div>
-
                     </div>
                 </div>
             </c:when>
@@ -102,6 +98,23 @@
             </c:otherwise>
         </c:choose>
         <%@include file="Footer.jsp"%>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const thumbnails = document.querySelectorAll(".thumbnail-container img");
+                const mainImage = document.querySelector(".product-main-img");
+
+                thumbnails.forEach(thumbnail => {
+                    thumbnail.addEventListener("click", function () {
+                        mainImage.src = this.src;
+
+                        thumbnails.forEach(img => img.classList.remove("active"));
+
+                        this.classList.add("active");
+                    });
+                });
+            });
+
+        </script>
     </body>
 
 </html>

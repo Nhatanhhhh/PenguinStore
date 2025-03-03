@@ -64,7 +64,7 @@
             <!-- Nếu user đã đăng nhập -->
             <c:if test="${sessionScope.userObj != null}">
                 <div class="header-icons col-md-4 d-flex justify-content-end">
-                    <a href="#" class="icon cart-icon" style="margin: 0 15px;"><span class="mdi mdi-cart-outline button button-dark" style="border-radius: 4px;"></span></a>
+                    <a href="<%= request.getContextPath()%>/Cart" class="icon cart-icon" style="margin: 0 15px;"><span class="mdi mdi-cart-outline button button-dark" style="border-radius: 4px;"></span></a>
                     <a href="<%= request.getContextPath()%>/ViewProfile" class="icon user-icon" style="margin: 0 15px;"><span class="mdi mdi-account button button-dark" style="border-radius: 4px;"></span></a>
                     <a href="<%= request.getContextPath()%>/Logout" class="button button-dark ml-2 mr-2">Logout</a>
                 </div>

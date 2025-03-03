@@ -7,9 +7,13 @@
     <filter-mapping>
         <filter-name>LoginFilter</filter-name>
         <url-pattern>/Cart</url-pattern>
+        <url-pattern>/Checkout</url-pattern>
+        <url-pattern>/Payment</url-pattern>
         <url-pattern>/ViewProfile</url-pattern>
         <url-pattern>/Order</url-pattern>
         <url-pattern>/EditProfile</url-pattern>
+        <url-pattern>/View/DashBoardForAdmin.jsp</url-pattern>
+        <url-pattern>/View/DashBoardForStaff.jsp</url-pattern>
     </filter-mapping>
     <servlet>
         <servlet-name>CustomerServlet</servlet-name>
@@ -32,7 +36,7 @@
         <servlet-class>Controller.OrderHistory</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>NewServlet</servlet-name>
+        <servlet-name>OrderDetail</servlet-name>
         <servlet-class>Controller.OrderDetail</servlet-class>
     </servlet>
     <servlet>
@@ -58,6 +62,34 @@
     <servlet>
         <servlet-name>VVCustomerController</servlet-name>
         <servlet-class>Controller.VVCustomerController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ManageProductController</servlet-name>
+        <servlet-class>Controller.ManageProductController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RestockController</servlet-name>
+        <servlet-class>Controller.RestockController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CartController</servlet-name>
+        <servlet-class>Controller.CartController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Payment</servlet-name>
+        <servlet-class>Controller.Payment</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Checkout</servlet-name>
+        <servlet-class>Controller.Checkout</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddToCartServlet</servlet-name>
+        <servlet-class>Controller.AddToCartServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StaffController</servlet-name>
+        <servlet-class>Controller.StaffController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
@@ -109,6 +141,34 @@
     <servlet-mapping>
         <servlet-name>VVCustomerController</servlet-name>
         <url-pattern>/VVCustomer</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageProductController</servlet-name>
+        <url-pattern>/ManageProduct</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RestockController</servlet-name>
+        <url-pattern>/Restock</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CartController</servlet-name>
+        <url-pattern>/Cart</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Payment</servlet-name>
+        <url-pattern>/Payment</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Checkout</servlet-name>
+        <url-pattern>/Checkout</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddToCartServlet</servlet-name>
+        <url-pattern>/AddToCartServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StaffController</servlet-name>
+        <url-pattern>/Staff</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

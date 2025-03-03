@@ -8,6 +8,8 @@ import DB.DBContext;
 import Models.Product;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 
 /**
@@ -18,8 +20,6 @@ public class ProductDAO extends DBContext {
 
     private Connection conn;
 
-    
-
     public ArrayList<Product> readAll() {
         ArrayList<Product> products = new ArrayList<>();
         String sql = "SELECT p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName, \n"
@@ -28,7 +28,8 @@ public class ProductDAO extends DBContext {
                 + "JOIN TypeProduct tp ON p.typeID = tp.typeID\n"
                 + "JOIN Category c ON tp.categoryID = c.categoryID\n"
                 + "LEFT JOIN Image i ON p.productID = i.productID\n"
-                + "GROUP BY p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName;";
+                + "GROUP BY p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName, p.dateCreate\n"
+                + "ORDER BY p.dateCreate DESC;";
         try ( ResultSet rs = execSelectQuery(sql)) {
             while (rs.next()) {
                 String productID = rs.getString("productID");
@@ -86,7 +87,7 @@ public class ProductDAO extends DBContext {
                 + "OR tp.typeName LIKE ? OR c.categoryName LIKE ?) "
                 + "GROUP BY p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName";
         Object param[] = {keysearch, keysearch, keysearch, keysearch};
-        try ( ResultSet rs = execSelectQuery(sql,param)) {
+        try ( ResultSet rs = execSelectQuery(sql, param)) {
             while (rs.next()) {
                 String productID = rs.getString("productID");
                 String productName = rs.getString("productName");
@@ -101,6 +102,26 @@ public class ProductDAO extends DBContext {
         } catch (Exception e) {
         }
         return products;
+    }
+
+    public int insertProduct(Product product) throws SQLException {
+        String sql = "EXEC InsertProduct \n"
+                + "    @productName = ?,\n"
+                + "    @description = ?,\n"
+                + "    @price = ?,\n"
+                + "    @typeID = ?;";
+        Object params[] = {product.getProductName(),
+            product.getDescription(), product.getPrice(), product.getTypeID()};
+        try {
+            return execQuery(sql, params);
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("Product exist!");
+            return 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
     }
 
 }

@@ -17,6 +17,7 @@ public class Product {
     private String categoryName;
     private String imgName;
     private String typeName;
+    private String typeID;
 
     public Product(String productID, String productName, String description, double price, String typeName, String categoryName, String imgName) {
         this.productID = productID;
@@ -26,9 +27,31 @@ public class Product {
         this.typeName = typeName;
         this.categoryName = categoryName;
         this.imgName = imgName;
+
+    }
+
+    public Product(String productName, String description, double price, String typeID) {
+        this.productName = productName;
+        this.description = description;
+        this.price = price;
+        this.typeID = typeID;
+    }
+
+    public Product(String productID, String productName, double price) {
+        this.productID = productID;
+        this.productName = productName;
+        this.price = price;
     }
 
     public Product() {
+    }
+
+    public String getTypeID() {
+        return typeID;
+    }
+
+    public void setTypeID(String typeID) {
+        this.typeID = typeID;
     }
 
     public String getProductID() {
@@ -62,6 +85,7 @@ public class Product {
     public void setPrice(double price) {
         this.price = price;
     }
+
     public String getTypeName() {
         return typeName;
     }

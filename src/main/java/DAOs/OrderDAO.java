@@ -14,15 +14,17 @@ import Models.Order;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * DAO class for Order
- * @author Nhat_Anh
+ * @author Nhat Anh CE181843
  */
 public class OrderDAO {
-
+private DBContext db = new DBContext();
     public List<Order> getOrdersByCustomerID(String customerID) {
         List<Order> orderList = new ArrayList<>();
         String query = "SELECT orderID, totalAmount, discountAmount, finalAmount, orderDate, statusOID, voucherID FROM [Order] WHERE customerID = ?";
@@ -49,5 +51,24 @@ public class OrderDAO {
             e.printStackTrace();
         }
         return orderList;
+    }
+    public String createOrder(Order order) {
+        String orderID = UUID.randomUUID().toString();
+        String sql = "INSERT INTO Orders (orderID, customerID, totalAmount, discountAmount, finalAmount, orderDate, statusOID, voucherID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            db.execQuery(sql, new Object[]{
+                orderID,
+                order.getCustomerID(),
+                order.getTotalAmount(),
+                order.getDiscountAmount(),
+                order.getFinalAmount(),
+                new java.sql.Date(order.getOrderDate().getTime()),
+                order.getStatusOID(),
+                order.getVoucherID()
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orderID;
     }
 }

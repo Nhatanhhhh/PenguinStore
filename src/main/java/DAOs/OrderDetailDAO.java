@@ -14,6 +14,7 @@ import DTO.OrderDetailDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import java.util.List;
  * @author PC
  */
 public class OrderDetailDAO {
+    private DBContext db = new DBContext();
     public List<OrderDetailDTO> getOrderDetailsByOrderID(String orderID) {
         List<OrderDetailDTO> details = new ArrayList<>();
         
@@ -52,5 +54,13 @@ public class OrderDetailDAO {
             e.printStackTrace();
         }
         return details;
+    }
+    public void addOrderDetail(String orderID, int productID, int quantity) {
+        String sql = "INSERT INTO OrderDetail (orderID, productID, quantity) VALUES (?, ?, ?)";
+        try {
+            db.execQuery(sql, new Object[]{orderID, productID, quantity});
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

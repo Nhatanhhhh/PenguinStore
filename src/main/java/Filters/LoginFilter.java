@@ -40,7 +40,7 @@ public class LoginFilter implements Filter {
             chain.doFilter(request, response);
         } else {
             // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
-            res.sendRedirect("Login");
+            res.sendRedirect("PenguinStore/Login");
         }
     }
 
