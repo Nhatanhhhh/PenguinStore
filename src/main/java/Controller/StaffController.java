@@ -113,7 +113,7 @@ public class StaffController extends HttpServlet {
                 break;
 
             case "create":
-
+                
                 String managerNameCreate = request.getParameter("managerName");
                 String password = request.getParameter("password");
                 String fullName = request.getParameter("fullName");
@@ -124,7 +124,7 @@ public class StaffController extends HttpServlet {
 
                 if (managerNameCreate == null || managerNameCreate.trim().isEmpty() || password == null || password.trim().isEmpty()) {
                     request.setAttribute("error", "Please Enter your data.");
-                    request.getRequestDispatcher("/View/CreateStaff.jsp").forward(request, response);
+                    request.getRequestDispatcher("View/CreateStaff.jsp").forward(request, response);
                     return;
                 }
 

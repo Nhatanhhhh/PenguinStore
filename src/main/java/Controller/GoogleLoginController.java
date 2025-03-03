@@ -29,8 +29,8 @@ import java.util.logging.Logger;
 @WebServlet(name = "GoogleLogin", urlPatterns = {"/GoogleLogin"})
 public class GoogleLoginController extends HttpServlet {
 
-    private static final String CLIENT_ID = "874334129822-q54jd6jgp3336in5ni3burmr6l317g1s.apps.googleusercontent.com";
-    private static final String CLIENT_SECRET = "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";
+    private static final String CLIENT_ID = "";
+    private static final String CLIENT_SECRET = "";
     private static final String REDIRECT_URI = "http://localhost:9999/PenguinStore/GoogleLogin";
     private final JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
 
