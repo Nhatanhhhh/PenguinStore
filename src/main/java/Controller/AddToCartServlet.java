@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Nhat_Anh
  */
-public class CustomerServlet extends HttpServlet {
+public class AddToCartServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -33,10 +33,10 @@ public class CustomerServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet CustomerServlet</title>");  
+            out.println("<title>Servlet AddToCartServlet</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet CustomerServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet AddToCartServlet at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }

@@ -31,8 +31,8 @@
                             </c:if>
                             <form action="<c:url value='/Voucher?action=create'/>" method="post">
                                 <label>Date created:</label>
-                                <input type="text" name="validFrom_display" value="<%= formattedDate %>" disabled> <br>
-                                <input type="hidden" name="validFrom" value="<%= formattedDate %>">
+                                <input type="text" name="validFrom_display" value="<%= formattedDate%>" disabled> <br>
+                                <input type="hidden" name="validFrom" value="<%= formattedDate%>">
 
                                 <label for="voucherCode">Voucher Code:</label>
                                 <input type="text" id="voucherCode" name="voucherCode" required><br>
@@ -47,7 +47,7 @@
                                 <input type="number" id="minOrderValue" name="minOrderValue" step="0.1" min="0" value="0" required><br>
 
                                 <label for="validUntil">Valid Until:</label>
-                                <input type="date" id="validUntil" name="validUntil" min="<%= formattedDate %>" required><br>
+                                <input type="date" id="validUntil" name="validUntil" min="<%= formattedDate%>" required><br>
 
                                 <label for="maxDiscountAmount">Maximum Discount Amount:</label>
                                 <input type="number" id="maxDiscountAmount" name="maxDiscountAmount" step="0.1" min="0" value="0" required><br>

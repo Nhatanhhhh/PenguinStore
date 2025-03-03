@@ -5,7 +5,7 @@
 --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="windows-1252"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -13,9 +13,9 @@
         <title>View Products</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/base.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/style.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/styleViewProducts.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/styleViewProducts.css"/>
     </head>
     <body>
         <%@include file="Header.jsp"%>

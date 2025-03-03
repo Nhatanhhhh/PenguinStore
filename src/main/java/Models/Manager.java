@@ -6,7 +6,7 @@ package Models;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Nguyen Nhat Anh - CE181843
  */
 public class Manager {
 

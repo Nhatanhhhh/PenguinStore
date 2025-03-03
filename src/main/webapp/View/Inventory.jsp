@@ -4,7 +4,7 @@
     Author     : Huynh Cong Nghiem - CE181351
 --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@page contentType="text/html" pageEncoding="windows-1252"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -17,11 +17,11 @@
         <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/styleViewProductDetail.css"/>
     </head>
     <body>
-        <%@include file="../View/HeaderAD.jsp"%>
+        <%@include file="Admin/HeaderAD.jsp"%>
 
         <div class="row">
             <div class="col-md-3">
-                <%@include file="../View/NavigationMenu.jsp"%>
+                <%@include file="Admin/NavigationMenu.jsp"%>
             </div>
             <div class="col-md-9">
                 <div class="product-images" style="margin-top: 20px; margin-bottom: 30px">

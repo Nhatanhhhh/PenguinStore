@@ -16,33 +16,27 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Nguyen Nhat Anh - CE181843
  */
 public class DBContext {
 
     private static Connection conn;
 
     public static Connection getConn() {
-        if (conn == null) {
-            try {
-                String user = "sa";
-                String pass = "23032004";
-                String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB;encrypt=false";
-
-                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-                conn = DriverManager.getConnection(url, user, pass);
-
-            } catch (SQLException | ClassNotFoundException ex) {
-                Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        Connection conn;
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB;user=sa;password=23032004;encrypt=false";
+            conn = DriverManager.getConnection(url);
+        } catch (Exception ex) {
+            conn = null;
         }
         return conn;
     }
 
-    // Ph??ng th?c cho các l?nh SELECT (có params)
     public ResultSet execSelectQuery(String query, Object[] params) throws SQLException {
-        Connection conn = getConn();
-        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        Connection connection = getConn();
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         if (params != null) {
             for (int i = 0; i < params.length; i++) {
@@ -52,14 +46,11 @@ public class DBContext {
         return preparedStatement.executeQuery();
     }
 
-    // Ph??ng th?c cho các l?nh SELECT không có params 
     public ResultSet execSelectQuery(String query) throws SQLException {
         return this.execSelectQuery(query, null);
     }
 
-    //Ph??ng th?c cho các l?nh INSERT, UPDATE, DELETE 
     public int execQuery(String query, Object[] params) throws SQLException {
-        Connection conn = getConn();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
 
         if (params != null) {
@@ -94,5 +85,4 @@ public class DBContext {
         }
         return hashedPassword;
     }
-
 }

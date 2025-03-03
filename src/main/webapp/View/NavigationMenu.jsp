@@ -30,8 +30,8 @@
                 </li>
                 <li>Staff
                     <ul class="dropdown">
-                        <li><a href="#">View Staffs</a></li>
-                        <li><a href="#">Create Account Staff</a></li>
+                        <li><a href="<c:url value='/Staff?action=list'/>">View Staffs</a></li>
+                        <li><a href="<c:url value='/Staff?action=create'/>">Create Account Staff</a></li>
                     </ul>
                 </li>
                 <li>Order

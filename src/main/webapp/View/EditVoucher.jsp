@@ -39,7 +39,7 @@
                                     </c:if>
 
                                     <c:if test="${not empty voucher}">
-                                        <form action="<c:url value='/Voucher?action=edit'/>" method="Post">
+                                        <form action="<c:url value='/Voucher?action=edit'/>" method="POST">
                                             <input type="hidden" name="voucherID" value="${voucher.voucherID}">
 
                                             <div class="mb-3">

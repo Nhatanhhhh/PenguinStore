@@ -39,7 +39,7 @@ public class VoucherController extends HttpServlet {
             case "list":
                 ArrayList<Voucher> voucherList = voucherDAO.getAll();
                 request.setAttribute("voucherList", voucherList);
-                request.getRequestDispatcher("/View/ListVoucher.jsp").forward(request, response);
+                request.getRequestDispatcher("View/ListVoucher.jsp").forward(request, response);
                 break;
 
             case "edit":
@@ -48,20 +48,20 @@ public class VoucherController extends HttpServlet {
                 //System.out.println("Query String: " + request.getQueryString());
 
                 if (voucherID == null || voucherID.trim().isEmpty()) {
-                    request.getRequestDispatcher("/View/ListVoucher.jsp").forward(request, response);
+                    request.getRequestDispatcher("View/ListVoucher.jsp").forward(request, response);
                     return;
                 }
                 Voucher existingVoucher = voucherDAO.getOnlyById(voucherID);
                 if (existingVoucher == null) {
-                    request.getRequestDispatcher("/View/ListVoucher.jsp").forward(request, response);
+                    request.getRequestDispatcher("View/ListVoucher.jsp").forward(request, response);
                     return;
                 }
                 request.setAttribute("voucher", existingVoucher);
-                request.getRequestDispatcher("/View/EditVoucher.jsp").forward(request, response);
+                request.getRequestDispatcher("View/EditVoucher.jsp").forward(request, response);
                 break;
 
             case "create":
-                request.getRequestDispatcher("/View/CreateVoucher.jsp").forward(request, response);
+                request.getRequestDispatcher("View/CreateVoucher.jsp").forward(request, response);
                 break;
 
             default:

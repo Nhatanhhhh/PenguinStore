@@ -56,23 +56,20 @@ public class ManageProductController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        String id = request.getParameter("id");
         ProductDAO productDAO = new ProductDAO();
         ProductVariantDAO productVariantDAO = new ProductVariantDAO();
         SizeDAO sizeDAO = new SizeDAO();
         ColorDAO colorDAO = new ColorDAO();
         TypeDAO typeDAO = new TypeDAO();
         System.out.println("Action: " + action);
-        System.out.println("Product ID: " + id);
         System.out.println("-------------------------");
         if (Objects.isNull(action)) {
             action = "view";
         }
-        if (Objects.isNull(id)) {
-            action = "view";
-        }
-        System.out.println("Action: " + action);
-        System.out.println("Product ID: " + id);
+
+        System.out.println(
+                "Action: " + action);
+
         switch (action) {
             case "view":
                 ArrayList<Product> listProduct = productDAO.readAll();
@@ -99,6 +96,7 @@ public class ManageProductController extends HttpServlet {
                 request.getRequestDispatcher("/View/CreateProduct.jsp").forward(request, response);
                 break;
             case "inventory":
+                String id = request.getParameter("id");
                 ArrayList<ProductVariant> listDetail = productVariantDAO.viewProductDetail(id);
                 Product product = productDAO.getOneProduct(id);
                 request.setAttribute("productDetail", listDetail);
@@ -172,5 +170,4 @@ public class ManageProductController extends HttpServlet {
                 break;
         }
     }
-
 }

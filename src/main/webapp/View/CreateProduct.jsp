@@ -5,11 +5,11 @@
 --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="windows-1252"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Create Product</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
@@ -141,11 +141,11 @@
         </style>
     </head>
     <body>
-        <%@include file="../View/HeaderAD.jsp"%>
+        <%@include file="Admin/HeaderAD.jsp"%>
         <div>
             <div class="row">
                 <div class="col-md-3">
-                    <%@include file="../View/NavigationMenu.jsp"%>
+                    <%@include file="Admin/NavigationMenu.jsp"%>
                 </div>
                 <div class="form-container col-md-9">
                     <h2 style="text-align: center;">Create New Product</h2>

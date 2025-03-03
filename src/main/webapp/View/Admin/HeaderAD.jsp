@@ -18,8 +18,8 @@
                 <input type="text" placeholder="" />
             </div>
             <div class="header-icons col-md-4 d-flex justify-content-end">
-                <button class="icon user-icon"><span class="mdi mdi-account"></span></button>
-                <button class="logout-button">Logout</button>
+                <a href="" class="icon user-icon"><i class="fa-solid fa-user-tie"></i></a>
+                <a href="${pageContext.request.contextPath}/Logout" class="logout-button">Logout</a>
             </div>
 
         </header>

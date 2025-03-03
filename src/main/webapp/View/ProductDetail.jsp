@@ -5,7 +5,7 @@
 --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="windows-1252"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -13,9 +13,9 @@
         <title>Product Detail</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/base.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/style.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/styleViewProductDetail.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/styleViewProductDetail.css"/>
     </head>
     <body>
         <%@include file="Header.jsp"%>
@@ -44,12 +44,12 @@
 
                         <c:if test="${not empty productDetail}">
                             <c:set var="hasSize" value="false"/>
-                            <c:set var="sizeSet" value="<%= new java.util.TreeSet<String>() %>" scope="request"/>
+                            <c:set var="sizeSet" value="<%= new java.util.TreeSet<String>()%>" scope="request"/>
 
                             <c:forEach var="variant" items="${productDetail}">
                                 <c:if test="${not empty variant.sizeName}">
                                     <c:set var="hasSize" value="true"/>
-                                    <% ((java.util.TreeSet<String>) request.getAttribute("sizeSet")).add(pageContext.getAttribute("variant").getClass().getMethod("getSizeName").invoke(pageContext.getAttribute("variant")).toString()); %>
+                                    <% ((java.util.TreeSet<String>) request.getAttribute("sizeSet")).add(pageContext.getAttribute("variant").getClass().getMethod("getSizeName").invoke(pageContext.getAttribute("variant")).toString());%>
                                 </c:if>
                             </c:forEach>
 

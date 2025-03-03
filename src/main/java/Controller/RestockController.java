@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 /**
- * Servlet x? lý nh?p hàng (Restock)
+ * Servlet x? lï¿½ nh?p hï¿½ng (Restock)
  *
  * @author Do Van Luan - CE180457
  */
@@ -30,13 +30,13 @@ public class RestockController extends HttpServlet {
                     return;
                 }
                 request.setAttribute("proVariantID", proVariantID);
-                request.getRequestDispatcher("/View/restock.jsp").forward(request, response);
+                request.getRequestDispatcher("/View/Restock.jsp").forward(request, response);
                 break;
 
             case "restockHistory":
                 ArrayList<Restock> restockHistory = restockDAO.getRestockHistory();
                 request.setAttribute("restockHistory", restockHistory);
-                request.getRequestDispatcher("/View/restockHistory.jsp").forward(request, response);
+                request.getRequestDispatcher("/View/RestockHistory.jsp").forward(request, response);
                 break;
 
             default:
@@ -53,7 +53,6 @@ public class RestockController extends HttpServlet {
         String proVariantID = request.getParameter("proVariantID");
         String quantityStr = request.getParameter("quantity");
         String priceStr = request.getParameter("price");
-        LocalDate restockDate = LocalDate.parse(request.getParameter("restockDate"));
         
         
         if (proVariantID == null || quantityStr == null || priceStr == null) {

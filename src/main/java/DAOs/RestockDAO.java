@@ -13,7 +13,7 @@ import Models.Restock;
 import java.sql.ResultSet;
 
 /**
- * RestockDAO dùng ?? c?p nh?t l?i s? l??ng hàng trong kho.
+ * RestockDAO dï¿½ng ?? c?p nh?t l?i s? l??ng hï¿½ng trong kho.
  *
  * @author Do Van Luan
  */
