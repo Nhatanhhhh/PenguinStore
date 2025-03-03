@@ -99,10 +99,6 @@
         <servlet-name>OrderHistory</servlet-name>
         <url-pattern>/OrderHistory</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CustomerServlet</servlet-name>
-        <url-pattern>/CustomerServlet</url-pattern>
-    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>View/index.jsp</welcome-file>
     </welcome-file-list>
