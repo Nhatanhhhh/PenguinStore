@@ -63,7 +63,7 @@ public class ManageProductController extends HttpServlet {
         ColorDAO colorDAO = new ColorDAO();
         TypeDAO typeDAO = new TypeDAO();
         System.out.println("Action: " + action);
-System.out.println("Product ID: " + id);
+        System.out.println("Product ID: " + id);
         System.out.println("-------------------------");
         if (Objects.isNull(action)) {
             action = "view";
@@ -138,7 +138,6 @@ System.out.println("Product ID: " + id);
             case "edit":
 
                 break;
-
             case "create":
                 String productName = request.getParameter("productName");
                 String description = request.getParameter("description");
@@ -166,6 +165,7 @@ System.out.println("Product ID: " + id);
                 } catch (SQLException ex) {
                     Logger.getLogger(ManageProductController.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                response.sendRedirect(request.getContextPath() + "/ManageProduct?action=view");
                 break;
             default:
                 response.sendRedirect(request.getContextPath() + "/ManageProduct?action=view");
