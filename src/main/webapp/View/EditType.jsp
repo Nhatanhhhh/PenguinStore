@@ -8,8 +8,8 @@
         <title>Edit Type</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/base.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/style.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
     </head>
     <body>
         <%@include file="Admin/HeaderAD.jsp"%>
@@ -43,11 +43,14 @@
                                             <div class="mb-3">
                                                 <label for="categoryID" class="form-label">Category:</label>
                                                 <select id="categoryID" name="categoryID" class="form-control">
-                                                    <option value="73CF5616-FF09-416F-BB82-23089053AC57" ${type.categoryID eq '73CF5616-FF09-416F-BB82-23089053AC57' ? 'selected' : ''}>Bottom</option>
-                                                    <option value="030BAAB6-1E21-4AFE-BDBF-6DAA0D66C18C" ${type.categoryID eq '030BAAB6-1E21-4AFE-BDBF-6DAA0D66C18C' ? 'selected' : ''}>Accessory</option>
-                                                    <option value="FAFB0BAB-DB01-4C7F-8444-BEDEB2578024" ${type.categoryID eq 'FAFB0BAB-DB01-4C7F-8444-BEDEB2578024' ? 'selected' : ''}>Top</option>
+                                                    <c:forEach var="category" items="${categoryList}">
+                                                        <option value="${category.categoryID}" ${type.categoryID eq category.categoryID ? 'selected' : ''}>
+                                                            ${category.categoryName}
+                                                        </option>
+                                                    </c:forEach>
                                                 </select>
                                             </div>
+
 
                                             <button type="submit" class="btn btn-primary">Update</button>
                                             <a href="<c:url value='/Type?action=list'/>" class="btn btn-secondary">Cancel</a>

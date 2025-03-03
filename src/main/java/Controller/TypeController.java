@@ -1,6 +1,8 @@
 package Controller;
 
+import DAOs.CategoryDAO;
 import DAOs.TypeDAO;
+import Models.Category;
 import Models.Type;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +26,8 @@ public class TypeController extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         TypeDAO typeDAO = new TypeDAO();
+        CategoryDAO categoryDAO = new CategoryDAO();
+        ArrayList<Category> categoryList = categoryDAO.getAll();
 
         if (Objects.isNull(action)) {
             action = "list"; // Default to listing types
@@ -38,29 +42,31 @@ public class TypeController extends HttpServlet {
 
             case "edit":
                 String typeID = request.getParameter("id");
+
                 System.out.println("Received typeID: " + typeID);
                 System.out.println("Query String: " + request.getQueryString());
 
                 if (typeID == null || typeID.trim().isEmpty()) {
                     request.getRequestDispatcher("/View/ListType.jsp").forward(request, response);
-
                     return;
                 }
 
-                Type existingType = typeDAO.getOnlyById(typeID);  
+                Type existingType = typeDAO.getOnlyById(typeID);
 
                 if (existingType == null) {
                     request.getRequestDispatcher("/View/ListType.jsp").forward(request, response);
-
                     return;
                 }
 
+                // Gửi cả type và danh sách category sang JSP
                 request.setAttribute("type", existingType);
+                request.setAttribute("categoryList", categoryList);
                 request.getRequestDispatcher("/View/EditType.jsp").forward(request, response);
-
                 break;
 
             case "create":
+
+                request.setAttribute("categoryList", categoryList);
                 request.getRequestDispatcher("/View/CreateType.jsp").forward(request, response);
                 break;
 
@@ -88,21 +94,18 @@ public class TypeController extends HttpServlet {
                 break;
 
             case "create":
-                
+
                 String typeName = request.getParameter("typeName");
                 String categoryID = request.getParameter("categoryID");
 
-               
                 if (typeName == null || typeName.trim().isEmpty() || categoryID == null || categoryID.trim().isEmpty()) {
                     request.setAttribute("error", "Please Enter your data.");
                     request.getRequestDispatcher("/View/CreateType.jsp").forward(request, response);
                     return;
                 }
 
-                
                 Type newType = new Type(null, categoryID, typeName);
 
-                
                 int rowsAffected = typeDAO.create(newType);
                 System.out.println("gia tri create tra ve: " + rowsAffected);
                 // Check result
@@ -115,16 +118,14 @@ public class TypeController extends HttpServlet {
                 break;
 
             case "edit":
-                
+
                 String typeID = request.getParameter("typeID");
                 String updatedTypeName = request.getParameter("typeName");
                 String updatedCategoryID = request.getParameter("categoryID");
 
-                
                 Type updatedType = new Type(typeID, updatedCategoryID, updatedTypeName);
                 typeDAO.update(updatedType);
 
-                
                 response.sendRedirect(request.getContextPath() + "/Type?action=list");
                 break;
 
