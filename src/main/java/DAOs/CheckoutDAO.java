@@ -26,7 +26,7 @@ public class CheckoutDAO {
 
     public Customer getCustomerInfo(String customerID) {
         Customer customer = null;
-        String sql = "SELECT customerID, fullName, email, address, zip, state FROM Customer WHERE customerID = ?";
+        String sql = "SELECT customerID, fullName, email, address, zip, state FROM Customer WHERE id = ?";
 
         try ( ResultSet rs = dbContext.execSelectQuery(sql, new Object[]{customerID})) {
             if (rs.next()) {
@@ -57,12 +57,12 @@ public class CheckoutDAO {
 
         try ( ResultSet rs = dbContext.execSelectQuery(sql, new Object[]{customerID})) {
             while (rs.next()) {
-                int productID = rs.getInt("productID");
+                String productID = rs.getString("productID"); // Đổi sang String
                 Product product = getProductDetails(productID);
                 cartItems.add(new Cart(
-                        rs.getInt("cartID"),
-                        rs.getInt("customerID"),
-                        rs.getInt("proVariantID"),
+                        rs.getString("cartID"), // Sửa từ getInt thành getString
+                        rs.getString("customerID"), // Sửa từ getInt thành getString
+                        rs.getString("proVariantID"), // Sửa từ getInt thành getString
                         productID,
                         rs.getInt("quantity")));
             }
@@ -72,8 +72,8 @@ public class CheckoutDAO {
         return cartItems;
     }
 
-    private Product getProductDetails(int productID) {
-        String sql = "SELECT productID, productName, price FROM Product WHERE productID = ?";
+    private Product getProductDetails(String productID) { // Đổi kiểu dữ liệu thành String
+        String sql = "SELECT productID, productName, price FROM Product WHERE productID = ?"; // Sửa id -> productID
         try ( ResultSet rs = dbContext.execSelectQuery(sql, new Object[]{productID})) {
             if (rs.next()) {
                 return new Product(

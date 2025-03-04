@@ -2,6 +2,7 @@ package Controller;
 
 import DAOs.CartDAO;
 import DB.DBContext;
+import Models.Cart;
 import Models.CartItem;
 import Models.Customer;
 import java.io.IOException;
@@ -39,18 +40,11 @@ public class CartController extends HttpServlet {
         Customer customer = (Customer) session.getAttribute("user");
         String customerID = customer.getCustomerID();
 
-        try {
+        CartDAO cartDAO = new CartDAO();
+        List<CartItem> cartItems = cartDAO.viewCart(customerID);
 
-            Connection conn = DBContext.getConn();
-            CartDAO cartDAO = new CartDAO();
-            List<CartItem> cartItems = cartDAO.viewCart(customerID);
-
-            request.setAttribute("cartItems", cartItems);
-            request.getRequestDispatcher("View/Cart.jsp").forward(request, response);
-        } catch (NumberFormatException e) {
-            Logger.getLogger(CartController.class.getName()).log(Level.SEVERE, "Invalid customerID format", e);
-            response.sendRedirect("404.jsp"); // Chuyển hướng đến trang báo lỗi
-        }
+        request.setAttribute("cartItems", cartItems);
+        request.getRequestDispatcher("View/Cart.jsp").forward(request, response);
     }
 
     @Override

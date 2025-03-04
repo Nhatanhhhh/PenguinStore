@@ -35,6 +35,7 @@ public class ProductController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String id = request.getParameter("id");
+        System.out.println("PRODUCT ID"+id);
         ProductDAO productDAO = new ProductDAO();
         ProductVariantDAO productVariantDAO = new ProductVariantDAO();
         if (id == null || id.isEmpty()) {
@@ -42,6 +43,11 @@ public class ProductController extends HttpServlet {
             request.setAttribute("listProduct", listProduct);
             request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
         } else {
+            // Nhận thông báo nếu có
+            String message = request.getParameter("message");
+            if ("success".equals(message)) {
+                request.setAttribute("message", "Sản phẩm đã được thêm vào giỏ hàng thành công!");
+            }
             ArrayList<ProductVariant> listDetail = productVariantDAO.viewProductDetail(id);
             Product product = productDAO.getOneProduct(id);
             request.setAttribute("productDetail", listDetail);

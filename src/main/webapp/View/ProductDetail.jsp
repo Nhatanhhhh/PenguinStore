@@ -86,12 +86,29 @@
                             </div>
 
                             <form action="AddToCartServlet" method="post">
+                                <input type="hidden" name="productID" value="${product.productID}">
                                 <input type="hidden" name="variantId" id="selectedVariantId" value="${productDetail[0].proVariantID}">
+                                <input type="hidden" name="quantity" id="cartQuantity" value="1">
                                 <button type="submit" class="add-to-cart">Add to cart</button>
                             </form>
                         </div>
+                        <c:if test="${not empty message}">
+                            <div class="after-cart">
+                                <div class="cart-success">
+                                    <p>✅ Product has been added to your cart!</p>
+                                </div>
+                                <div>
+                                    <a href="Cart" class="btn btn-primary">🛒 View Cart</a>
+                                    <a href="Checkout" class="btn btn-success">💳 Checkout</a>
+                                    <a href="Product" class="btn btn-warning">💳 Continue Shopping</a>
+                                </div>
+                            </div>
+                        </c:if>
                     </div>
                 </div>
+
+
+
             </c:when>
             <c:otherwise>
                 <p style="text-align: center; font-size: 18px; font-weight: bold; color: red;">Product not found</p>
@@ -115,6 +132,63 @@
             });
 
         </script>
+
+
+
+
     </body>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sizeButtons = document.querySelectorAll(".size-btn");
+            const colorCircles = document.querySelectorAll(".color-circle");
+            const quantityInput = document.getElementById("quantity");
+            const variantIdInput = document.getElementById("selectedVariantId");
+
+            let selectedSize = "";
+            let selectedColor = "";
+
+            // Khi chọn size
+            sizeButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    selectedSize = this.textContent.trim();
+                    sizeButtons.forEach(btn => btn.classList.remove("selected"));
+                    this.classList.add("selected");
+                    updateVariantId();
+                });
+            });
+
+            // Khi chọn màu
+            colorCircles.forEach(circle => {
+                circle.addEventListener("click", function () {
+                    selectedColor = this.style.backgroundColor;
+                    colorCircles.forEach(c => c.classList.remove("selected"));
+                    this.classList.add("selected");
+                    updateVariantId();
+                });
+            });
+
+            // Hàm cập nhật variantId
+            function updateVariantId() {
+                fetch(`GetVariantIDServlet?size=${selectedSize}&color=${selectedColor}`)
+                        .then(response => response.text())
+                        .then(variantId => {
+                            variantIdInput.value = variantId; // Cập nhật hidden input
+                        });
+            }
+
+            // Nút tăng/giảm số lượng
+            document.querySelector(".quantity button:first-child").addEventListener("click", function () {
+                if (parseInt(quantityInput.value) > 1) {
+                    quantityInput.value = parseInt(quantityInput.value) - 1;
+                }
+            });
+
+            document.querySelector(".quantity button:last-child").addEventListener("click", function () {
+                quantityInput.value = parseInt(quantityInput.value) + 1;
+            });
+        });
+    </script>
+
 </html>
+

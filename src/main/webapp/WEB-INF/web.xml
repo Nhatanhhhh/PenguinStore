@@ -91,6 +91,10 @@
         <servlet-name>StaffController</servlet-name>
         <servlet-class>Controller.StaffController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetVariantIDServlet</servlet-name>
+        <servlet-class>Controller.GetVariantIDServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/Logout</url-pattern>
@@ -169,6 +173,10 @@
     <servlet-mapping>
         <servlet-name>StaffController</servlet-name>
         <url-pattern>/Staff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetVariantIDServlet</servlet-name>
+        <url-pattern>/GetVariantIDServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

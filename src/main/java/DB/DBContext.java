@@ -26,7 +26,7 @@ public class DBContext {
         Connection conn;
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB;user=nhatanh;password=123;encrypt=false";
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB2;user=sa;password=Leminhvip1;encrypt=false";
             conn = DriverManager.getConnection(url);
         } catch (Exception ex) {
             conn = null;

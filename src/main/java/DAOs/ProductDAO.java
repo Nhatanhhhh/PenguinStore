@@ -28,8 +28,7 @@ public class ProductDAO extends DBContext {
                 + "JOIN TypeProduct tp ON p.typeID = tp.typeID\n"
                 + "JOIN Category c ON tp.categoryID = c.categoryID\n"
                 + "LEFT JOIN Image i ON p.productID = i.productID\n"
-                + "GROUP BY p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName, p.dateCreate\n"
-                + "ORDER BY p.dateCreate DESC;";
+                + "GROUP BY p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName\n";
         try ( ResultSet rs = execSelectQuery(sql)) {
             while (rs.next()) {
                 String productID = rs.getString("productID");
