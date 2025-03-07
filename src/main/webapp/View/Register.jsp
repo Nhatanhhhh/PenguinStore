@@ -16,9 +16,9 @@
 
         <div class="container" style="padding: 0; margin-top: 20px; border-radius: 15px; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
             <div class="row">
-                <div class="image-container-2 col-md-6"></div>
+                <div class="image-container-2 col-md-6" data-aos="fade-up-right" ></div>
 
-                <div class="register-container col-md-6"  style="margin: 10px;">
+                <div class="register-container col-md-6" data-aos="fade-up-left" style="margin: 10px;">
                     <h1 style=" font-size: 24px;">PENGUIN</h1>
                     <p style="text-align: center; font-size: 18px; margin-bottom: 20px;">Create Account</p>
 
@@ -127,7 +127,7 @@
                             <!-- Social Media & Register Button -->
                             <div class="container-login100-form-btn" style="margin-top: 20px;">
                                 <div class="col-md-6 d-flex justify-content-start">
-                                    <a class="icon-google" href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:9999/PenguinStore/GoogleLogin&response_type=code&client_id=&approval_prompt=force"><i class="fa-brands fa-google"></i></a>
+                                    <a class="icon-google" href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:9999/PenguinStore/GoogleLogin&response_type=code&client_id=481523146636-vh5s2vjv8fm9hb8dtgi9e3f66711192u.apps.googleusercontent.com&approval_prompt=force"><i class="fa-brands fa-google"></i></a>
                                 </div>
                                 <div class="col-md-6 d-flex justify-content-end">
                                     <button class="login100-form-btn">

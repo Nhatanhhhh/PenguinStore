@@ -12,6 +12,11 @@
         <url-pattern>/ViewProfile</url-pattern>
         <url-pattern>/Order</url-pattern>
         <url-pattern>/EditProfile</url-pattern>
+        <url-pattern>/Feedback</url-pattern>
+        <url-pattern>/ListFeedbackForStaff</url-pattern>
+        <url-pattern>/DashBoardForStaff</url-pattern>
+        <url-pattern>/DashBoardForAdmin</url-pattern>
+        <url-pattern>/View/LoginManager.jsp</url-pattern>
         <url-pattern>/View/DashBoardForAdmin.jsp</url-pattern>
         <url-pattern>/View/DashBoardForStaff.jsp</url-pattern>
     </filter-mapping>
@@ -91,6 +96,34 @@
         <servlet-name>StaffController</servlet-name>
         <servlet-class>Controller.StaffController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FeedbackController</servlet-name>
+        <servlet-class>Controller.FeedbackController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LoginManagerController</servlet-name>
+        <servlet-class>Controller.LoginManagerController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ErrorServlet404</servlet-name>
+        <servlet-class>Controller.ErrorServlet404</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ErrorServlet500</servlet-name>
+        <servlet-class>Controller.ErrorServlet500</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ViewListFeedbackController</servlet-name>
+        <servlet-class>Controller.ViewListFeedback</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DashBoardForStaffServlet</servlet-name>
+        <servlet-class>Controller.DashBoardForStaffServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DashBoardForAdminServlet</servlet-name>
+        <servlet-class>Controller.DashBoardForAdminServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/Logout</url-pattern>
@@ -110,13 +143,13 @@
     <welcome-file-list>
         <welcome-file>View/index.jsp</welcome-file>
     </welcome-file-list>
-    <!--<error-page>
+<!--<error-page>
         <error-code>404</error-code>
-        <location>/View/error/404.jsp</location>
+        <location>/404</location>
     </error-page>
     <error-page>
         <error-code>500</error-code>
-        <location>/View/error/500.jsp</location>
+        <location>/500</location>
     </error-page>-->
     <servlet-mapping>
         <servlet-name>ProductController</servlet-name>
@@ -169,6 +202,34 @@
     <servlet-mapping>
         <servlet-name>StaffController</servlet-name>
         <url-pattern>/Staff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FeedbackController</servlet-name>
+        <url-pattern>/Feedback</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginManagerController</servlet-name>
+        <url-pattern>/LoginManager</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ErrorServlet404</servlet-name>
+        <url-pattern>/404</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ErrorServlet500</servlet-name>
+        <url-pattern>/500</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ViewListFeedbackController</servlet-name>
+        <url-pattern>/ListFeedbackForStaff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DashBoardForStaffServlet</servlet-name>
+        <url-pattern>/DashBoardForStaff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DashBoardForAdminServlet</servlet-name>
+        <url-pattern>/DashBoardForAdmin</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

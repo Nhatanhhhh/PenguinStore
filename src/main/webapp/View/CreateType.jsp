@@ -29,10 +29,11 @@
 
                                 <div class="mb-3">
                                     <label for="categoryID" class="form-label">Category:</label>
-                                    <select id="categoryID" name="categoryID" class="form-control">
-                                        <option value="73CF5616-FF09-416F-BB82-23089053AC57">Bottom</option>
-                                        <option value="030BAAB6-1E21-4AFE-BDBF-6DAA0D66C18C">Accessory</option>
-                                        <option value="FAFB0BAB-DB01-4C7F-8444-BEDEB2578024">Top</option>
+                                    <select id="categoryID" name="categoryID" class="form-control" required>
+                                        <option value="">-- Select Category --</option>
+                                        <c:forEach var="category" items="${categoryList}">
+                                            <option value="${category.categoryID}">${category.categoryName}</option>
+                                        </c:forEach>
                                     </select>
                                 </div>
 

@@ -118,6 +118,9 @@ public class RegisterDAO {
                     customer.setFullName(rs.getString("fullName"));
                     customer.setEmail(rs.getString("email"));
                     customer.setPhoneNumber(rs.getString("phoneNumber"));
+                    customer.setAddress(rs.getString("address"));
+                    customer.setState(rs.getString("state"));
+                    customer.setZip(rs.getString("zip"));
                     customer.setIsVerified(rs.getBoolean("isVerified"));
                     return customer;
                 }

@@ -67,7 +67,7 @@
                 </div>
 
                 <div class="col-md-10">
-                    <form action="<%= request.getContextPath()%>/EditProfile" method="POST">
+                    <form class="form" action="<%= request.getContextPath()%>/EditProfile" method="POST">
                         <!-- Full Name and Phone Number -->
                         <div class="form-group">
                             <label for="fullName">Full Name</label>

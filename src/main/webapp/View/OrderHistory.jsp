@@ -77,6 +77,7 @@
                     <div class="voucher"><a href="<%= request.getContextPath()%>/VVCustomer">Voucher</a></div>
                     <div class="order"><a style="font-weight: bold;">Order</a></div>
                     <div class="password"><a href="#">Password</a></div>
+                    <div class="divider"></div>
                 </div>
 
                 <div class="col-md-10">
@@ -98,7 +99,7 @@
                                 <td><%= order.getOrderDate()%></td>
                                 <td><%= order.getFinalAmount()%><i class="fa-solid fa-dollar-sign"></i></td>
                                 <td><%= order.getStatusOID()%></td>
-                                <td><a href="OrderDetail?orderID=<%= order.getOrderID()%>">View Details</a></td>
+                                <td><a class="button button-dark" href="OrderDetail?orderID=<%= order.getOrderID()%>">View Details</a></td>
                             </tr>
                             <% } %>
                         </tbody>
@@ -106,11 +107,23 @@
                     <% }%>
                 </div>
             </div>
-
-
         </div>
-
-
+                
+        <div style="background-color: #F9FAFB;  padding: 40px 0px;">
+            <div class="row">
+                <div class="col-md-6 d-flex justify-content-center">
+                    <img style="width: 380px; height: 380px;" src="Image/Product/window.png" />
+                </div>
+                <div class="col-md-6">
+                    <div style="width: 300px; height: 80px; margin-top: 40px;">
+                        <h1 style="font-size: 40px; text-align: left;">DON'T FORGET OUR NEW PRODUCTS</h1>
+                        <div style="margin-left: 50px; margin-top: 50px;">
+                            <a href="#" class="button button-dark">New Products</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <%@include file="Footer.jsp"%>
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>

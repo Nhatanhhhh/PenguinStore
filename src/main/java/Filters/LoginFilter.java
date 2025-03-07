@@ -22,11 +22,6 @@ import java.io.IOException;
 public class LoginFilter implements Filter {
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // Hàm này có thể để trống nếu không có logic cần thiết
-    }
-
-    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
@@ -40,12 +35,8 @@ public class LoginFilter implements Filter {
             chain.doFilter(request, response);
         } else {
             // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
-            res.sendRedirect("PenguinStore/Login");
+            res.sendRedirect("/PenguinStore");
         }
     }
 
-    @Override
-    public void destroy() {
-        // Hàm này có thể để trống nếu không có logic cần thiết
-    }
 }

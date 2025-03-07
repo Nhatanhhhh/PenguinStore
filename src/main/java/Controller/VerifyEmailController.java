@@ -50,7 +50,7 @@ public class VerifyEmailController extends HttpServlet {
                 String result = registerDAO.registerUser(username, hashedPassword, fullName, email, phone);
                 if ("SUCCESS".equals(result)) {
                     request.setAttribute("successMessage", "Successful authentication, you can log in!");
-                    response.sendRedirect("View/LoginCustomer.jsp");
+                    response.sendRedirect("Login");
                 } else {
                     request.setAttribute("errorMessage", "Successful registration, please try again!");
                     request.getRequestDispatcher("View/VerifyEmail.jsp").forward(request, response);

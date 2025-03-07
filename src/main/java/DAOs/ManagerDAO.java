@@ -27,12 +27,6 @@ import java.util.logging.Logger;
  */
 public class ManagerDAO extends DBContext {
 
-    private final DBContext dbContext;
-
-    public ManagerDAO() {
-        this.dbContext = new DBContext();
-    }
-
     /**
      * L?y thông tin qu?n lý t? username và m?t kh?u (?ã hash)
      *
@@ -48,7 +42,7 @@ public class ManagerDAO extends DBContext {
 
         System.out.println("Hashed Password:" + hashedPassword);
 
-        try ( ResultSet rs = dbContext.execSelectQuery(query, params)) {
+        try ( ResultSet rs = execSelectQuery(query, params)) {
             if (rs.next()) {
                 manager = new Manager(
                         rs.getString("managerID"),
@@ -74,7 +68,7 @@ public class ManagerDAO extends DBContext {
 
         String query = "SELECT managerName,email from Manager WHERE role=0";
 
-        try ( ResultSet rs = dbContext.execSelectQuery(query)) {
+        try ( ResultSet rs = execSelectQuery(query)) {
             while (rs.next()) {
                 getNameAndEmail.add(new ShowStaffDTO(rs.getString("managerName"), rs.getString("email")));
             }
@@ -91,7 +85,7 @@ public class ManagerDAO extends DBContext {
         String query = "SELECT * FROM Manager WHERE managerName = ?";
         Object[] params = {managerName};
 
-        try ( ResultSet rs = dbContext.execSelectQuery(query, params)) {
+        try ( ResultSet rs = execSelectQuery(query, params)) {
             if (rs.next()) {
                 manager = new Manager(
                         rs.getString("managerID"),
@@ -144,7 +138,7 @@ public class ManagerDAO extends DBContext {
                 managerName
             };
 
-            return dbContext.execQuery(sqlUpdate, updateParams);
+            return execQuery(sqlUpdate, updateParams);
         } catch (SQLException e) {
             Logger.getLogger(ManagerDAO.class.getName()).log(Level.SEVERE, null, e);
             return 0;

@@ -34,8 +34,19 @@ public class DBContext {
         return conn;
     }
 
+    /**
+     * Executes a SELECT query with parameters.
+     *
+     * @param query SQL query string
+     * @param params Query parameters
+     * @return ResultSet containing query results
+     * @throws SQLException if a database error occurs
+     */
     public ResultSet execSelectQuery(String query, Object[] params) throws SQLException {
         Connection connection = getConn();
+        if (connection == null) {
+            throw new SQLException("Unable to establish a database connection.");
+        }
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         if (params != null) {
@@ -46,19 +57,39 @@ public class DBContext {
         return preparedStatement.executeQuery();
     }
 
+    /**
+     * Executes a SELECT query without parameters.
+     *
+     * @param query SQL query string
+     * @return ResultSet containing query results
+     * @throws SQLException if a database error occurs
+     */
     public ResultSet execSelectQuery(String query) throws SQLException {
-        return this.execSelectQuery(query, null);
+        return execSelectQuery(query, null);
     }
 
+    /**
+     * Executes an INSERT, UPDATE, or DELETE query.
+     *
+     * @param query SQL query string
+     * @param params Query parameters
+     * @return Number of affected rows
+     * @throws SQLException if a database error occurs
+     */
     public int execQuery(String query, Object[] params) throws SQLException {
-        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        try ( Connection connection = getConn();  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-        if (params != null) {
-            for (int i = 0; i < params.length; i++) {
-                preparedStatement.setObject(i + 1, params[i]);
+            if (connection == null) {
+                throw new SQLException("Unable to establish a database connection.");
             }
+
+            if (params != null) {
+                for (int i = 0; i < params.length; i++) {
+                    preparedStatement.setObject(i + 1, params[i]);
+                }
+            }
+            return preparedStatement.executeUpdate();
         }
-        return preparedStatement.executeUpdate();
     }
 
     /**

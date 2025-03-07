@@ -117,9 +117,9 @@ public class LoginServlet extends HttpServlet {
                 if (user instanceof Manager) {
                     Manager manager = (Manager) user;
                     if (manager.isRole() == true) {
-                        response.sendRedirect("View/DashBoardForAdmin.jsp");
+                        response.sendRedirect("DashBoardForAdmin");
                     } else {
-                        response.sendRedirect("View/DashBoardForStaff.jsp");
+                        response.sendRedirect("ListFeedbackForStaff");
                     }
                 } else {
                     response.sendRedirect(request.getContextPath());

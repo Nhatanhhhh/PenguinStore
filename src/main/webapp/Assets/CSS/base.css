@@ -48,7 +48,7 @@ a:hover{
     display: inline-block;
     padding: 8px 20px;
     border-radius: 45px;
-    border: 2px solid var(--color-text); /* Vi?n thay v� n?n */
+    border: 2px solid var(--color-text); 
     background: transparent;
     color: var(--color-text);
     font-size: 13px;

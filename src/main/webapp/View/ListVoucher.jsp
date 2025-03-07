@@ -18,11 +18,11 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Assets/CSS/Admin/DashBoeard.css"/>
     </head>
     <body>
-        <%@include file="../View/HeaderAD.jsp"%>
+        <%@include file="Admin/HeaderAD.jsp"%>
 
         <div class="row">
             <div class="col-md-2">
-                <%@include file="../View/NavigationMenu.jsp"%>
+                <%@include file="Admin/NavigationMenu.jsp"%>
 
             </div>
             <div class="col-md-10">

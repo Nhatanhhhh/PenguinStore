@@ -4,8 +4,10 @@
  */
 package Controller;
 
+import DAOs.FeedbackDAO;
 import DAOs.ProductDAO;
 import DAOs.ProductVariantDAO;
+import Models.Feedback;
 import Models.Product;
 import Models.ProductVariant;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -44,8 +47,20 @@ public class ProductController extends HttpServlet {
         } else {
             ArrayList<ProductVariant> listDetail = productVariantDAO.viewProductDetail(id);
             Product product = productDAO.getOneProduct(id);
+            
+            // Lấy số sao trung bình & số lượt đánh giá
+            double averageRating = FeedbackDAO.getAverageRating(id);
+            int totalReviews = FeedbackDAO.getTotalReviews(id);
+
+            // Lấy 3 đánh giá gần nhất
+            List<Feedback> feedbackList = FeedbackDAO.getLatestFeedbacks(id);
+            
             request.setAttribute("productDetail", listDetail);
             request.setAttribute("product", product);
+            request.setAttribute("averageRating", averageRating);
+            request.setAttribute("totalReviews", totalReviews);
+            request.setAttribute("feedbackList", feedbackList);
+
             request.getRequestDispatcher("/View/ProductDetail.jsp").forward(request, response);
         }
 

@@ -4,20 +4,21 @@
  */
 package Controller;
 
-import DAOs.ResetPasswordDAO;
-import Service.EmailService;
+import DAOs.FeedbackDAO;
+import Models.Feedback;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  *
- * @author Nguyen Nhat Anh - CE181843
+ * @author Nhat_Anh
  */
-public class ForgetPasswordController extends HttpServlet {
+public class ViewListFeedback extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,10 +37,10 @@ public class ForgetPasswordController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ForgetPasswordController</title>");
+            out.println("<title>Servlet ViewListFeedback</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ForgetPasswordController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ViewListFeedback at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -57,7 +58,11 @@ public class ForgetPasswordController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("View/ForgetPassword.jsp").forward(request, response);
+        FeedbackDAO feedbackDAO = new FeedbackDAO();
+        List<Feedback> feedbacks = feedbackDAO.getAllFeedbacks();
+
+        request.setAttribute("feedbacks", feedbacks);
+        request.getRequestDispatcher("/View/DashBoardForStaff.jsp").forward(request, response);
     }
 
     /**
@@ -71,47 +76,7 @@ public class ForgetPasswordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String email = request.getParameter("email");
-        ResetPasswordDAO rPD = new ResetPasswordDAO();
-        String emailValidationMessage = validateEmail(email);
-        if (!emailValidationMessage.isEmpty()) {
-            request.setAttribute("errorMessage", emailValidationMessage);
-            request.getRequestDispatcher("ForgetPassword").forward(request, response);
-            return;
-        } else {
-            try {
-                boolean emailExists = rPD.checkEmailExists(email);
-
-                if (!emailExists) {
-                    request.setAttribute("errorMessage", "Email does not exist in the system!");
-                    request.getRequestDispatcher("ForgetPassword").forward(request, response);
-                } else {
-                    int verificationCode = (int) (Math.random() * 900000) + 100000;
-                    String verificationCodeStr = String.valueOf(verificationCode);
-                    EmailService emailService = new EmailService();
-                    emailService.sendVerificationEmail(email, verificationCodeStr);
-                    request.getSession().setAttribute("email", email);
-                    request.getSession().setAttribute("verificationCode", verificationCodeStr);
-                }
-            } catch (Exception e) {
-            }
-        }
-
-        response.sendRedirect("VerifyEmailRSP");
-    }
-
-    private String validateEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            return "Email cannot be empty.";
-        }
-
-        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-
-        if (!email.matches(emailRegex)) {
-            return "Invalid email format. Please enter a valid email (e.g., example@gmail.com).";
-        }
-
-        return "";
+        processRequest(request, response);
     }
 
     /**
