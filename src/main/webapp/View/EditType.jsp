@@ -8,6 +8,7 @@
         <title>Edit Type</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
     </head>
@@ -32,7 +33,7 @@
                                     </c:if>
 
                                     <c:if test="${not empty type}">
-                                        <form action="<c:url value='/Type?action=edit'/>" method="Post">
+                                        <form id="editForm" action="<c:url value='/Type?action=edit'/>" method="Post">
                                             <input type="hidden" name="typeID" value="${type.typeID}">
 
                                             <div class="mb-3">
@@ -65,6 +66,25 @@
         </div>
 
 
+        <script>
+            document.getElementById("editForm").addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: "Confirm Update",
+                    text: "Are you sure you want to update this Type Product?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, update it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        event.target.submit();
+                    }
+                });
+            });
+        </script>
 
     </body>
 </html>

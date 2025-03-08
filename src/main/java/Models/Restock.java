@@ -11,12 +11,40 @@ import java.time.LocalDate;
  * @author Do Van Luan - CE180457
  */
 public class Restock {
+
+    private String productName;
     private String restockID;
     private String proVariantID;
     private int quantity;
     private double price;
     private double totalCost;
     private LocalDate restockDate;
+
+    public Restock(String productName, String restockID, String proVariantID, int quantity, double price, double totalCost, LocalDate restockDate) {
+        this.productName = productName;
+        this.restockID = restockID;
+        this.proVariantID = proVariantID;
+        this.quantity = quantity;
+        this.price = price;
+        this.totalCost = totalCost;
+        this.restockDate = restockDate;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public LocalDate getRestockDate() {
+        return restockDate;
+    }
+
+    public void setRestockDate(LocalDate restockDate) {
+        this.restockDate = restockDate;
+    }
 
     public Restock(String restockID, String proVariantID, int quantity, double price, double totalCost, LocalDate restockDate) {
         this.restockID = restockID;
@@ -74,6 +102,5 @@ public class Restock {
     public void setRestockDay(LocalDate restockDay) {
         this.restockDate = restockDate;
     }
-    
-    
+
 }

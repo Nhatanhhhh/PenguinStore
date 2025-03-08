@@ -1,52 +1,114 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DTO;
 
-/**
- *
- * @author PC
- */
 public class OrderDetailDTO {
 
-    private int quantity;
-    private String productName;
-    private double price;
     private String imgName;
+    private String productName;
+    private double unitPrice;
+    private String colorName;
     private String sizeName;
-    private String status;
+    private int quantity;
+    private double totalAmount;
+    private double discountAmount;
+    private double finalAmount;
+    private String dateOrder;
+    private String statusOrderName;
+    private String fullName;
+    private String statusOID;
 
-    public OrderDetailDTO(int quantity, String productName, double price, String imgName, String sizeName, String status) {
-        this.quantity = quantity;
-        this.productName = productName;
-        this.price = price;
+    public OrderDetailDTO(double totalAmount, String dateOrder, String statusOrderName, String statusOID) {
+        this.totalAmount = totalAmount;
+        this.dateOrder = dateOrder;
+        this.statusOrderName = statusOrderName;
+        this.statusOID = statusOID;
+    }
+
+    public String getStatusOID() {
+        return statusOID;
+    }
+
+    public void setStatusOID(String statusOID) {
+        this.statusOID = statusOID;
+    }
+
+    public OrderDetailDTO(String imgName, String productName, double unitPrice, String colorName, String sizeName, int quantity, double totalAmount, double discountAmount, double finalAmount, String dateOrder, String statusOrderName) {
         this.imgName = imgName;
+        this.productName = productName;
+        this.unitPrice = unitPrice;
+        this.colorName = colorName;
         this.sizeName = sizeName;
-        this.status = status;
+        this.quantity = quantity;
+        this.totalAmount = totalAmount;
+        this.discountAmount = discountAmount;
+        this.finalAmount = finalAmount;
+        this.dateOrder = dateOrder;
+        this.statusOrderName = statusOrderName;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public OrderDetailDTO(String imgName, String productName, double unitPrice, String colorName, String sizeName, int quantity, double totalAmount, double discountAmount, double finalAmount, String dateOrder, String statusOrderName, String fullName) {
+        this.imgName = imgName;
+        this.productName = productName;
+        this.unitPrice = unitPrice;
+        this.colorName = colorName;
+        this.sizeName = sizeName;
+        this.quantity = quantity;
+        this.totalAmount = totalAmount;
+        this.discountAmount = discountAmount;
+        this.finalAmount = finalAmount;
+        this.dateOrder = dateOrder;
+        this.statusOrderName = statusOrderName;
+        this.fullName = fullName;
     }
 
-    public String getProductName() {
-        return productName;
+    public String getFullName() {
+        return fullName;
     }
 
-    public double getPrice() {
-        return price;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getImgName() {
         return imgName;
     }
 
+    public String getProductName() {
+        return productName;
+    }
+
+    public double getUnitPrice() {
+        return unitPrice;
+    }
+
+    public String getColorName() {
+        return colorName;
+    }
+
     public String getSizeName() {
         return sizeName;
     }
 
-    public String getStatus() {
-        return status;
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public double getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public double getFinalAmount() {
+        return finalAmount;
+    }
+
+    public String getDateOrder() {
+        return dateOrder;
+    }
+
+    public String getStatusOrderName() {
+        return statusOrderName;
     }
 }

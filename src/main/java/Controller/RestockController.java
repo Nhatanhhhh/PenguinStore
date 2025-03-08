@@ -40,10 +40,9 @@ public class RestockController extends HttpServlet {
                 break;
 
             default:
-                response.sendRedirect(request.getContextPath() + "/Type?action=list");
+                response.sendRedirect(request.getContextPath() + "/ManageProduct?action=view");
                 break;
         }
-
 
     }
 
@@ -53,8 +52,7 @@ public class RestockController extends HttpServlet {
         String proVariantID = request.getParameter("proVariantID");
         String quantityStr = request.getParameter("quantity");
         String priceStr = request.getParameter("price");
-        
-        
+
         if (proVariantID == null || quantityStr == null || priceStr == null) {
             request.setAttribute("errorMessage", "Invalid input!");
             response.sendRedirect(request.getContextPath() + "/Restock?action=restockHistory");
@@ -64,12 +62,12 @@ public class RestockController extends HttpServlet {
         try {
             int quantity = Integer.parseInt(quantityStr);
             double price = Double.parseDouble(priceStr);
-            
+
             RestockDAO restockDAO = new RestockDAO();
             boolean success = restockDAO.restockProduct(proVariantID, quantity, price);
 
             if (success) {
-                 response.sendRedirect(request.getContextPath() + "/Restock?action=restockHistory");
+                response.sendRedirect(request.getContextPath() + "/Restock?action=restockHistory");
             } else {
                 request.setAttribute("errorMessage", "Import failed!");
                 request.getRequestDispatcher(request.getHeader("referer")).forward(request, response);
