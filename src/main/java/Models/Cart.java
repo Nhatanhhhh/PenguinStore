@@ -10,43 +10,41 @@ package Models;
  */
 public class Cart {
 
-    private int cartID;
-    private int customerID;
-    private int proVariantID;
-    private int productID;
+    private String cartID;
+    private String customerID;
+    private String proVariantID;
+    private String productID;
     private int quantity;
 
- 
-    
-    public int getCartID() {
+    public String getCartID() {
         return cartID;
     }
 
-    public void setCartID(int cartID) {
+    public void setCartID(String cartID) {
         this.cartID = cartID;
     }
 
-    public int getCustomerID() {
+    public String getCustomerID() {
         return customerID;
     }
 
-    public void setCustomerID(int customerID) {
+    public void setCustomerID(String customerID) {
         this.customerID = customerID;
     }
 
-    public int getProVariantID() {
+    public String getProVariantID() {
         return proVariantID;
     }
 
-    public void setProVariantID(int proVariantID) {
+    public void setProVariantID(String proVariantID) {
         this.proVariantID = proVariantID;
     }
 
-    public int getProductID() {
+    public String getProductID() {
         return productID;
     }
 
-    public void setProductID(int productID) {
+    public void setProductID(String productID) {
         this.productID = productID;
     }
 
@@ -61,11 +59,18 @@ public class Cart {
     public Cart() {
     }
 
-    public Cart(int cartID, int customerID, int proVariantID, int productID, int quantity) {
+    public Cart(String cartID, String customerID, String proVariantID, String productID, int quantity) {
         this.cartID = cartID;
         this.customerID = customerID;
         this.proVariantID = proVariantID;
         this.productID = productID;
+        this.quantity = quantity;
+    }
+
+    public Cart(String customerID, String productID, String proVariantID, int quantity) {
+        this.customerID = customerID;
+        this.productID = productID;
+        this.proVariantID = proVariantID;
         this.quantity = quantity;
     }
 }

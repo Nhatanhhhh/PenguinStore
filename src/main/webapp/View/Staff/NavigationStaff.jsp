@@ -16,7 +16,7 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                         Dashboard
                     </a>
-                    <a class="nav-link" href="order-management.jsp">
+                    <a class="nav-link" href="OrderManagement">
                         <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
                         Order Management
                     </a>

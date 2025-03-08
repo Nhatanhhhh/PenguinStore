@@ -112,18 +112,24 @@ public class LoginServlet extends HttpServlet {
 
             if (user != null) {
                 session.setAttribute("user", user);
-                setRememberMeCookies(response, username, hashedPassword, rememberMe);
 
                 if (user instanceof Manager) {
                     Manager manager = (Manager) user;
+                    session.setAttribute("user", manager);
+                    session.setAttribute("role", manager.isRole() ? "ADMIN" : "STAFF");
+                    System.out.println("✅ Đăng nhập thành công! Role: " + session.getAttribute("role"));
                     if (manager.isRole() == true) {
                         response.sendRedirect("DashBoardForAdmin");
                     } else {
                         response.sendRedirect("ListFeedbackForStaff");
                     }
                 } else {
+                    session.setAttribute("role", "CUSTOMER");
+                    System.out.println("✅ Đăng nhập với vai trò CUSTOMER!");
                     response.sendRedirect(request.getContextPath());
                 }
+
+                setRememberMeCookies(response, username, hashedPassword, rememberMe);
             } else {
                 session.setAttribute("errorMessage", "Incorrect username or password.");
                 response.sendRedirect("customer".equalsIgnoreCase(userType) ? "View/LoginCustomer.jsp" : "View/LoginManager.jsp");

@@ -8,6 +8,7 @@ import DAOs.CartDAO;
 import DAOs.OrderDAO;
 import DAOs.OrderDetailDAO;
 import Models.Cart;
+import Models.Customer;
 import Models.Order;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -51,9 +52,17 @@ public class Payment extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
         HttpSession session = request.getSession();
-        String customerIDStr = (String) session.getAttribute("customerID");
-        int customerID = Integer.parseInt(customerIDStr);
+
+        // Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("View/LoginCustomer.jsp");
+            return;
+        }
+
+        Customer customer = (Customer) session.getAttribute("user");
+        String customerID = customer.getCustomerID();
 
         CartDAO cartDAO = new CartDAO();
         OrderDAO orderDAO = new OrderDAO();
