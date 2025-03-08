@@ -52,7 +52,11 @@
         </style>
     </head>
     <body class="sb-nav-fixed">
-
+        <%
+            Manager manager = (Manager) session.getAttribute("user");
+            String managerName = (manager != null) ? manager.getManagerName() : "Guest";
+            String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
+        %>
         <!-- Error or Success Messages -->
         <%
             String message = (String) request.getAttribute("errorMessage");
