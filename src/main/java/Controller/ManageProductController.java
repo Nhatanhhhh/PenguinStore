@@ -16,7 +16,6 @@ import Models.ProductVariant;
 import Models.Size;
 import Models.Type;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,12 +25,9 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Arrays;
 import jakarta.servlet.annotation.MultipartConfig;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,17 +58,9 @@ public class ManageProductController extends HttpServlet {
         SizeDAO sizeDAO = new SizeDAO();
         ColorDAO colorDAO = new ColorDAO();
         TypeDAO typeDAO = new TypeDAO();
-        System.out.println("Action: " + action);
-        System.out.println("Product ID: " + id);
-        System.out.println("-------------------------");
         if (Objects.isNull(action)) {
             action = "view";
         }
-        if (Objects.isNull(id)) {
-            action = "view";
-        }
-        System.out.println("Action: " + action);
-        System.out.println("Product ID: " + id);
         switch (action) {
             case "view":
                 ArrayList<Product> listProduct = productDAO.readAll();
@@ -86,9 +74,16 @@ public class ManageProductController extends HttpServlet {
                 request.getRequestDispatcher("/View/ViewProductsAdmin.jsp").forward(request, response);
                 break;
             case "edit":
-
+                ArrayList<ProductVariant> productDetail = productVariantDAO.viewProductDetail(id);
+                Product chooseProduct = productDAO.getOneProduct(id);
+                System.out.println("Product Detail Size: " + productDetail.size());
+                for (ProductVariant pv : productDetail) {
+                    System.out.println("Variant: " + pv.getColorName() + ", " + pv.getSizeName());
+                }
+                request.setAttribute("product", chooseProduct);
+                request.setAttribute("productDetail", productDetail);
+                request.getRequestDispatcher("/View/EditProduct.jsp").forward(request, response);
                 break;
-
             case "create":
                 ArrayList<Type> listType = typeDAO.getAll();
                 ArrayList<Size> listSize = sizeDAO.getAll();
@@ -99,8 +94,14 @@ public class ManageProductController extends HttpServlet {
                 request.getRequestDispatcher("/View/CreateProduct.jsp").forward(request, response);
                 break;
             case "inventory":
+                ArrayList<Type> type = typeDAO.getAll();
+                for (Type type1 : type) {
+                    System.out.println(type1.getTypeName());
+                }
                 ArrayList<ProductVariant> listDetail = productVariantDAO.viewProductDetail(id);
                 Product product = productDAO.getOneProduct(id);
+              
+                request.setAttribute("listType", type);
                 request.setAttribute("productDetail", listDetail);
                 request.setAttribute("product", product);
                 request.getRequestDispatcher("/View/Inventory.jsp").forward(request, response);
@@ -129,15 +130,16 @@ public class ManageProductController extends HttpServlet {
         SizeDAO sizeDAO = new SizeDAO();
         ColorDAO colorDAO = new ColorDAO();
         TypeDAO typeDAO = new TypeDAO();
+
         if (Objects.isNull(action)) {
             action = "view";
         }
+
         switch (action) {
             case "view":
-
             case "edit":
-
                 break;
+
             case "create":
                 String productName = request.getParameter("productName");
                 String description = request.getParameter("description");
@@ -146,6 +148,7 @@ public class ManageProductController extends HttpServlet {
                 String typeId = request.getParameter("typeId");
                 String[] colorIds = request.getParameterValues("colorIds");
                 String[] sizeIds = request.getParameterValues("sizeIds");
+
                 String[] context = request.getServletContext().getRealPath("").split("target");
                 String realPath = context[0] + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "Image" + File.separator + "Product";
                 ArrayList<String> imageNames = new ArrayList<>();
@@ -167,6 +170,34 @@ public class ManageProductController extends HttpServlet {
                 }
                 response.sendRedirect(request.getContextPath() + "/ManageProduct?action=view");
                 break;
+
+            case "updateProduct":
+            try {
+                String productID = request.getParameter("productID");
+                String updatedProductName = request.getParameter("productName");
+                String updatedDescription = request.getParameter("description");
+                int updatedPrice = Integer.parseInt(request.getParameter("price"));
+
+                boolean success = productDAO.updateProduct(productID, updatedProductName, updatedDescription, updatedPrice);
+                response.getWriter().write(success ? "Success" : "Error updating product");
+            } catch (Exception ex) {
+                Logger.getLogger(ManageProductController.class.getName()).log(Level.SEVERE, null, ex);
+                response.getWriter().write("Error: " + ex.getMessage());
+            }
+            break;
+
+            case "updateVariantStatus":
+                try {
+                String variantID = request.getParameter("variantID");
+                boolean status = Boolean.parseBoolean(request.getParameter("status"));
+                boolean updated = productVariantDAO.updateProductVariantStatus(variantID, status);
+                response.getWriter().write(updated ? "Success" : "Failed to update");
+            } catch (Exception ex) {
+                Logger.getLogger(ManageProductController.class.getName()).log(Level.SEVERE, null, ex);
+                response.getWriter().write("Error: " + ex.getMessage());
+            }
+            break;
+
             default:
                 response.sendRedirect(request.getContextPath() + "/ManageProduct?action=view");
                 break;

@@ -7,11 +7,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     Author     : Huynh Cong Nghiem - CE181351
 */
 
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f8f8;
-    padding: 20px;
-}
 
 
 .product-container {
@@ -33,7 +28,8 @@ body {
 }
 
 .product-main-img {
-    width: 100%;
+    width: 500px;
+    height: 500px;
     border-radius: 10px;
 }
 

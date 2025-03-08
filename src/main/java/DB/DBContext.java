@@ -16,33 +16,38 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Nguyen Nhat Anh - CE181843
  */
 public class DBContext {
 
     private static Connection conn;
 
     public static Connection getConn() {
-        if (conn == null) {
-            try {
-                String user = "sa";
-                String pass = "12345";
-                String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB;encrypt=false";
-
-                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-                conn = DriverManager.getConnection(url, user, pass);
-
-            } catch (SQLException | ClassNotFoundException ex) {
-                Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        Connection conn;
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB;user=sa;password=12345;encrypt=false";
+            conn = DriverManager.getConnection(url);
+        } catch (Exception ex) {
+            conn = null;
         }
         return conn;
     }
 
-    // Ph??ng th?c cho các l?nh SELECT (có params)
+    /**
+     * Executes a SELECT query with parameters.
+     *
+     * @param query SQL query string
+     * @param params Query parameters
+     * @return ResultSet containing query results
+     * @throws SQLException if a database error occurs
+     */
     public ResultSet execSelectQuery(String query, Object[] params) throws SQLException {
-        Connection conn = getConn(); // ??m b?o k?t n?i
-        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        Connection connection = getConn();
+        if (connection == null) {
+            throw new SQLException("Unable to establish a database connection.");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         if (params != null) {
             for (int i = 0; i < params.length; i++) {
@@ -52,22 +57,39 @@ public class DBContext {
         return preparedStatement.executeQuery();
     }
 
-    // Ph??ng th?c cho các l?nh SELECT không có params 
+    /**
+     * Executes a SELECT query without parameters.
+     *
+     * @param query SQL query string
+     * @return ResultSet containing query results
+     * @throws SQLException if a database error occurs
+     */
     public ResultSet execSelectQuery(String query) throws SQLException {
-        return this.execSelectQuery(query, null);
+        return execSelectQuery(query, null);
     }
 
-    //Ph??ng th?c cho các l?nh INSERT, UPDATE, DELETE 
+    /**
+     * Executes an INSERT, UPDATE, or DELETE query.
+     *
+     * @param query SQL query string
+     * @param params Query parameters
+     * @return Number of affected rows
+     * @throws SQLException if a database error occurs
+     */
     public int execQuery(String query, Object[] params) throws SQLException {
-        Connection conn = getConn();
-        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        try ( Connection connection = getConn();  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-        if (params != null) {
-            for (int i = 0; i < params.length; i++) {
-                preparedStatement.setObject(i + 1, params[i]);
+            if (connection == null) {
+                throw new SQLException("Unable to establish a database connection.");
             }
+
+            if (params != null) {
+                for (int i = 0; i < params.length; i++) {
+                    preparedStatement.setObject(i + 1, params[i]);
+                }
+            }
+            return preparedStatement.executeUpdate();
         }
-        return preparedStatement.executeUpdate();
     }
 
     /**
@@ -84,7 +106,8 @@ public class DBContext {
                 md.update(password.getBytes());
                 byte[] digest = md.digest();
                 StringBuilder sb = new StringBuilder();
-                for (byte b : digest) {sb.append(String.format("%02x", b & 0xff));
+                for (byte b : digest) {
+                    sb.append(String.format("%02x", b & 0xff));
                 }
                 hashedPassword = sb.toString();
             } catch (NoSuchAlgorithmException e) {
@@ -93,5 +116,4 @@ public class DBContext {
         }
         return hashedPassword;
     }
-
 }

@@ -75,6 +75,18 @@ public class ProductVariantDAO extends DBContext {
         }
     }
 
+    public boolean updateProductVariantStatus(String proVariantID, boolean status) {
+        String query = "UPDATE ProductVariants SET status = ? WHERE proVariantID = ?";
+        Object[] params = {status, proVariantID};
+        try {
+            execQuery(query, params);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public ArrayList<ProductVariant> getAll() {
         ArrayList<ProductVariant> productVariant = new ArrayList<>();
         String sql = "SELECT pPV.proVariantID, PV.status, PV.stockQuantity, C.colorName, S.sizeName\n"
@@ -98,4 +110,5 @@ public class ProductVariantDAO extends DBContext {
         }
         return productVariant;
     }
+
 }

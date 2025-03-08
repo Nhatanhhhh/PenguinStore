@@ -19,7 +19,7 @@
             </div>
             <div class="header-icons col-md-4 d-flex justify-content-end">
                 <a href="" class="icon user-icon"><i class="fa-solid fa-user-tie"></i></a>
-                <button class="logout-button">Logout</button>
+                <a href="${pageContext.request.contextPath}/Logout" class="logout-button">Logout</a>
             </div>
 
         </header>

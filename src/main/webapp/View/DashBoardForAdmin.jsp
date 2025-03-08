@@ -17,12 +17,12 @@
     </head>
     <body>
         <!-- Header -->
-        <%@include file="HeaderAD.jsp"%>
+        <%@include file="Admin/HeaderAD.jsp"%>
 
         <!-- Navigation Menu -->
         <div class="row">
             <div class="col-md-2">
-                <%@include file="NavigationMenu.jsp"%>
+                <%@include file="Admin/NavigationMenu.jsp"%>
             </div>
 
             <div class="col-md-10">
@@ -70,7 +70,7 @@
 
 
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
-        
+
         <!-- Thư viện Chart.js -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <!-- Script biểu đồ doanh thu -->

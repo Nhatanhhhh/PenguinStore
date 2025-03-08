@@ -9,6 +9,7 @@ package Models;
  * @author Huynh Cong Nghiem - CE181351
  */
 public class ProductVariant {
+
     private String proVariantID;
     private boolean status;
     private int stockQuantity;
@@ -65,5 +66,5 @@ public class ProductVariant {
     public void setColorName(String colorName) {
         this.colorName = colorName;
     }
-    
+
 }

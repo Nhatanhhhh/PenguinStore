@@ -5,16 +5,16 @@
 --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="windows-1252"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Create Product</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/base.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/style.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Assets/CSS/Admin/DashBoeard.css"/>
         <style>
             .form-container {
@@ -137,30 +137,76 @@
                 font-size: 12px;
                 cursor: pointer;
             }
+            .modal {
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-content {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                text-align: center;
+            }
+
+            .modal-content button {
+                margin: 10px;
+                padding: 10px 15px;
+                cursor: pointer;
+            }
+            #productImages {
+                display: none;
+            }
+
+            .label-upload {
+                width: 150px;
+                height: 150px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: black;
+                font-size: 20px;
+                cursor: pointer;
+                border-radius: 10px;
+                border: 2px solid black;
+                margin-top: 10px;
+            }
+
+            .label-upload:hover {
+                opacity: 0.8;
+            }
 
         </style>
     </head>
     <body>
-        <%@include file="../View/HeaderAD.jsp"%>
+        <%@include file="Admin/HeaderAD.jsp"%>
         <div>
             <div class="row">
                 <div class="col-md-3">
-                    <%@include file="../View/NavigationMenu.jsp"%>
+                    <%@include file="Admin/NavigationMenu.jsp"%>
                 </div>
                 <div class="form-container col-md-9">
                     <h2 style="text-align: center;">Create New Product</h2>
-                    <form action="<c:url value="/ManageProduct?action=create"/>" method="POST" enctype="multipart/form-data">
+                    <form id="create-product-form" action="<c:url value="/ManageProduct?action=create"/>" method="POST" enctype="multipart/form-data" class="create-product-form">
                         <!-- Product Name -->
                         <label for="productName">Product Name:</label>
-                        <input type="text" id="productName" name="productName" required>
+                        <input type="text" id="productName" name="productName" placeholder="Enter name of product..." required>
 
                         <!-- Description -->
                         <label for="description">Description:</label>
-                        <textarea id="description" name="description" rows="4" required></textarea>
+                        <textarea id="description" name="description" rows="4" required placeholder="Enter description of product..."></textarea>
 
                         <!-- Price -->
                         <label for="price">Price:</label>
-                        <input type="number" id="price" name="price" step="1" min="1" required>
+                        <input type="number" id="price" name="price" step="1" min="1" placeholder="Enter price of product (VND)..." required>
 
                         <!-- Select Category -->
                         <label for="category">Select Category:</label>
@@ -201,13 +247,14 @@
                             </c:forEach>
                         </div>
                         <!-- Upload Multiple Product Images -->
-                        <label for="productImages">Upload Product Images:</label>
+                        <label for="productImages" class="label-upload">+</label>
                         <input type="file" id="productImages" name="productImages" accept="image/*" multiple>
+
                         <input type="file" id="hiddenFileInput" name="selectedFiles" multiple style="display: none;">
                         <br><br>
 
                         <div id="previewContainer"></div>
-                        <input type="submit" value="Create Product" class="submit-btn">
+                        <input type="submit" value="Create Product" class="submit-btn" style="width: 150px">
                     </form>
                 </div>
             </div>
@@ -291,6 +338,35 @@
                     }
                 }
             });
+            document.addEventListener("DOMContentLoaded", function () {
+                const form = document.getElementById("create-product-form");
+                const submitBtn = document.querySelector(".submit-btn");
+
+                submitBtn.addEventListener("click", function (event) {
+                    event.preventDefault(); // Ngăn form submit ngay lập tức
+
+                    // Tạo modal động
+                    const modal = document.createElement("div");
+                    modal.classList.add("modal");
+                    modal.innerHTML = `
+            <div class="modal-content">
+                <p>Please double check all information before creating product (Image, category, size, etc.)?</p>
+                <button id="confirm-btn">Confirm</button>
+                <button id="cancel-btn">Cancel</button>
+            </div>
+        `;
+                    document.body.appendChild(modal);
+                    modal.style.display = "flex";
+                    document.getElementById("confirm-btn").addEventListener("click", function () {
+                        modal.remove();
+                        form.submit();
+                    });
+                    document.getElementById("cancel-btn").addEventListener("click", function () {
+                        modal.remove();
+                    });
+                });
+            });
+
         </script>
 
     </body>

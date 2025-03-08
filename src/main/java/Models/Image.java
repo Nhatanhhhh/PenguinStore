@@ -9,6 +9,7 @@ package Models;
  * @author Huynh Cong Nghiem - CE181351
  */
 public class Image {
+
     private String imgID;
     private String imgName;
     private String productID;
@@ -45,6 +46,5 @@ public class Image {
     public void setProductID(String productID) {
         this.productID = productID;
     }
-    
-    
+
 }

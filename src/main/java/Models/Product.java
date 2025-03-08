@@ -27,7 +27,7 @@ public class Product {
         this.typeName = typeName;
         this.categoryName = categoryName;
         this.imgName = imgName;
-        
+
     }
 
     public Product(String productName, String description, double price, String typeID) {
@@ -37,7 +37,12 @@ public class Product {
         this.typeID = typeID;
     }
 
-   
+    public Product(String productID, String productName, double price) {
+        this.productID = productID;
+        this.productName = productName;
+        this.price = price;
+    }
+
     public Product() {
     }
 
@@ -49,7 +54,6 @@ public class Product {
         this.typeID = typeID;
     }
 
-    
     public String getProductID() {
         return productID;
     }
@@ -81,6 +85,7 @@ public class Product {
     public void setPrice(double price) {
         this.price = price;
     }
+
     public String getTypeName() {
         return typeName;
     }

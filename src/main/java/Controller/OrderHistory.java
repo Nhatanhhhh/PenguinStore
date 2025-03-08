@@ -8,6 +8,7 @@ import DAOs.OrderDAO;
 import DAOs.OrderDetailDAO;
 import DB.DBContext;
 import DTO.OrderDetailDTO;
+import Models.Customer;
 import Models.Order;
 import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
@@ -64,20 +65,21 @@ public class OrderHistory extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-
-        String customerID = (String) session.getAttribute("customerID");
-
-        if (customerID == null) { 
-            response.sendRedirect("/LoginCustomer.jsp");
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("View/LoginCustomer.jsp");
             return;
-        }  
+        }
+
+        Customer customer = (Customer) session.getAttribute("user");
+        String customerID = customer.getCustomerID();
 
         OrderDAO orderDAO = new OrderDAO();
         List<Order> orders = orderDAO.getOrdersByCustomerID(customerID);
         request.setAttribute("orders", orders);
         request.getRequestDispatcher("View/OrderHistory.jsp").forward(request, response);
     }
+
     /**
      * Handles the HTTP <code>POST</code> method.
      *
