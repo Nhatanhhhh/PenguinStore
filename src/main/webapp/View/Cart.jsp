@@ -1,3 +1,4 @@
+<%@page import="java.util.Map"%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -12,7 +13,7 @@
     </head>
     <body>
         <%@include file="Header.jsp"%>
-
+        <h1>PENGUIN Cart</h1>
         <div class="cart-container">
             <div class="cart-header">
                 <span>Product</span>
@@ -34,6 +35,13 @@
                     <p><strong><%= item.getProductName()%></strong></p>
                     <p>Color: <%= item.getColorName()%></p>
                     <p>Price: $<span class="price"><%= item.getPrice()%></span></p>
+                    <!-- Form ?? xóa s?n ph?m -->
+                    <form action="<%= request.getContextPath()%>/Cart" method="post">
+                        <input type="hidden" name="action" value="delete">
+                        <% Map<CartItem, String> productIDs = (Map<CartItem, String>) request.getAttribute("productIDs");%>
+                        <input type="hidden" name="productID" value="<%= (productIDs.get(item) != null && !productIDs.get(item).isEmpty()) ? productIDs.get(item) : "empty.jsp" %>">
+                        <button type="submit" class="remove-btn" onclick="return confirm('Are you sure?')">Remove</button>
+                    </form>
                 </div>
                 <div class="quantity">
                     <button onclick="changeQuantity(-1, <%= item.getPrice()%>, '<%= item.getProductName()%>')">-</button>
@@ -41,6 +49,7 @@
                     <button onclick="changeQuantity(1, <%= item.getPrice()%>, '<%= item.getProductName()%>')">+</button>
                 </div>
                 <p>Total: $<span id="total_<%= item.getProductName()%>"><%= item.getPrice() * item.getQuantity()%></span></p>
+
             </div>
             <% subtotal += item.getPrice() * item.getQuantity(); %>
             <% } %>
@@ -48,7 +57,11 @@
             <p>Your cart is empty.</p>
             <% }%>
 
-            <p>Subtotal: $<span id="subtotal"><%= subtotal%></span></p>
+            <p>Subtotal: $<span id="subtotal"><%= subtotal%></span></p><form action="<%= request.getContextPath()%>/Cart" method="post">
+                <input type="hidden" name="action" value="clear">
+                <button type="submit" class="clear-cart-btn" onclick="return confirm('Are you sure you want to clear the cart?')">Clear Cart</button>
+            </form>
+
             <div class="checkout">
                 <form action="<%= request.getContextPath()%>/Checkout" method="post">
                     <button type="submit">Checkout</button>

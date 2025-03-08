@@ -5,12 +5,16 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, java.util.ArrayList, Models.Order, Models.Customer" %>
-
+<%@ page import="java.util.List" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <%
     List<Order> orders = (List<Order>) request.getAttribute("orders");
-    if (orders == null)
+    if (orders == null) {
         orders = new ArrayList<Order>();
+    }
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 %>
+
 
 <!DOCTYPE html>
 <html>
@@ -23,9 +27,11 @@
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/customer.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/editprofile.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/oh.css"/>
     </head>
     <body>
         <%@include file="Header.jsp"%>
+
         <%                Customer customer = (Customer) session.getAttribute("user");
         %>
         <h1 class="text-center mb-4" style="font-size: 35px;">Order History</h1>
@@ -46,8 +52,6 @@
             }
         %>
 
-
-
         <div class="container mt-3">
             <div class="account-information">
                 <div class="row">
@@ -64,11 +68,12 @@
                             </span>
                         </div>
                         <div class="view-your-username-and-manage-your-account">
-                            View your Order
+                            Order
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="row">
                 <div class="list col-md-2">
                     <div class="divider"></div>
@@ -79,40 +84,68 @@
                     <div class="password"><a href="#">Password</a></div>
                 </div>
 
-                <div class="col-md-10">
-                    <% if (orders.isEmpty()) { %>
-                    <p>You have no orders yet. <a href="/ProductController">Start shopping now!</a></p>
-                    <% } else {%>
-                    <table border="1">
-                        <thead class="table table-bordered">
-                            <tr class="thead-dark">
-                                <th>Order Date</th>
-                                <th>Total Price</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% for (Order order : orders) {%>
-                            <tr>
-                                <td><%= order.getOrderDate()%></td>
-                                <td><%= order.getFinalAmount()%><i class="fa-solid fa-dollar-sign"></i></td>
-                                <td><%= order.getStatusOID()%></td>
-                                <td><a href="OrderDetail?orderID=<%= order.getOrderID()%>">View Details</a></td>
-                            </tr>
-                            <% } %>
-                        </tbody>
-                    </table>
-                    <% }%>
+                <% for (Order order : orders) {%>
+                <div class="order" data-status="<%= order.getStatusName()%>">
+                    <div class="order-info">
+                        <p><strong>OrderID:</strong> <%= (order.getOrderID().length() >= 4) ? order.getOrderID().substring(0, 4) : order.getOrderID()%></p>
+                        <p><strong>Voucher code:</strong> <%= order.getVoucherName()%></p>
+                        <p><strong>Order date:</strong> <%= order.getOrderDate()%></p>
+                        <span class="status <%= order.getStatusName().toLowerCase().replace(" ", "-")%>">
+                            <%= order.getStatusName()%>
+                        </span> Your product has been <%= order.getStatusName().toLowerCase()%>
+                    </div>
+                    <div class="btn-container">
+                        <form action="<%= request.getContextPath()%>/OrderDetail" method="GET">
+                            <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
+                            <button type="submit" class="btn btn-view">View Order</button>
+                        </form>
+                        <% if ("Delivery successful".equals(order.getStatusName())) { %>
+                        <button class="btn btn-review">Write A Review</button>
+                        <% } else { %>
+                        <button class="btn btn-cancel">Cancel Order</button>
+                        <% } %>
+                    </div>
+                </div>
+                <% }%>
+
+            </div>
+    </body>
+    <div style="background-color: #F9FAFB;  padding: 40px 0px;">
+        <div class="row">
+            <div class="col-md-6 d-flex justify-content-center">
+                <img style="width: 380px; height: 380px;" src="Image/Product/window.png" />
+            </div>
+            <div class="col-md-6">
+                <div style="width: 300px; height: 80px; margin-top: 40px;">
+                    <h1 style="font-size: 40px; text-align: left;">DON'T FORGET OUR NEW PRODUCTS</h1>
+                    <div style="margin-left: 50px; margin-top: 50px;">
+                        <a href="#" class="button button-dark">New Products</a>
+                    </div>
                 </div>
             </div>
-
-
         </div>
+    </div>
+    <%@include file="Footer.jsp"%>
 
-
-
-        <%@include file="Footer.jsp"%>
-        <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
-    </body>
 </html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".order").forEach(order => {
+            let status = order.getAttribute("data-status");
+            let reviewBtn = order.querySelector(".btn-review");
+            let cancelBtn = order.querySelector(".btn-cancel");
+
+            if (status === "Delivery successful") {
+                if (cancelBtn)
+                    cancelBtn.style.display = "none";
+            } else {
+                if (reviewBtn)
+                    reviewBtn.style.display = "none";
+            }
+        });
+    });
+</script>
+<style>
+
+</style>

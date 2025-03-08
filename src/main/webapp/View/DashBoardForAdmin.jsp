@@ -18,10 +18,9 @@
     <body>
         <!-- Header -->
         <%@include file="Admin/HeaderAD.jsp"%>
-
         <!-- Navigation Menu -->
         <div class="row">
-            <div class="col-md-2">
+            <div class="col-md-2">s
                 <%@include file="Admin/NavigationMenu.jsp"%>
             </div>
 

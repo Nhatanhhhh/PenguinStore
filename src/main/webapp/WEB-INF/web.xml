@@ -95,6 +95,18 @@
         <servlet-name>GetVariantIDServlet</servlet-name>
         <servlet-class>Controller.GetVariantIDServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ViewOrderStaff</servlet-name>
+        <servlet-class>Controller.ViewOrderStaff</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrderManagement</servlet-name>
+        <servlet-class>Controller.OrderManagement</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrderDeatilStaff</servlet-name>
+        <servlet-class>Controller.OrderDetailStaff</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/Logout</url-pattern>
@@ -106,6 +118,10 @@
     <servlet-mapping>
         <servlet-name>OrderHistory</servlet-name>
         <url-pattern>/OrderHistory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrderDetail</servlet-name>
+        <url-pattern>/OrderDetail</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CustomerServlet</servlet-name>
@@ -177,6 +193,18 @@
     <servlet-mapping>
         <servlet-name>GetVariantIDServlet</servlet-name>
         <url-pattern>/GetVariantIDServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ViewOrderStaff</servlet-name>
+        <url-pattern>/ViewOrderStaff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrderManagement</servlet-name>
+        <url-pattern>/OrderManagement</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrderDeatilStaff</servlet-name>
+        <url-pattern>/OrderDetailStaff</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

@@ -92,6 +92,7 @@
                                 <button type="submit" class="add-to-cart">Add to cart</button>
                             </form>
                         </div>
+                                
                         <c:if test="${not empty message}">
                             <div class="after-cart">
                                 <div class="cart-success">

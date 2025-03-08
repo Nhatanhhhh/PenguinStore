@@ -123,15 +123,15 @@ public class CartDAO {
         return false;
     }
 
-    public boolean deleteCartItem(String cartID) {
-        String query = "DELETE FROM Cart WHERE cartID = ?";
-        try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, cartID);
-            return stmt.executeUpdate() > 0;
+    public void removeFromCart(String customerID, String productID) {
+        String sql = "DELETE FROM Cart WHERE customerID = ? AND productID = ?";
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, customerID);
+            ps.setString(2, productID);
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
     }
 
     public double getProductPrice(String productID) {
@@ -147,6 +147,28 @@ public class CartDAO {
             e.printStackTrace();
         }
         return price;
+    }
+
+    public String getProductIDByItem(CartItem item) {
+        String productID = null;
+        String sql = "SELECT p.productID FROM Product p "
+                + "JOIN ProductVariants pv ON p.productID = pv.productID "
+                + "JOIN Color c ON pv.colorID = c.colorID "
+                + "WHERE p.productName = ? AND c.colorName = ?";
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, item.getProductName());
+            ps.setString(2, item.getColorName());
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                productID = rs.getString("productID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productID;
     }
 
     public void clearCart(String customerID) {

@@ -1,0 +1,79 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Mar 7, 2025, 1:47:32 AM
+    Author     : PC
+*/
+body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+}
+.order-container {
+    max-width: 800px;
+    margin: auto;
+}
+.product {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+.product img {
+    width: 80px;
+    height: auto;
+    border-radius: 5px;
+}
+.product-details {
+    flex-grow: 1;
+    margin-left: 10px;
+}
+.price {
+    font-weight: bold;
+}
+.summary {
+    text-align: right;
+    margin-top: 20px;
+}
+.progress-container {
+    text-align: center;
+    margin-top: 40px;
+}
+.progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.progress div {
+    text-align: center;
+}
+.icon {
+    background: black;
+    color: white;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 20px;
+}
+
+.review-link {
+    color: red;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.review-link:hover {
+    text-decoration: underline;
+}
+
+.order-title {
+    font-weight: bold;
+    text-align: center;
+}
+
