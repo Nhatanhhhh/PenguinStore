@@ -1,4 +1,3 @@
-<%@page import="Models.Manager"%>
 <%@page import="Models.Feedback"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.List"%>
@@ -53,9 +52,6 @@
         </style>
     </head>
     <body class="sb-nav-fixed">
-        <%
-            Manager manager = (Manager) session.getAttribute("user");
-        %>
 
         <!-- Error or Success Messages -->
         <%
