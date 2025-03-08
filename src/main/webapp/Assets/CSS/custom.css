@@ -1,0 +1,111 @@
+.div {
+    background: #ffffff;
+    height: 1615px;
+    position: relative;
+    overflow: hidden;
+}
+.star-shooting-outline {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    left: 138px;
+    top: 818px;
+    overflow: hidden;
+}
+.div2 {
+    background: #f4f4f4;
+    border-radius: 20px;
+    width: 850px;
+    height: 950px;
+    position: absolute;
+    left: 295px;
+    top: 333px;
+    overflow: hidden;
+}
+.modern-style-is-a-blend-of-minimalism-and-personality-highlighting-your-unique-personality {
+    color: #000000;
+    text-align: left;
+    font-family: "Figtree-SemiBold", sans-serif;
+    font-size: 30px;
+    line-height: 32px;
+    font-weight: 600;
+    text-transform: uppercase;
+    position: absolute;
+    left: 402px;
+    top: 175px;
+    width: 400px;
+    height: 255px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.fashion-is-not-just-about-clothes-it-s-also-about-how-you-tell-your-own-story {
+    color: #000000;
+    text-align: left;
+    font-family: "Figtree-SemiBold", sans-serif;
+    font-size: 30px;
+    line-height: 32px;
+    font-weight: 600;
+    text-transform: uppercase;
+    position: absolute;
+    left: 77px;
+    top: 522px;
+    width: 324px;
+    height: 290px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.vector {
+    width: 11.76%;
+    height: 10.53%;
+    position: absolute;
+    right: 40.94%;
+    left: 47.29%;
+    bottom: 82.11%;
+    top: 7.37%;
+    overflow: visible;
+}
+.vector2 {
+    width: 11.76%;
+    height: 10.53%;
+    position: absolute;
+    right: 79.18%;
+    left: 9.06%;
+    bottom: 9.26%;
+    top: 80.21%;
+    overflow: visible;
+}
+.pexels-pixabay-157675-1 {
+    border-radius: 20px;
+    width: 490.16px;
+    height: 680px;
+    position: absolute;
+    left: 781px;
+    top: 927px;
+    transform-origin: 0 0;
+    transform: rotate(0deg) scale(1, 1);
+    object-fit: cover;
+}
+.image {
+    border-radius: 20px;
+    width: 450px;
+    height: 680px;
+    position: absolute;
+    left: 138px;
+    top: 75px;
+    box-shadow: 0px 1.21px 2.06px 0px rgba(68, 68, 68, 0.02),
+        0px 5.33px 4.26px 0px rgba(68, 68, 68, 0.04),
+        0px 13.07px 8.5px 0px rgba(68, 68, 68, 0.05),
+        0px 25.18px 16.65px 0px rgba(68, 68, 68, 0.06),
+        0px 42.36px 30.62px 0px rgba(68, 68, 68, 0.08),
+        0px 20px 52.29px 0px rgba(68, 68, 68, 0.04);
+    object-fit: cover;
+}
+
+.section-1{
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+    padding: 20px 0px !important;
+    background-color: #F9FAFB !important;
+}
