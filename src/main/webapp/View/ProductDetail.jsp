@@ -33,7 +33,6 @@
             .card:hover {
                 transform: scale(1.05);
             }
-
         </style>
     </head>
     <body>
@@ -54,11 +53,11 @@
                     <div class="product-info">
                         <h1>${product.productName}</h1>
                         <p><strong>Description:</strong> ${product.description}</p>
+
                         <!-- Hiển thị trung bình số sao -->
                         <div class="text-left">
                             <p>
                                 <strong>Average Rating:</strong>
-
                                 <span class="stars">
                                     <c:set var="fullStars" value="${Math.floor(averageRating)}"/>
                                     <c:set var="decimalPart" value="${averageRating - fullStars}"/>
@@ -66,15 +65,12 @@
                                     <c:forEach var="i" begin="1" end="5">
                                         <c:choose>
                                             <c:when test="${i <= fullStars}">
-                                                <!-- Sao đầy đủ -->
                                                 <i class="fa-solid fa-star" style="color: orange;"></i>
                                             </c:when>
                                             <c:when test="${i == fullStars + 1 && decimalPart >= 0.25}">
-                                                <!-- Hiển thị sao nửa nếu phần thập phân >= 0.25 -->
                                                 <i class="fa-solid fa-star-half-stroke" style="color: orange;"></i>
                                             </c:when>
                                             <c:otherwise>
-                                                <!-- Sao rỗng -->
                                                 <i class="fa-regular fa-star" style="color: gray;"></i>
                                             </c:otherwise>
                                         </c:choose>
@@ -83,36 +79,13 @@
                                 (${totalReviews} reviews)
                             </p>
                         </div>
+
                         <p class="price">$${product.price}</p>
                         <p><strong>Type:</strong> ${product.typeName}</p>
                         <p><strong>Category:</strong> ${product.categoryName}</p>
 
                         <c:set var="uniqueSizes" value="" />
                         <c:set var="uniqueColors" value="" />
-
-                        <c:if test="${not empty productDetail}">
-                            <c:set var="hasSize" value="false"/>
-                            <c:set var="sizeSet" value="<%= new java.util.TreeSet<String>()%>" scope="request"/>
-
-                            <c:forEach var="variant" items="${productDetail}">
-                                <c:if test="${not empty variant.sizeName}">
-                                    <c:set var="hasSize" value="true"/>
-                                    <% ((java.util.TreeSet<String>) request.getAttribute("sizeSet")).add(pageContext.getAttribute("variant").getClass().getMethod("getSizeName").invoke(pageContext.getAttribute("variant")).toString());%>
-                                </c:if>
-                            </c:forEach>
-
-                            <c:if test="${hasSize}">
-                                <div class="options">
-                                    <label><strong>Size:</strong></label>
-                                    <div class="size-options">
-                                        <c:forEach var="size" items="${sizeSet}">
-                                            <button class="size-btn">${size}</button>
-                                        </c:forEach>
-                                    </div>
-                                </div>
-                            </c:if>
-                        </c:if>
-
 
                         <div class="options">
                             <label><strong>Color:</strong></label>
@@ -148,9 +121,6 @@
 
         <div class="container-fluid pt-5 pb-5 mt-5 pb-5" style="background-color: #F6F6F6">
             <h2 class="text-center mb-4">Latest Reviews</h2>
-
-
-
             <div class="row row-cols-1 row-cols-md-3 g-4">
                 <c:choose>
                     <c:when test="${not empty feedbackList}">
@@ -187,7 +157,6 @@
             </div>
         </div>
 
-
         <%@include file="Footer.jsp"%>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
@@ -197,15 +166,62 @@
                 thumbnails.forEach(thumbnail => {
                     thumbnail.addEventListener("click", function () {
                         mainImage.src = this.src;
-
                         thumbnails.forEach(img => img.classList.remove("active"));
-
                         this.classList.add("active");
                     });
                 });
             });
 
+            document.addEventListener("DOMContentLoaded", function () {
+                const sizeButtons = document.querySelectorAll(".size-btn");
+                const colorCircles = document.querySelectorAll(".color-circle");
+                const quantityInput = document.getElementById("quantity");
+                const variantIdInput = document.getElementById("selectedVariantId");
+
+                let selectedSize = "";
+                let selectedColor = "";
+
+                // Khi chọn size
+                sizeButtons.forEach(button => {
+                    button.addEventListener("click", function () {
+                        selectedSize = this.textContent.trim();
+                        sizeButtons.forEach(btn => btn.classList.remove("selected"));
+                        this.classList.add("selected");
+                        updateVariantId();
+                    });
+                });
+
+                // Khi chọn màu
+                colorCircles.forEach(circle => {
+                    circle.addEventListener("click", function () {
+                        selectedColor = this.style.backgroundColor;
+                        colorCircles.forEach(c => c.classList.remove("selected"));
+                        this.classList.add("selected");
+                        updateVariantId();
+                    });
+                });
+
+                // Hàm cập nhật variantId
+                function updateVariantId() {
+                    fetch(`GetVariantIDServlet?size=${selectedSize}&color=${selectedColor}`)
+                            .then(response => response.text())
+                            .then(variantId => {
+                                variantIdInput.value = variantId; // Cập nhật hidden input
+                            });
+                }
+
+                // Nút tăng/giảm số lượng
+                document.querySelector(".quantity button:first-child").addEventListener("click", function () {
+                    if (parseInt(quantityInput.value) > 1) {
+                        quantityInput.value = parseInt(quantityInput.value) - 1;
+                    }
+                });
+
+                document.querySelector(".quantity button:last-child").addEventListener("click", function () {
+                    quantityInput.value = parseInt(quantityInput.value) + 1;
+                });
+            });
+
         </script>
     </body>
-
 </html>

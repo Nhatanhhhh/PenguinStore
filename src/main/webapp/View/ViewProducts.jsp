@@ -24,14 +24,14 @@
             <div class="container mt-5 mb-5">
                 <div class="container">
                     <nav class="back-homepage" style="text-align: center; font-size: 20px; margin-bottom: 20px;">
-                        <a href="/PenguinStore" style="text-decoration: none; color: gray;">Home </a> &gt;
+                        <a href="/PenguinStore/Homepage" style="text-decoration: none; color: gray;">Home </a> &gt;
                         <span style="color: lightgray;"> All Product</span>
                     </nav>
                     <div class="row row-cols-1 row-cols-md-3 g-4">
                         <c:forEach var="product" items="${listProduct}">
                             <a href="Product?id=${product.productID}" class="text-decoration-none">
                                 <div class="col mt-3">
-                                    <div class="card product-item" >
+                                    <div class="card product-item">
                                         <c:if test="${not empty product.imgName}">
                                             <c:set var="imgList" value="${fn:split(product.imgName, ',')}" />
                                             <c:set var="firstImg" value="${imgList[0]}" />

@@ -3,7 +3,6 @@ package DAOs;
 import DB.DBContext;
 import Models.Cart;
 import Models.CartItem;
-import Models.ProductVariant;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,10 +12,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Loc_LM
- */
 public class CartDAO {
 
     private DBContext db = new DBContext();

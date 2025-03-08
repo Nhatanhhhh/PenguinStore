@@ -27,20 +27,20 @@ public class CheckoutDAO {
 
     private DBContext dbContext = new DBContext();
 
-    public List<CartItem> viewCart(String customerID) {
-        List<CartItem> cartItems = new ArrayList<>();
-        String sql = "SELECT p.productName, "
-                + "       p.price, "
-                + "       ca.quantity, "
-                + "       c.colorName, "
-                + "       STRING_AGG(i.imgName, ', ') AS imgName "
-                + "FROM Cart ca "
-                + "JOIN ProductVariants pv ON ca.proVariantID = pv.proVariantID "
-                + "JOIN Product p ON pv.productID = p.productID "
-                + "JOIN Color c ON pv.colorID = c.colorID "
-                + "LEFT JOIN Image i ON p.productID = i.productID "
-                + "WHERE ca.customerID = ? "
-                + "GROUP BY p.productID, p.productName, p.price, ca.quantity, c.colorName";
+        public List<CartItem> viewCart(String customerID) {
+            List<CartItem> cartItems = new ArrayList<>();
+            String sql = "SELECT p.productName, "
+                    + "       p.price, "
+                    + "       ca.quantity, "
+                    + "       c.colorName, "
+                    + "       STRING_AGG(i.imgName, ', ') AS imgName "
+                    + "FROM Cart ca "
+                    + "JOIN ProductVariants pv ON ca.proVariantID = pv.proVariantID "
+                    + "JOIN Product p ON pv.productID = p.productID "
+                    + "JOIN Color c ON pv.colorID = c.colorID "
+                    + "LEFT JOIN Image i ON p.productID = i.productID "
+                    + "WHERE ca.customerID = ? "
+                    + "GROUP BY p.productID, p.productName, p.price, ca.quantity, c.colorName";
 
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, customerID);
@@ -60,5 +60,6 @@ public class CheckoutDAO {
         }
         return cartItems;
     }
+    
 
 }

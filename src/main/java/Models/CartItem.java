@@ -1,15 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Models;
 
-/**
- *
- * @author Loc_LM
- */
 public class CartItem {
-
     private String productName;
     private double price;
     private int quantity;
@@ -43,7 +34,7 @@ public class CartItem {
     public String getImgNames() {
         return imgNames;
     }
-
+    
     // Phương thức lấy ảnh đầu tiên từ danh sách ảnh
     public String getFirstImage() {
         if (imgNames != null && !imgNames.isEmpty()) {

@@ -7,7 +7,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Admin Dashboard</title>
 
-
         <!-- Import CSS -->
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
@@ -61,17 +60,13 @@
                     </table>
                 </div>
             </div>
-
         </div>
-
-
-
-
 
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
 
         <!-- Thư viện Chart.js -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
         <!-- Script biểu đồ doanh thu -->
         <script>
             const ctx = document.getElementById('revenueChart').getContext('2d');

@@ -6,8 +6,8 @@ package DTO;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Le Minh Loc - CE180992
  */
 public class CartSummaryDTO {
-    
+
 }

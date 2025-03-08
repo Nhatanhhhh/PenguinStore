@@ -11,13 +11,12 @@ import Models.Feedback;
 import Models.Product;
 import Models.ProductVariant;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -38,23 +37,32 @@ public class ProductController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String id = request.getParameter("id");
+        System.out.println("PRODUCT ID: " + id); // Bổ sung log để debug
+
         ProductDAO productDAO = new ProductDAO();
         ProductVariantDAO productVariantDAO = new ProductVariantDAO();
+
         if (id == null || id.isEmpty()) {
             ArrayList<Product> listProduct = productDAO.readAll();
             request.setAttribute("listProduct", listProduct);
             request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
         } else {
+            // Nhận thông báo nếu có
+            String message = request.getParameter("message");
+            if ("success".equals(message)) {
+                request.setAttribute("message", "Sản phẩm đã được thêm vào giỏ hàng thành công!");
+            }
+
             ArrayList<ProductVariant> listDetail = productVariantDAO.viewProductDetail(id);
             Product product = productDAO.getOneProduct(id);
-            
+
             // Lấy số sao trung bình & số lượt đánh giá
             double averageRating = FeedbackDAO.getAverageRating(id);
             int totalReviews = FeedbackDAO.getTotalReviews(id);
 
             // Lấy 3 đánh giá gần nhất
             List<Feedback> feedbackList = FeedbackDAO.getLatestFeedbacks(id);
-            
+
             request.setAttribute("productDetail", listDetail);
             request.setAttribute("product", product);
             request.setAttribute("averageRating", averageRating);
@@ -63,7 +71,6 @@ public class ProductController extends HttpServlet {
 
             request.getRequestDispatcher("/View/ProductDetail.jsp").forward(request, response);
         }
-
     }
 
     /**
@@ -79,7 +86,8 @@ public class ProductController extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         ProductDAO productDAO = new ProductDAO();
-        if (action != null || "search".equals(action)) {
+
+        if (action != null && "search".equals(action)) {
             String searchQuery = request.getParameter("searchQuery");
             ArrayList<Product> listProduct = productDAO.searchProduct(searchQuery);
             request.setAttribute("listProduct", listProduct);

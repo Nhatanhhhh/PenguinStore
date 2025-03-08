@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+
+    <!-- Filter Configuration -->
     <filter>
         <filter-name>LoginFilter</filter-name>
         <filter-class>Filters.LoginFilter</filter-class>
@@ -8,6 +12,7 @@
         <filter-name>AuthorizationFilter</filter-name>
         <filter-class>Filters.AuthorizationFilter</filter-class>
     </filter>
+
     <filter-mapping>
         <filter-name>LoginFilter</filter-name>
         <url-pattern>/Cart</url-pattern>
@@ -21,6 +26,7 @@
         <url-pattern>/DashBoardForAdmin</url-pattern>
         <url-pattern>/DashBoardForStaff</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>AuthorizationFilter</filter-name>
         <url-pattern>/DashBoardForAdmin</url-pattern>
@@ -35,12 +41,16 @@
         <url-pattern>/EditProfile</url-pattern>
         <url-pattern>/Feedback</url-pattern>
         <url-pattern>/ChangePassword</url-pattern>
-        <url-pattern>/ChangePassword</url-pattern>
-        
     </filter-mapping>
+
+    <!-- Servlet Configuration -->
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>Controller.LoginServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrderHistory</servlet-name>
+        <servlet-class>Controller.OrderHistory</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
@@ -154,17 +164,15 @@
         <servlet-name>OrderManagement</servlet-name>
         <servlet-class>Controller.OrderManagement</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>OrderDeatilStaff</servlet-name>
-        <servlet-class>Controller.OrderDetailStaff</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>LogoutServlet</servlet-name>
-        <url-pattern>/Logout</url-pattern>
-    </servlet-mapping>
+
+    <!-- Servlet Mappings -->
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/Login</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/Logout</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>OrderHistory</servlet-name>
@@ -237,55 +245,10 @@
         <servlet-name>FeedbackController</servlet-name>
         <url-pattern>/Feedback</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>LoginManagerController</servlet-name>
-        <url-pattern>/LoginManager</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ErrorServlet404</servlet-name>
-        <url-pattern>/404</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ErrorServlet500</servlet-name>
-        <url-pattern>/500</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ViewListFeedbackController</servlet-name>
-        <url-pattern>/ListFeedbackForStaff</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DashBoardForStaffServlet</servlet-name>
-        <url-pattern>/DashBoardForStaff</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DashBoardForAdminServlet</servlet-name>
-        <url-pattern>/DashBoardForAdmin</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ChangePasswordController</servlet-name>
-        <url-pattern>/ChangePassword</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AccessDeniedController</servlet-name>
-        <url-pattern>/AccessDenied</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetVariantIDServlet</servlet-name>
-        <url-pattern>/GetVariantIDServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ViewOrderStaff</servlet-name>
-        <url-pattern>/ViewOrderStaff</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>OrderManagement</servlet-name>
-        <url-pattern>/OrderManagement</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>OrderDeatilStaff</servlet-name>
-        <url-pattern>/OrderDetailStaff</url-pattern>
-    </servlet-mapping>
+
+    <!-- Session Configuration -->
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
+
 </web-app>

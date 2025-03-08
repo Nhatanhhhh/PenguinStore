@@ -52,7 +52,7 @@ public class Payment extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession();
 
         // Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
@@ -112,5 +112,4 @@ public class Payment extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

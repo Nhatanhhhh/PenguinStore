@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Nguyen Nhat Anh - CE181843
  */
 public class ManagerDAO extends DBContext {
 

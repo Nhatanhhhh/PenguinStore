@@ -1,0 +1,102 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Mar 4, 2025, 10:56:15 AM
+    Author     : PC
+*/
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+.container {
+    display: flex;
+    justify-content: space-between;
+}
+.form-section, .summary-section {
+    width: 45%;
+}
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+button {
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
+.summary-section {
+    background: #f8f8f8;
+    padding: 20px;
+    border-radius: 5px;
+}
+.product {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.product img {
+    width: 80px;
+    height: auto;
+    border-radius: 5px;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%;
+    text-align: center;
+    border-radius: 5px;
+}
+.close {
+    color: red;
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+
+/* Modal */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 40%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+}
