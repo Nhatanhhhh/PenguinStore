@@ -6,12 +6,9 @@ package DAOs;
 
 import DB.DBContext;
 import DTO.ShowStaffDTO;
-import Models.Customer;
 import Models.Manager;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -23,9 +20,19 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Nguyen Nhat Anh - CE181843
+ * @author Nhat_Anh
  */
-public class ManagerDAO extends DBContext {
+public class ManagerDAO {
+
+    private final DBContext dbContext;
+
+    public ManagerDAO(DBContext dbContext) {
+        this.dbContext = dbContext;
+    }
+    
+     public ManagerDAO() {
+        this.dbContext = new DBContext();
+    }
 
     /**
      * L?y thông tin qu?n lý t? username và m?t kh?u (?ã hash)
@@ -42,7 +49,7 @@ public class ManagerDAO extends DBContext {
 
         System.out.println("Hashed Password:" + hashedPassword);
 
-        try ( ResultSet rs = execSelectQuery(query, params)) {
+        try ( ResultSet rs = dbContext.execSelectQuery(query, params)) {
             if (rs.next()) {
                 manager = new Manager(
                         rs.getString("managerID"),
@@ -68,7 +75,7 @@ public class ManagerDAO extends DBContext {
 
         String query = "SELECT managerName,email from Manager WHERE role=0";
 
-        try ( ResultSet rs = execSelectQuery(query)) {
+        try ( ResultSet rs = dbContext.execSelectQuery(query)) {
             while (rs.next()) {
                 getNameAndEmail.add(new ShowStaffDTO(rs.getString("managerName"), rs.getString("email")));
             }
@@ -85,7 +92,7 @@ public class ManagerDAO extends DBContext {
         String query = "SELECT * FROM Manager WHERE managerName = ?";
         Object[] params = {managerName};
 
-        try ( ResultSet rs = execSelectQuery(query, params)) {
+        try ( ResultSet rs = dbContext.execSelectQuery(query, params)) {
             if (rs.next()) {
                 manager = new Manager(
                         rs.getString("managerID"),
@@ -114,18 +121,21 @@ public class ManagerDAO extends DBContext {
                 + "phoneNumber = ?, "
                 + "address = ?, "
                 + "dateOfBirth = ?, "
-                + "role = 0 "
+                + "role = ? "
                 + "WHERE managerName = ?";
-
+        String passMD5 = managerChange.getPassword();
         try {
-
+           
             if (!managerName.equals(managerChange.getManagerName())) {
                 Manager checkName = getByManagerName(managerChange.getManagerName());
                 if (checkName != null) {
                     return 0;
+                }else if(!checkName.getPassword().equals(managerChange.getPassword())){
+                    passMD5 = md5(managerChange.getPassword());
                 }
             }
-            String passMD5 = md5(managerChange.getPassword());
+            
+            
             Object[] updateParams = {
                 managerChange.getManagerName(),
                 passMD5,
@@ -137,55 +147,42 @@ public class ManagerDAO extends DBContext {
                 managerChange.isRole(),
                 managerName
             };
-
-            return execQuery(sqlUpdate, updateParams);
+            
+            return  dbContext.execQuery(sqlUpdate, updateParams);
+           
         } catch (SQLException e) {
             Logger.getLogger(ManagerDAO.class.getName()).log(Level.SEVERE, null, e);
             return 0;
         }
     }
 
-    public boolean insert(Manager manager) {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        boolean isSuccess = false;
+    public int insert(Manager manager) {
+        if (getByManagerName(manager.getManagerName()) != null) {
+            return 0;
+        }
 
-        // Hash mật khẩu trước khi lưu vào DB
         String hashedPassword = DBContext.hashPasswordMD5(manager.getPassword());
 
+        String sql = "INSERT INTO Manager(managerName, password, fullName, email, phoneNumber, address, dateOfBirth, role) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
+
+        Object[] params = {
+            manager.getManagerName(),
+            hashedPassword,
+            manager.getFullName(),
+            manager.getEmail(),
+            manager.getPhoneNumber(),
+            manager.getAddress(),
+            manager.getDateOfBirth()
+          
+        };
+
         try {
-            conn = DBContext.getConn();
-            String sql = "INSERT INTO Manager(managerName, password, fullName, email, phoneNumber, address, dateOfBirth, role) VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
-            ps = conn.prepareStatement(sql);
-
-            ps.setString(1, manager.getManagerName());
-            ps.setString(2, manager.getPassword());
-            ps.setString(3, hashedPassword);
-            ps.setString(4, manager.getFullName());
-            ps.setString(5, manager.getEmail());
-            ps.setString(6, manager.getPhoneNumber());
-            ps.setString(7, manager.getAddress());
-            ps.setString(8, manager.getDateOfBirth());
-
-            int rowsAffected = ps.executeUpdate();
-            isSuccess = (rowsAffected > 0);
-
+            return dbContext.execQuery(sql, params);
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            // Đóng ps, conn
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+            Logger.getLogger(ManagerDAO.class.getName()).log(Level.SEVERE, null, e);
+            return 0;
         }
-        return isSuccess;
     }
 
     private String md5(String input) {

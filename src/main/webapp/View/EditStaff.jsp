@@ -37,7 +37,7 @@
 
                                             <div class="mb-3">
                                                 <label for="managerName" class="form-label">Staff Name:</label>
-                                                <input type="text" class="form-control" id="staffName" name="staffName" value="${manager.managerName}" required>
+                                                <input type="text" class="form-control" id="managerName" name="staffName" value="${manager.managerName}" required>
                                             </div>
 
                                             <div class="mb-3">
@@ -70,7 +70,11 @@
 
                                             <div class="mb-3">
                                                 <label for="dateOfBirth" class="form-label">Date of Birth: </label>
+<<<<<<< HEAD
                                                 <input type="text" class="form-control" id="dateOfBirth" name="dateOfBirth" value="${manager.dateOfBirth}" required>
+=======
+                                                <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" value="${manager.dateOfBirth}" required>
+>>>>>>> Thuan
                                             </div>
 
                                             <button type="submit" class="btn btn-primary">Update</button>

@@ -1,8 +1,9 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, Models.CartItem, Models.Voucher" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>PENGUIN Checkout</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
@@ -79,29 +80,28 @@
                 <div id="voucherList">
                     <% List<Voucher> vouchers = (List<Voucher>) request.getAttribute("vouchers"); %>
                     <% if (vouchers != null && !vouchers.isEmpty()) { %>
-                        <% for (Voucher voucher : vouchers) { %>
-                            <div class="voucher-item" 
-                                 data-code="<%= voucher.getVoucherCode()%>" 
-                                 data-discount-per="<%= voucher.getDiscountPer()%>"
-                                 data-discount-amount="<%= voucher.getDiscountAmount()%>"
-                                 data-min-order="<%= voucher.getMinOrderValue()%>">
-                                <strong><%= voucher.getVoucherCode()%></strong> - 
-                                <%= voucher.getDiscountPer()%>% off (Max $<%= voucher.getDiscountAmount()%>) <br>
-                                Min Order: $<%= voucher.getMinOrderValue()%>
-                                <% if (voucher.isVoucherStatus()) { %>
-                                    <button class="useVoucher">Use</button>
-                                <% } else { %>
-                                    <span style="color: red;">Expired</span>
-                                <% } %>
-                            </div>
+                    <% for (Voucher voucher : vouchers) { %>
+                    <div class="voucher-item" 
+                         data-code="<%= voucher.getVoucherCode()%>" 
+                         data-discount-per="<%= voucher.getDiscountPer()%>"
+                         data-discount-amount="<%= voucher.getDiscountAmount()%>"
+                         data-min-order="<%= voucher.getMinOrderValue()%>">
+                        <strong><%= voucher.getVoucherCode()%></strong> - 
+                        <%= voucher.getDiscountPer()%>% off (Max $<%= voucher.getDiscountAmount()%>) <br>
+                        Min Order: $<%= voucher.getMinOrderValue()%>
+                        <% if (voucher.isVoucherStatus()) { %>
+                        <button class="useVoucher">Use</button>
+                        <% } else { %>
+                        <span style="color: red;">Expired</span>
                         <% } %>
+                    </div>
+                    <% } %>
                     <% } else { %>
-                        <p>No available vouchers.</p>
+                    <p>No available vouchers.</p>
                     <% } %>
                 </div>
             </div>
         </div>
-
         <script>
             document.getElementById('viewVoucher').addEventListener('click', function (e) {
                 e.preventDefault();
@@ -165,3 +165,4 @@
         <%@include file="Footer.jsp"%>
     </body>
 </html>
+

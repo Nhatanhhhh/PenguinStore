@@ -89,7 +89,7 @@ public class ResetPasswordController extends HttpServlet {
             return;
         }
 
-        // Kiểm tra mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt
+        // Kiểm tra mật khẩu phải chứa ít nhất một chữ hoa, một chữ thư�?ng, một số và một ký tự đặc biệt
         if (!newPassword.matches(".*[A-Z].*")) {
             request.setAttribute("errorMessage", "The password must contain at least one capital, regular, number and 1 special character.");
             request.getRequestDispatcher("ResetPassword").forward(request, response);

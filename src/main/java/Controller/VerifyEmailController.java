@@ -35,7 +35,7 @@ public class VerifyEmailController extends HttpServlet {
         if ("/VerifyEmail".equals(action)) {
             String verificationCode = request.getParameter("verificationCode");
             String sessionCode = (String) request.getSession().getAttribute("verificationCode");
-            System.out.println("Mã xác thực người dùng nhập: " + verificationCode);
+            System.out.println("Mã xác thực ngư�?i dùng nhập: " + verificationCode);
             System.out.println("Mã xác thực trong session: " + sessionCode);
             if (verificationCode != null && verificationCode.equals(sessionCode)) {
 

@@ -29,9 +29,9 @@ public class LoginFilter implements Filter {
         // Kiểm tra session hiện tại
         HttpSession session = req.getSession(false);
 
-        // Kiểm tra xem người dùng đã đăng nhập (session có tồn tại và có thuộc tính người dùng hoặc googleUser)
+        // Kiểm tra xem ngư�?i dùng đã đăng nhập (session có tồn tại và có thuộc tính ngư�?i dùng hoặc googleUser)
         if (session != null && (session.getAttribute("user") != null)) {
-            // Nếu người dùng đã đăng nhập, cho phép tiếp tục request
+            // Nếu ngư�?i dùng đã đăng nhập, cho phép tiếp tục request
             chain.doFilter(request, response);
         } else {
             // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập

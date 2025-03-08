@@ -5,11 +5,13 @@
 package DAOs;
 
 import DB.DBContext;
+import DTO.ShowCusDTO;
 import Models.Customer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  *
@@ -26,9 +28,9 @@ public class CustomerDAO {
     /**
      * Lấy thông tin khách hàng từ username và password (đã hash)
      *
-     * @param username Tên người dùng
+     * @param username Tên ngư�?i dùng
      * @param hashedPassword Mật khẩu đã được mã hóa MD5
-     * @return Đối tượng Customer nếu tìm thấy, ngược lại null
+     * @return �?ối tượng Customer nếu tìm thấy, ngược lại null
      */
     public static Customer getCustomerByUsernameAndPassword(String username, String hashedPassword) {
         Customer customer = null;
@@ -64,7 +66,7 @@ public class CustomerDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // Đóng rs, ps, conn để tránh rò rỉ kết nối
+            // �?óng rs, ps, conn để tránh rò rỉ kết nối
             try {
                 if (rs != null) {
                     rs.close();
@@ -84,9 +86,9 @@ public class CustomerDAO {
     }
 
     /**
-     * Đăng ký người dùng mới
+     * �?ăng ký ngư�?i dùng mới
      *
-     * @param customer Đối tượng Customer chứa thông tin người dùng
+     * @param customer �?ối tượng Customer chứa thông tin ngư�?i dùng
      * @return True nếu đăng ký thành công, ngược lại False
      */
     public static boolean registerCustomer(Customer customer) {
@@ -121,7 +123,7 @@ public class CustomerDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // Đóng ps, conn
+            // �?óng ps, conn
             try {
                 if (ps != null) {
                     ps.close();
@@ -135,5 +137,28 @@ public class CustomerDAO {
         }
 
         return isSuccess;
+    }
+
+    public ArrayList<ShowCusDTO> getListCus() {
+        ArrayList<ShowCusDTO> getListCustomer = new ArrayList<>();
+
+        String query = "SELECT customerName,fullName,address, email,phoneNumber, state, zip from Customer";
+
+        try ( ResultSet rs = dbContext.execSelectQuery(query)) {
+            while (rs.next()) {
+                getListCustomer.add(new ShowCusDTO(
+                        rs.getString("customerName"),
+                        rs.getString("fullName"),
+                        rs.getString("address"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("state"),
+                        rs.getString("zip")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return getListCustomer;
     }
 }

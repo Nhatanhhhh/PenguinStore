@@ -55,7 +55,7 @@ public class Payment extends HttpServlet {
 
         HttpSession session = request.getSession();
 
-        // Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
+        // Nếu chưa đăng nhập, chuyển hướng v�? trang đăng nhập
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect("View/LoginCustomer.jsp");
             return;

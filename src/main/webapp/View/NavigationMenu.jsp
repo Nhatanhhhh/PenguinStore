@@ -52,9 +52,11 @@
                 </li>
                 <li>Customer
                     <ul class="dropdown">
-                        <li><a href="#">View Customers</a></li>
+                         <li><a href="<c:url value='/Customer?action=list'/>">View Customer</a></li>
                     </ul>
                 </li>
+                
+                
             </ul>
 
             <h2>Statistic</h2>

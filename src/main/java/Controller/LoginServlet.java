@@ -117,7 +117,7 @@ public class LoginServlet extends HttpServlet {
                     Manager manager = (Manager) user;
                     session.setAttribute("user", manager);
                     session.setAttribute("role", manager.isRole() ? "ADMIN" : "STAFF");
-                    System.out.println("✅ Đăng nhập thành công! Role: " + session.getAttribute("role"));
+                    System.out.println("✅ �?ăng nhập thành công! Role: " + session.getAttribute("role"));
                     if (manager.isRole() == true) {
                         response.sendRedirect("DashBoardForAdmin");
                     } else {
@@ -125,7 +125,7 @@ public class LoginServlet extends HttpServlet {
                     }
                 } else {
                     session.setAttribute("role", "CUSTOMER");
-                    System.out.println("✅ Đăng nhập với vai trò CUSTOMER!");
+                    System.out.println("✅ �?ăng nhập với vai trò CUSTOMER!");
                     response.sendRedirect(request.getContextPath());
                 }
 

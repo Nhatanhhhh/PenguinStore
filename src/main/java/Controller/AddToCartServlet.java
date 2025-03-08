@@ -44,7 +44,7 @@ public class AddToCartServlet extends HttpServlet {
 //            throws ServletException, IOException {
 //        HttpSession session = request.getSession();
 //
-//        // Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
+//        // Nếu chưa đăng nhập, chuyển hướng v�? trang đăng nhập
 //        if (session == null || session.getAttribute("user") == null) {
 //            response.sendRedirect("View/LoginCustomer.jsp");
 //            return;
@@ -100,7 +100,7 @@ public class AddToCartServlet extends HttpServlet {
         int quantity = Integer.parseInt(quantityStr);
 
         try ( Connection conn = DBContext.getConn()) {
-            // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+            // Kiểm tra xem sản phẩm đã có trong gi�? hàng chưa
             String checkSql = "SELECT quantity FROM Cart WHERE customerID = ? AND productID = ? AND proVariantID = ?";
             PreparedStatement checkPs = conn.prepareStatement(checkSql);
             checkPs.setString(1, customerID);
@@ -121,7 +121,7 @@ public class AddToCartServlet extends HttpServlet {
                 updatePs.setString(4, proVariantID);
                 updatePs.executeUpdate();
             } else {
-                // Nếu sản phẩm chưa có, thêm mới vào giỏ hàng
+                // Nếu sản phẩm chưa có, thêm mới vào gi�? hàng
                 String insertSql = "INSERT INTO Cart (customerID, productID, proVariantID, quantity) VALUES (?, ?, ?, ?)";
                 PreparedStatement insertPs = conn.prepareStatement(insertSql);
                 insertPs.setString(1, customerID);

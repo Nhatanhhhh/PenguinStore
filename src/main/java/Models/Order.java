@@ -44,7 +44,8 @@ public class Order {
         this.voucherID = voucherID;
         this.voucherName = voucherName;
     }
-     public Order(String orderID, String fullName, Date orderDate, double totalAmount, String orderStatus) {
+
+    public Order(String orderID, String fullName, Date orderDate, double totalAmount, String orderStatus) {
         this.orderID = orderID;
         this.fullName = fullName;
         this.orderDate = orderDate;
@@ -67,7 +68,7 @@ public class Order {
     public void setOrderStatus(String orderStatus) {
         this.orderStatus = orderStatus;
     }
-     
+
     public String getVoucherName() {
         return voucherName;
     }

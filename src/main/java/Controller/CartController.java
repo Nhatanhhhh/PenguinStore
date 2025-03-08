@@ -32,7 +32,7 @@ public class CartController extends HttpServlet {
 
         CartDAO cartDAO = new CartDAO();
         List<CartItem> cartItems = cartDAO.viewCart(customerID);
-        
+
         // Tạo Map để lưu productID tương ứng với từng CartItem
         Map<CartItem, String> productIDs = new HashMap<>();
         for (CartItem item : cartItems) {
@@ -64,21 +64,21 @@ public class CartController extends HttpServlet {
         CartDAO cartDAO = new CartDAO();
 
         if ("delete".equals(action)) {
-            // Xóa sản phẩm khỏi giỏ hàng
+            // Xóa sản phẩm kh�?i gi�? hàng
             String productID = request.getParameter("productID");
             if (productID != null && !productID.isEmpty()) {
                 cartDAO.removeFromCart(customerID, productID);
             }
         } else if ("clear".equals(action)) {
-            // Xóa toàn bộ giỏ hàng
+            // Xóa toàn bộ gi�? hàng
             cartDAO.clearCart(customerID);
             response.sendRedirect(request.getContextPath() + "/Cart");
             return;
         }
 
-        // Load lại giỏ hàng sau khi cập nhật
+        // Load lại gi�? hàng sau khi cập nhật
         List<CartItem> cartItems = cartDAO.viewCart(customerID);
-        
+
         // Cập nhật Map chứa productID
         Map<CartItem, String> productIDs = new HashMap<>();
         for (CartItem item : cartItems) {

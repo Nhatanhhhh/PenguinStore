@@ -73,7 +73,7 @@ public class LogoutServlet extends HttpServlet {
             }
         }
 
-        // Chuyển hướng về trang đăng nhập kèm thông báo đăng xuất thành công
+        // Chuyển hướng v�? trang đăng nhập kèm thông báo đăng xuất thành công
         response.sendRedirect(request.getContextPath() + "/Login?logoutSuccess=true");
     }
 

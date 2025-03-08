@@ -145,19 +145,19 @@ public class RegisterDAO {
     }
 
     /**
-     * Hàm đăng ký người dùng qua Google.
+     * Hàm đăng ký ngư�?i dùng qua Google.
      *
      * @param customerName tên đăng nhập (có thể dùng email nếu chưa có tên
      * riêng)
-     * @param fullName Họ và tên của người dùng
-     * @param email email của người dùng
+     * @param fullName H�? và tên của ngư�?i dùng
+     * @param email email của ngư�?i dùng
      * @param googleID mã định danh Google (payload.getSubject())
      * @param accessToken token truy cập của Google
-     * @param address địa chỉ (nếu có, hoặc truyền chuỗi rỗng)
-     * @param phone số điện thoại (nếu có, hoặc truyền chuỗi rỗng)
-     * @param state tỉnh/thành phố (nếu có, hoặc truyền chuỗi rỗng)
-     * @param zip mã bưu điện (nếu có, hoặc truyền chuỗi rỗng)
-     * @return "SUCCESS" nếu đăng ký thành công, ngược lại trả về thông báo lỗi.
+     * @param address địa chỉ (nếu có, hoặc truy�?n chuỗi rỗng)
+     * @param phone số điện thoại (nếu có, hoặc truy�?n chuỗi rỗng)
+     * @param state tỉnh/thành phố (nếu có, hoặc truy�?n chuỗi rỗng)
+     * @param zip mã bưu điện (nếu có, hoặc truy�?n chuỗi rỗng)
+     * @return "SUCCESS" nếu đăng ký thành công, ngược lại trả v�? thông báo lỗi.
      */
     public String registerUserGoogle(String customerName, String fullName, String email, String googleID,
             String accessToken) {
@@ -192,7 +192,7 @@ public class RegisterDAO {
 
     private String generateRandomPassword() {
         SecureRandom random = new SecureRandom();
-        byte[] bytes = new byte[12]; // Độ dài mật khẩu 12 ký tự
+        byte[] bytes = new byte[12]; // �?ộ dài mật khẩu 12 ký tự
         random.nextBytes(bytes);
         return Base64.getEncoder().encodeToString(bytes).substring(0, 12); // Chỉ lấy 12 ký tự đầu
     }

@@ -50,7 +50,7 @@ public class ProductController extends HttpServlet {
             // Nhận thông báo nếu có
             String message = request.getParameter("message");
             if ("success".equals(message)) {
-                request.setAttribute("message", "Sản phẩm đã được thêm vào giỏ hàng thành công!");
+                request.setAttribute("message", "Sản phẩm đã được thêm vào gi�? hàng thành công!");
             }
 
             ArrayList<ProductVariant> listDetail = productVariantDAO.viewProductDetail(id);

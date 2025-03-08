@@ -1,8 +1,9 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.Map"%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Shopping Cart</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
@@ -35,7 +36,7 @@
                     <p><strong><%= item.getProductName()%></strong></p>
                     <p>Color: <%= item.getColorName()%></p>
                     <p>Price: $<span class="price"><%= item.getPrice()%></span></p>
-                    <!-- Form ?? xóa s?n ph?m -->
+                    <!-- Form ?? xï¿½a s?n ph?m -->
                     <form action="<%= request.getContextPath()%>/Cart" method="post">
                         <input type="hidden" name="action" value="delete">
                         <% Map<CartItem, String> productIDs = (Map<CartItem, String>) request.getAttribute("productIDs");%>

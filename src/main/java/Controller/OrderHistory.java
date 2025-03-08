@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
 package Controller;
 
 import DAOs.OrderDAO;
@@ -53,7 +57,7 @@ public class OrderHistory extends HttpServlet {
             double totalAmount = Double.parseDouble(request.getParameter("subtotal"));
             double discountAmount = Double.parseDouble(request.getParameter("discount"));
             double finalAmount = Double.parseDouble(request.getParameter("total"));
-            
+
             String voucher = request.getParameter("voucher");
             voucher = (voucher != null && !voucher.isEmpty()) ? voucher : null;
 
@@ -72,7 +76,7 @@ public class OrderHistory extends HttpServlet {
 
             orderDetailDAO.saveOrderDetails(orderID, cartItems);
             cartDAO.clearCart(customerID);
-            
+
             response.sendRedirect("View/OrderHistory.jsp?message=Order placed successfully");
         } catch (NumberFormatException e) {
             response.sendRedirect("View/Checkout.jsp?message=Invalid input format");
