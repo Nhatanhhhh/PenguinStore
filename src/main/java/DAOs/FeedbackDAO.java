@@ -239,7 +239,6 @@ public class FeedbackDAO {
 
                 feedbackList.add(feedback);
             }
-            System.out.println("✅ Số feedback lấy được từ DB: " + feedbackList.size());
         } catch (SQLException e) {
             e.printStackTrace();
         }

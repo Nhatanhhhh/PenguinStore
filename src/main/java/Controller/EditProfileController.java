@@ -40,7 +40,7 @@ public class EditProfileController extends HttpServlet {
 
         if (customer == null) {
             request.setAttribute("errorMessage", "Invalid session. Please log in again.");
-            request.getRequestDispatcher("View/LoginCustomer.jsp").forward(request, response);
+            request.getRequestDispatcher("Login").forward(request, response);
             return;
         }
 

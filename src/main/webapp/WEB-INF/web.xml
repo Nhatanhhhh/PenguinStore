@@ -13,17 +13,30 @@
         <url-pattern>/Order</url-pattern>
         <url-pattern>/EditProfile</url-pattern>
         <url-pattern>/Feedback</url-pattern>
+        <url-pattern>/VVCustomer</url-pattern>
+        <url-pattern>/ChangePassword</url-pattern>
         <url-pattern>/ListFeedbackForStaff</url-pattern>
         <url-pattern>/DashBoardForStaff</url-pattern>
         <url-pattern>/DashBoardForAdmin</url-pattern>
+        <url-pattern>/View/ResetPassword.jsp</url-pattern>
         <url-pattern>/View/LoginManager.jsp</url-pattern>
+        <url-pattern>/View/CustomerProfile.jsp</url-pattern>
+        <url-pattern>/View/EditProfile.jsp</url-pattern>
+        <url-pattern>/View/Cart.jsp</url-pattern>
+        <url-pattern>/View/OrderHistory.jsp</url-pattern>
+        <url-pattern>/View/OrderDetail.jsp</url-pattern>
+        <url-pattern>/View/ViewProductsAdmin.jsp</url-pattern>
+        <url-pattern>/View/Feedback.jsp</url-pattern>
+        <url-pattern>/View/DetailStaff</url-pattern>
+        <url-pattern>/View/CreateVoucher.jsp</url-pattern>
+        <url-pattern>/View/CreateProduct.jsp</url-pattern>
+        <url-pattern>/View/Checkout.jsp</url-pattern>
         <url-pattern>/View/DashBoardForAdmin.jsp</url-pattern>
         <url-pattern>/View/DashBoardForStaff.jsp</url-pattern>
+        <url-pattern>/View/Restock.jsp</url-pattern>
+        <url-pattern>/View/ViewVoucherCustomer.jsp</url-pattern>
+        <url-pattern>/View/ChangePassword.jsp</url-pattern>
     </filter-mapping>
-    <servlet>
-        <servlet-name>CustomerServlet</servlet-name>
-        <servlet-class>Controller.CustomerServlet</servlet-class>
-    </servlet>
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>Controller.LoginServlet</servlet-class>
@@ -51,10 +64,6 @@
     <servlet>
         <servlet-name>ForgetPasswordController</servlet-name>
         <servlet-class>Controller.ForgetPasswordController</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ChangePasswordController</servlet-name>
-        <servlet-class>Controller.ChangePasswordController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ResetPasswordController</servlet-name>
@@ -124,6 +133,10 @@
         <servlet-name>DashBoardForAdminServlet</servlet-name>
         <servlet-class>Controller.DashBoardForAdminServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ChangePasswordController</servlet-name>
+        <servlet-class>Controller.ChangePasswordController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/Logout</url-pattern>
@@ -136,14 +149,10 @@
         <servlet-name>OrderHistory</servlet-name>
         <url-pattern>/OrderHistory</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CustomerServlet</servlet-name>
-        <url-pattern>/CustomerServlet</url-pattern>
-    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>View/index.jsp</welcome-file>
     </welcome-file-list>
-<!--<error-page>
+    <!--<error-page>
         <error-code>404</error-code>
         <location>/404</location>
     </error-page>
@@ -230,6 +239,10 @@
     <servlet-mapping>
         <servlet-name>DashBoardForAdminServlet</servlet-name>
         <url-pattern>/DashBoardForAdmin</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChangePasswordController</servlet-name>
+        <url-pattern>/ChangePassword</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

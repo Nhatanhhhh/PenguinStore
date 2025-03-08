@@ -76,7 +76,7 @@
                     <div class="edit-profile"><a  href="<%= request.getContextPath()%>/EditProfile">Edit Profile</a></div>
                     <div class="voucher"><a href="<%= request.getContextPath()%>/VVCustomer">Voucher</a></div>
                     <div class="order"><a style="font-weight: bold;">Order</a></div>
-                    <div class="password"><a href="#">Password</a></div>
+                    <div class="password"><a href="<%= request.getContextPath()%>/ChangePassword">Password</a></div>
                     <div class="divider"></div>
                 </div>
 

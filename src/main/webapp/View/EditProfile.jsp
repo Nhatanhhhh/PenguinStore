@@ -63,7 +63,7 @@
                     <div class="edit-profile"><a style="font-weight: bold;">Edit Profile</a></div>
                     <div class="voucher"><a href="<%= request.getContextPath()%>/VVCustomer">Voucher</a></div>
                     <div class="order"><a href="<%= request.getContextPath()%>/OrderHistory">Order</a></div>
-                    <div class="password"><a href="#">Password</a></div>
+                    <div class="password"><a href="<%= request.getContextPath()%>/ChangePassword">Password</a></div>
                 </div>
 
                 <div class="col-md-10">
