@@ -16,32 +16,38 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Nguyen Nhat Anh - CE181843
  */
 public class DBContext {
 
     private static Connection conn;
 
     public static Connection getConn() {
-        if (conn == null) {
-            try {
-                String user = "nhatanh";
-                String pass = "123";
-                String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB;encrypt=false";
-
-                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-                conn = DriverManager.getConnection(url, user, pass);
-
-            } catch (SQLException | ClassNotFoundException ex) {
-                Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        Connection conn;
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB;user=nhatanh;password=123;encrypt=false";
+            conn = DriverManager.getConnection(url);
+        } catch (Exception ex) {
+            conn = null;
         }
         return conn;
     }
 
+    /**
+     * Executes a SELECT query with parameters.
+     *
+     * @param query SQL query string
+     * @param params Query parameters
+     * @return ResultSet containing query results
+     * @throws SQLException if a database error occurs
+     */
     public ResultSet execSelectQuery(String query, Object[] params) throws SQLException {
         Connection connection = getConn();
-        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        if (connection == null) {
+            throw new SQLException("Unable to establish a database connection.");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
 
         if (params != null) {
             for (int i = 0; i < params.length; i++) {
@@ -51,19 +57,39 @@ public class DBContext {
         return preparedStatement.executeQuery();
     }
 
+    /**
+     * Executes a SELECT query without parameters.
+     *
+     * @param query SQL query string
+     * @return ResultSet containing query results
+     * @throws SQLException if a database error occurs
+     */
     public ResultSet execSelectQuery(String query) throws SQLException {
-        return this.execSelectQuery(query, null);
+        return execSelectQuery(query, null);
     }
 
+    /**
+     * Executes an INSERT, UPDATE, or DELETE query.
+     *
+     * @param query SQL query string
+     * @param params Query parameters
+     * @return Number of affected rows
+     * @throws SQLException if a database error occurs
+     */
     public int execQuery(String query, Object[] params) throws SQLException {
-        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        try ( Connection connection = getConn();  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-        if (params != null) {
-            for (int i = 0; i < params.length; i++) {
-                preparedStatement.setObject(i + 1, params[i]);
+            if (connection == null) {
+                throw new SQLException("Unable to establish a database connection.");
             }
+
+            if (params != null) {
+                for (int i = 0; i < params.length; i++) {
+                    preparedStatement.setObject(i + 1, params[i]);
+                }
+            }
+            return preparedStatement.executeUpdate();
         }
-        return preparedStatement.executeUpdate();
     }
 
     /**
@@ -90,5 +116,4 @@ public class DBContext {
         }
         return hashedPassword;
     }
-
 }

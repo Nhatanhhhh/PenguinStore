@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Nguyen Nhat Anh - CE181843
  */
 public class LoginServlet extends HttpServlet {
 
@@ -69,7 +69,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.sendRedirect("View/Homepage/index.jsp");
+        request.getRequestDispatcher("/View/LoginCustomer.jsp").forward(request, response);
     }
 
     /**
@@ -89,12 +89,10 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
         String rememberMe = request.getParameter("remember-me");
 
-
-        // Mã hóa m?t kh?u
+        // Mï¿½ hï¿½a m?t kh?u
         String hashedPassword = DBContext.hashPasswordMD5(password);
         HttpSession session = request.getSession(true);
 
-        
         try {
             Object user = null;
 
@@ -118,10 +116,10 @@ public class LoginServlet extends HttpServlet {
 
                 if (user instanceof Manager) {
                     Manager manager = (Manager) user;
-                    if (manager.isRole()) {
-                        response.sendRedirect("View/DashBoardForAdmin.jsp");
+                    if (manager.isRole() == true) {
+                        response.sendRedirect("DashBoardForAdmin");
                     } else {
-                        response.sendRedirect("View/DashBoardForStaff.jsp");
+                        response.sendRedirect("ListFeedbackForStaff");
                     }
                 } else {
                     response.sendRedirect(request.getContextPath());
@@ -133,7 +131,7 @@ public class LoginServlet extends HttpServlet {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Login error", e);
             session.setAttribute("errorMessage", "An error occurred. Please try again.");
-            response.sendRedirect("View/Homepage/index.jsp");
+            response.sendRedirect("/PenguinStore");
         }
     }
 

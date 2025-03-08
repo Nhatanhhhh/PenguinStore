@@ -6,26 +6,19 @@
         <title>Internal Server Error</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/Guest/style.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/error.css"/>
     </head>
     <body>
-        <section class="py-3 py-md-5 min-vh-100 d-flex justify-content-center align-items-center">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="text-center">
-                            <h2 class="d-flex justify-content-center align-items-center gap-2 mb-4">
-                                <span class="display-1 fw-bold">5</span>
-                                <i class="bi bi-exclamation-circle-fill text-danger display-1"></i>
-                                <i class="bi bi-exclamation-circle-fill text-danger display-1"></i>
-                            </h2>
-                            <h3 class="h2 mb-2">Opps! Internal Server Error!</h3>
-                            <p class="mb-5">Unfortunately we're having trouble loading the page you are looking for. Please come back in a while.</p>
-                        </div>
-                    </div>
+        <div data-aos="zoom-in-up" id="notfound">
+            <div class="notfound">
+                <div class="notfound-404">
+                    <h1>500</h1>
                 </div>
+                <h2>We are sorry, something went wrong!</h2>
+                <p>There was an internal server error. Please try again later or contact support if the issue persists.</p>
+                <a class="button button-dark" href="<%= request.getContextPath()%>"> Back To Homepage</a>
             </div>
-        </section>
+        </div>
 
 
         <script>

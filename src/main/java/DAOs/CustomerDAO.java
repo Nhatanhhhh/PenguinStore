@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Nguyen Nhat Anh - CE181843
  */
 public class CustomerDAO {
 
@@ -24,19 +24,27 @@ public class CustomerDAO {
     }
 
     /**
-     * L?y th�ng tin kh�ch h�ng t? username v� m?t kh?u (?� hash)
+     * Lấy thông tin khách hàng từ username và password (đã hash)
      *
-     * @param username T�n ng??i d�ng
-     * @param password M?t kh?u ch?a m� h�a (s? ???c m� h�a trong h�m n�y)
-     * @return ??i t??ng Customer n?u t�m th?y, ng??c l?i tr? v? null
+     * @param username Tên người dùng
+     * @param hashedPassword Mật khẩu đã được mã hóa MD5
+     * @return Đối tượng Customer nếu tìm thấy, ngược lại null
      */
-    public Customer getCustomerByUsernameAndPassword(String username, String hashedPassword) {
+    public static Customer getCustomerByUsernameAndPassword(String username, String hashedPassword) {
         Customer customer = null;
-        
-        String query = "SELECT * FROM Customer WHERE customerName = ? AND password = ?";
-        Object[] params = {username, hashedPassword};
 
-        try ( ResultSet rs = dbContext.execSelectQuery(query, params)) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DBContext.getConn();
+            String sql = "SELECT * FROM Customer WHERE customerName = ? AND password = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, username);
+            ps.setString(2, hashedPassword);
+
+            rs = ps.executeQuery();
             if (rs.next()) {
                 customer = new Customer(
                         rs.getString("customerID"),
@@ -47,51 +55,85 @@ public class CustomerDAO {
                         rs.getString("googleID"),
                         rs.getString("accessToken"),
                         rs.getString("address"),
-                        rs.getInt("phoneNumber"),
-                        rs.getString("state"),
+                        rs.getString("phoneNumber"),
                         rs.getString("zip"),
+                        rs.getString("state"),
                         rs.getBoolean("isVerified")
                 );
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            // Đóng rs, ps, conn để tránh rò rỉ kết nối
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
 
         return customer;
     }
 
     /**
-     * ??ng k� ng??i d�ng m?i
+     * Đăng ký người dùng mới
      *
-     * @param customer ??i t??ng Customer ch?a th�ng tin ng??i d�ng
-     * @return True n?u ??ng k� th�nh c�ng, ng??c l?i False
+     * @param customer Đối tượng Customer chứa thông tin người dùng
+     * @return True nếu đăng ký thành công, ngược lại False
      */
-    public boolean registerCustomer(Customer customer) {
-        String query = "INSERT INTO Customer (customerID, customerName, password, fullName, email, address, phoneNumber, state, zip, isVerified) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public static boolean registerCustomer(Customer customer) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        boolean isSuccess = false;
 
-        // M� h�a m?t kh?u tr??c khi l?u v�o DB
+        // Hash mật khẩu trước khi lưu vào DB
         String hashedPassword = DBContext.hashPasswordMD5(customer.getPassWord());
 
-        Object[] params = {
-            customer.getCustomerID(),
-            customer.getUserName(),
-            hashedPassword,
-            customer.getFullName(),
-            customer.getEmail(),
-            customer.getAddress(),
-            customer.getPhoneNumber(),
-            customer.getState(),
-            customer.getZip(),
-            customer.isIsVerified()
-        };
-
         try {
-            return dbContext.execQuery(query, params) > 0;
+            conn = DBContext.getConn();
+            String sql = "INSERT INTO Customer (customerID, customerName, password, fullName, email, "
+                    + "address, phoneNumber, state, zip, isVerified) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            ps = conn.prepareStatement(sql);
+
+            ps.setString(1, customer.getCustomerID());
+            ps.setString(2, customer.getUserName());
+            ps.setString(3, hashedPassword);
+            ps.setString(4, customer.getFullName());
+            ps.setString(5, customer.getEmail());
+            ps.setString(6, customer.getAddress());
+            ps.setString(7, customer.getPhoneNumber());
+            ps.setString(8, customer.getState());
+            ps.setString(9, customer.getZip());
+            ps.setBoolean(10, customer.isIsVerified());
+
+            int rowsAffected = ps.executeUpdate();
+            isSuccess = (rowsAffected > 0);
+
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            // Đóng ps, conn
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
-        return false;
-    }
 
+        return isSuccess;
+    }
 }

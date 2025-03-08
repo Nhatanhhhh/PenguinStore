@@ -2,29 +2,19 @@
     "use strict";
 
     /*==================================================================
-     [ Focus input ]*/
-    $('.input100').each(function () {
-        $(this).on('blur', function () {
-            if ($(this).val().trim() != "") {
-                $(this).addClass('has-val');
-            } else {
-                $(this).removeClass('has-val');
-            }
-        })
-    });
-
-    /*==================================================================
      [ Validate ]*/
     var input = $('.validate-input .input100');
 
     $('.validate-form').on('submit', function () {
         var check = true;
+
         for (var i = 0; i < input.length; i++) {
             if (validate(input[i]) == false) {
                 showValidate(input[i]);
                 check = false;
             }
         }
+
         return check;
     });
 
@@ -44,6 +34,7 @@
                 return false;
             }
         }
+        return true;
     }
 
     function showValidate(input) {
@@ -57,6 +48,18 @@
     }
 
     /*==================================================================
-     [ Hi?n th? thông báo Logout ]*/
+     [ Show pass ]*/
+    $('.btn-show-pass').on('click', function () {
+        var input = $(this).next('input');
+        var icon = $(this).find('i');
+
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash'); 
+        } else {
+            input.attr('type', 'password');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye'); 
+        }
+    });
 
 })(jQuery);

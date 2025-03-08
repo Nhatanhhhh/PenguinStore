@@ -1,25 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100..900&family=Inter:wght@100..900&display=swap');
 
 :root {
     --color-one: #8261EE;
     --color-two: #1E1E1E;
     --color-text: #1E1E1E;
 
-    --font: 'Raleway', sans-serif;
+    /* Cập nhật font chữ */
+    --font: 'Poppins', 'Inter', sans-serif;
 }
 
-*::selection{
+*::selection {
     background-color: var(--color-two);
     color: #fff;
 }
 
 body {
     color: var(--color-text);
-    line-height: 1.6;
+    line-height: 1.8; /* Cải thiện độ dễ đọc */
     font-family: var(--font);
+    background-color: #fff !important;
 }
 
-a {
+a{
     text-decoration: none;
     color: var(--color-text);
     transition: all 0.3s ease 0s;
@@ -27,7 +29,18 @@ a {
 
 a:hover{
     text-decoration: none;
-    color: var(--color-two);
+    color: #555555;
+}
+
+.text {
+    text-decoration: none;
+    color: var(--color-text);
+    transition: all 0.3s ease;
+}
+
+.text:hover {
+    text-decoration: none;
+    color: var(--color-one);
 }
 
 /* Button */
@@ -35,7 +48,7 @@ a:hover{
     display: inline-block;
     padding: 8px 20px;
     border-radius: 45px;
-    border: 2px solid var(--color-text); /* Vi?n thay v� n?n */
+    border: 2px solid var(--color-text); 
     background: transparent;
     color: var(--color-text);
     font-size: 13px;

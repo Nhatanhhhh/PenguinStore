@@ -7,7 +7,7 @@
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/base.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/style.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/loginadmin.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/util.css"/>
     </head>
     <body>
@@ -17,7 +17,7 @@
                     <span class="login100-form-title p-b-41">
                         Account Login
                     </span>
-                    <form class="login100-form validate-form p-b-33 p-t-5" action="<%= request.getContextPath() %>/Login" method="POST">
+                    <form data-aos="fade-up" data-aos-duration="3000" class="login100-form validate-form p-b-33 p-t-5" action="<%= request.getContextPath() %>/Login" method="POST">
                         <input type="hidden" name="userType" value="manager">
 
                         <div class="wrap-input100 validate-input" data-validate = "Enter username">

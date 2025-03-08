@@ -7,6 +7,7 @@ package Controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +15,7 @@ import jakarta.servlet.http.HttpSession;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Nguyen Nhat Anh - CE181843
  */
 public class LogoutServlet extends HttpServlet {
 
@@ -57,13 +58,23 @@ public class LogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-
         if (session != null) {
-            session.invalidate(); // X�a to�n b? session
+            session.invalidate();
         }
 
-        // Chuy?n h??ng v? trang ??ng nh?p v?i th�ng b�o th�nh c�ng
-        response.sendRedirect(request.getContextPath() + "/View/LoginCustomer.jsp?logoutSuccess=true");
+        // Xoá tất cả các cookie (bao gồm cookie remember me nếu có)
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                cookie.setValue("");
+                cookie.setMaxAge(0);
+                cookie.setPath("/");
+                response.addCookie(cookie);
+            }
+        }
+
+        // Chuyển hướng về trang đăng nhập kèm thông báo đăng xuất thành công
+        response.sendRedirect(request.getContextPath() + "/Login?logoutSuccess=true");
     }
 
     /**
@@ -77,7 +88,7 @@ public class LogoutServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        doGet(request, response);
     }
 
     /**

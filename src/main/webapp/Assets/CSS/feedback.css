@@ -1,0 +1,149 @@
+.container {
+    background-color: #f0f0f0;
+    padding: 40px;
+    border-radius: 10px;
+    width: 50% !important;
+    text-align: left;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    margin-top: 20px; /* Điều chỉnh khoảng cách so với phần trên */
+}
+
+/* Star Rating Section */
+.rating-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.rating-label {
+    font-size: 18px;
+    margin-right: 10px;
+    color: #333;
+}
+
+.star-rating {
+    display: inline-flex;
+    margin-right: 10px;
+    direction: rtl; /* Điều chỉnh để hover từ trái sang phải */
+}
+
+.star-rating input[type="radio"] {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 2em;
+    color: lightgray;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.star-rating input[type="radio"]:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: orange;
+}
+
+.rating-description {
+    font-size: 18px;
+    color: #f16b00;
+}
+
+/* Input Section */
+.input-group {
+    margin-bottom: 20px;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    resize: none;
+    height: 200px;  /* Reduced height of the textarea */
+    transition: all 0.3s ease-in-out; /* Hiệu ứng mượt khi hover */
+}
+
+/* Button Section */
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px; /* Adjust the top margin for the buttons */
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px !important;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    background-color: #d91e1e;
+    color: white;
+    margin-right: 10px;
+}
+
+.submit-btn {
+    background-color: #f16b00;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background-color: #c31414;
+}
+
+.submit-btn:hover {
+    background-color: #e65c00;
+}
+
+/* Specific style for the 'Xóa' button */
+button#deletetBtn {
+    margin-left: 10px; /* Adds spacing to the left */
+    background-color: #c31414; /* Red color for 'Xóa' button */
+}
+
+button#deletetBtn:hover {
+    background-color: #cc0000; /* Darker red on hover */
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    text-align: center;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+textarea#review {
+    height: 100px; /* Giới hạn chiều cao */
+    max-height: 150px; /* Ngăn người dùng mở rộng */
+    overflow-y: auto; /* Hiển thị thanh cuộn khi quá dài */
+    resize: none; /* Chặn resize bằng chuột */
+}
+
+
