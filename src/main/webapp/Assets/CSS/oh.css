@@ -56,3 +56,17 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     border: 1px solid black;
     color: black;
 }
+
+.btn-recancel {
+    background-color: #28a745 !important; /* Màu xanh */
+    color: white !important; /* Chữ màu trắng */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.btn-recancel:hover {
+    background-color: #218838 !important; /* Màu xanh đậm khi hover */
+}

@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class OrderHistory extends HttpServlet {
 
@@ -46,6 +45,34 @@ public class OrderHistory extends HttpServlet {
             return;
         }
 
+        String action = request.getParameter("action");
+        if ("updateStatus".equals(action)) {
+            updateOrderStatus(request, response);
+        } else {
+            placeOrder(request, response);
+        }
+    }
+
+    private void updateOrderStatus(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String orderID = request.getParameter("orderID");
+        String newStatus = request.getParameter("newStatus");
+
+        OrderDAO orderDAO = new OrderDAO();
+        boolean success = orderDAO.updateOrderStatusForCus(orderID, newStatus);
+
+        if (success) {
+            request.setAttribute("successMessage", "Order status updated successfully.");
+        } else {
+            request.setAttribute("errorMessage", "Failed to update order status.");
+        }
+
+        doGet(request, response);  // Load lại danh sách đơn hàng
+    }
+
+    private void placeOrder(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
         Customer customer = (Customer) session.getAttribute("user");
         String customerID = customer.getCustomerID();
 
@@ -53,7 +80,7 @@ public class OrderHistory extends HttpServlet {
             double totalAmount = Double.parseDouble(request.getParameter("subtotal"));
             double discountAmount = Double.parseDouble(request.getParameter("discount"));
             double finalAmount = Double.parseDouble(request.getParameter("total"));
-            
+
             String voucher = request.getParameter("voucher");
             voucher = (voucher != null && !voucher.isEmpty()) ? voucher : null;
 
@@ -72,7 +99,7 @@ public class OrderHistory extends HttpServlet {
 
             orderDetailDAO.saveOrderDetails(orderID, cartItems);
             cartDAO.clearCart(customerID);
-            
+
             response.sendRedirect("View/OrderHistory.jsp?message=Order placed successfully");
         } catch (NumberFormatException e) {
             response.sendRedirect("View/Checkout.jsp?message=Invalid input format");

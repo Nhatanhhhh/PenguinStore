@@ -117,4 +117,21 @@ public class OrderDAO {
         return false;
     }
 
+    public boolean updateOrderStatusForCus(String orderID, String newStatus) {
+        String statusOID = getStatusOIDByName(newStatus);  // Lấy ID của trạng thái mới
+        if (statusOID == null) {
+            return false;
+        }
+
+        String sql = "UPDATE [Order] SET statusOID = ? WHERE orderID = ?";
+        try ( Connection conn = db.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, statusOID);
+            stmt.setString(2, orderID);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

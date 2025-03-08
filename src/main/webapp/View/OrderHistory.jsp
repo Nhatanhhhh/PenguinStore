@@ -101,14 +101,29 @@
                         </form>
                         <% if ("Delivery successful".equals(order.getStatusName())) { %>
                         <button class="btn btn-review">Write A Review</button>
-                        <% } else { %>
-                        <button class="btn btn-cancel">Cancel Order</button>
+                        <% } else if ("Order Cancellation Request".equals(order.getStatusName())) {%>
+                        <form action="<%= request.getContextPath()%>/OrderHistory" method="POST">
+                            <input type="hidden" name="action" value="updateStatus">
+                            <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
+                            <input type="hidden" name="newStatus" value="Pending processing">
+                            <button type="submit" class="btn btn-recancel">ReCancel</button>
+                        </form>
+                        <% } else {%>
+                        <form action="<%= request.getContextPath()%>/OrderHistory" method="POST">
+                            <input type="hidden" name="action" value="updateStatus">
+                            <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
+                            <input type="hidden" name="newStatus" value="Order Cancellation Request">
+                            <button type="submit" class="btn btn-cancel">Cancel Order</button>
+                        </form>
+
                         <% } %>
                     </div>
                 </div>
                 <% }%>
 
             </div>
+
+
     </body>
     <div style="background-color: #F9FAFB;  padding: 40px 0px;">
         <div class="row">
@@ -125,27 +140,67 @@
             </div>
         </div>
     </div>
-    <%@include file="Footer.jsp"%>
+    
+    <!-- Modal Confirm -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Confirm Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmMessage">Are you sure you want to proceed?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger" id="confirmAction">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <%@include file="Footer.jsp"%>
 </html>
 
 <script>
+    let status = order.getAttribute("data-status").trim();
     document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".order").forEach(order => {
-            let status = order.getAttribute("data-status");
-            let reviewBtn = order.querySelector(".btn-review");
-            let cancelBtn = order.querySelector(".btn-cancel");
+        let selectedForm = null;
 
-            if (status === "Delivery successful") {
-                if (cancelBtn)
-                    cancelBtn.style.display = "none";
-            } else {
-                if (reviewBtn)
-                    reviewBtn.style.display = "none";
+        document.querySelectorAll(".btn-cancel, .btn-recancel").forEach(button => {
+            button.addEventListener("click", function (event) {
+                event.preventDefault(); // Ngăn chặn submit ngay lập tức
+                selectedForm = this.closest("form");
+
+                let actionType = this.classList.contains("btn-cancel") ? "Cancel" : "ReCancel";
+                document.getElementById("confirmMessage").textContent = `Are you sure you want to ${actionType} this order?`;
+
+                let modal = new bootstrap.Modal(document.getElementById("confirmModal"));
+                modal.show();
+            });
+        });
+
+        document.getElementById("confirmAction").addEventListener("click", function () {
+            if (selectedForm) {
+                selectedForm.submit();
             }
         });
     });
+
 </script>
 <style>
+    .btn-recancel {
+        background-color: #28a745 !important;
+        color: white !important;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out;
+    }
 
+    .btn-recancel:hover {
+        background-color: #218838 !important;
+    }
 </style>

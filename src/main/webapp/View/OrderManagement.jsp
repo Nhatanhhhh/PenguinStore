@@ -20,9 +20,9 @@
     </head>
     <body class="sb-nav-fixed">
 
-        <%@include file="Staff/Header.jsp" %> <!-- Nhúng Header -->
+        <%@include file="Staff/Header.jsp" %>
         <div id="layoutSidenav">
-            <%@include file="Staff/Sidebar.jsp" %> <!-- Nhúng Sidebar -->
+            <%@include file="Staff/Sidebar.jsp" %>
             <div id="layoutSidenav_content">
                 <div class="container mt-4">
                     <h2 class="text-danger">Order Management</h2>
@@ -30,7 +30,7 @@
                     <div class="d-flex justify-content-between mb-3">
                         <div>
                             <label>Filter by order status:</label>
-                            <select id="filterStatus" class="form-select d-inline-block w-auto">
+                            <select id="filterStatus" class="form-select d-inline-block w-auto" onchange="filterOrders()">
                                 <option value="all">All</option>
                                 <option value="pending-processing">Pending processing</option>
                                 <option value="processed">Processed</option>
@@ -40,11 +40,23 @@
                                 <option value="delivery-failed">Delivery failed</option>
                                 <option value="delivery-successful">Delivery successful</option>
                             </select>
-                            <button class="btn btn-primary" onclick="filterOrders()">Filter</button>
+
                         </div>
                         <div>
                             <label for="searchBox">Search:</label>
                             <input type="text" id="searchBox" class="form-control d-inline-block w-auto" onkeyup="searchOrders()">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <label>Show:</label>
+                            <select id="entriesPerPage" class="form-select d-inline-block w-auto" onchange="updateEntries()">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span> entries</span>
                         </div>
                     </div>
 
@@ -71,24 +83,53 @@
                                 <td>$<%= order.getTotalAmount()%></td>
                                 <td><%= order.getOrderStatus()%></td>
                                 <td>
+                                    <% if (order.getOrderStatus().equals("Cancel order")) { %>
+                                    <span class="text-danger fw-bold">Confirmed order cancelled</span>
+                                    <% } else if (order.getOrderStatus().equals("Order Cancellation Request")) { %>
+                                    <span class="text-warning fw-bold">Order Cancellation Request</span>
+                                    <% } else if (order.getOrderStatus().equals("Delivery successful")) { %>
+                                    <span class="text-success fw-bold">Order has been delivered successfully</span>
+                                    <% } else {%>
                                     <select class="form-select">
                                         <option <%= order.getOrderStatus().equals("Pending processing") ? "selected" : ""%>>Pending processing</option>
                                         <option <%= order.getOrderStatus().equals("Processed") ? "selected" : ""%>>Processed</option>
-                                        <option <%= order.getOrderStatus().equals("Order Cancellation Request") ? "selected" : ""%>>Order Cancellation Request</option>
-                                        <option <%= order.getOrderStatus().equals("Cancel order") ? "selected" : ""%>>Cancel order</option>
                                         <option <%= order.getOrderStatus().equals("Delivered to the carrier") ? "selected" : ""%>>Delivered to the carrier</option>
                                         <option <%= order.getOrderStatus().equals("Delivery failed") ? "selected" : ""%>>Delivery failed</option>
                                         <option <%= order.getOrderStatus().equals("Delivery successful") ? "selected" : ""%>>Delivery successful</option>
                                     </select>
+                                    <% } %>
                                 </td>
+
+
+
                                 <td>
+                                    <% if (order.getOrderStatus().equals("Cancel order")) {%>
+                                    <form action="<%= request.getContextPath()%>/OrderDetailStaff" method="GET">
+                                        <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
+                                        <button type="submit" class="btn btn-info">Order Detail</button>
+                                    </form>
+                                    <% } else if (order.getOrderStatus().equals("Order Cancellation Request")) {%>
+                                    <button class="btn btn-danger" onclick="acceptCancel('<%= order.getOrderID()%>')">Accept Cancel</button>
+                                    <form action="<%= request.getContextPath()%>/OrderDetailStaff" method="GET">
+                                        <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
+                                        <button type="submit" class="btn btn-info">Order Detail</button>
+                                    </form>
+                                    <% } else if (order.getOrderStatus().equals("Delivery successful")) {%>
+                                    <!-- Không hi?n th? nút Update -->
+                                    <form action="<%= request.getContextPath()%>/OrderDetailStaff" method="GET">
+                                        <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
+                                        <button type="submit" class="btn btn-info">Order Detail</button>
+                                    </form>
+                                    <% } else {%>
                                     <button class="btn btn-primary" onclick="confirmUpdate('<%= order.getOrderID()%>', this)">Update</button>
                                     <form action="<%= request.getContextPath()%>/OrderDetailStaff" method="GET">
                                         <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
-                                        <button type="submit" class="btn btn-info">View Details</button>
+                                        <button type="submit" class="btn btn-info">Order Detail</button>
                                     </form>
-
+                                    <% } %>
                                 </td>
+
+
                             </tr>
                             <%     }
                             } else { %>
@@ -96,29 +137,33 @@
                             <% }%>
                         </tbody>
                     </table>
-                </div>
-
-                <!-- Modal -->
-                <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="confirmModalLabel">Confirm Update</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                Are you sure you want to update the order status?
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-primary" id="confirmUpdateBtn">Confirm</button>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span id="paginationInfo"></span>
+                        <nav>
+                            <ul class="pagination" id="paginationControls"></ul>
+                        </nav>
+                    </div>
+                    <div class="modal fade" id="confirmModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirm Update</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to update this order status?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-primary" id="confirmUpdateBtn">Update</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
+                </div>
             </div>
             <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
@@ -153,28 +198,61 @@
         modal.hide();
     });
 
+
     function filterOrders() {
-        let filter = document.getElementById("filterStatus").value.toLowerCase(); // Chuy?n v? ch? th??ng
+        let filter = document.getElementById("filterStatus").value.toLowerCase();
+        let filterText = document.getElementById("filterStatus").options[document.getElementById("filterStatus").selectedIndex].text;
         let rows = document.querySelectorAll("#orderTable tr");
+        let found = false;
+
+        let statusMapping = {
+            "pending-processing": "pending processing",
+            "processed": "processed",
+            "order-cancellation-request": "order cancellation request",
+            "cancel-order": "cancel order",
+            "delivered-to-carrier": "delivered to the carrier",
+            "delivery-failed": "delivery failed",
+            "delivery-successful": "delivery successful"
+        };
 
         rows.forEach(row => {
-            let status = row.cells[4].innerText.trim().toLowerCase(); // Chuy?n v? ch? th??ng
-
-            // Mapping l?i các giá tr? trong <option> thành giá tr? hi?n th? trong b?ng
-            let statusMapping = {
-                "pending-processing": "pending processing",
-                "processed": "processed",
-                "order-cancellation-request": "order cancellation request",
-                "cancel-order": "cancel order",
-                "delivered-to-carrier": "delivered to the carrier",
-                "delivery-failed": "delivery failed",
-                "delivery-successful": "delivery successful"
-            };
-
-            // N?u ch?n "all" ho?c status trùng kh?p thì hi?n th?
-            row.style.display = (filter === "all" || status === statusMapping[filter]) ? "" : "none";
+            if (row.id !== "notFoundRow") {  // ??m b?o không x? lý dòng "Not found"
+                let status = row.cells[4].innerText.trim().toLowerCase();
+                if (filter === "all" || status === statusMapping[filter]) {
+                    row.style.display = "";
+                    found = true; // N?u có ít nh?t 1 dòng h?p l?, không hi?n th? "Not found"
+                } else {
+                    row.style.display = "none";
+                }
+            }
         });
+
+        // Xóa dòng "Not found" n?u có d? li?u h?p l?
+        let notFoundRow = document.getElementById("notFoundRow");
+        if (notFoundRow) {
+            notFoundRow.remove();
+        }
+
+        // N?u không tìm th?y k?t qu?, thêm dòng "Not found" v?i tr?ng thái ?ã filter
+        if (!found) {
+            let tbody = document.getElementById("orderTable");
+            let tr = document.createElement("tr");
+            tr.id = "notFoundRow";
+            tr.innerHTML = `<td colspan="7" class="text-danger fw-bold">The status you are looking for was NOT FOUND. ${filterText}</td>`;
+            tbody.appendChild(tr);
+        }
     }
+    function acceptCancel(orderId) {
+        fetch('<%= request.getContextPath()%>/OrderManagement', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'orderID=' + orderId + '&statusName=Cancel order'
+        }).then(response => response.text()).then(data => {
+            alert('Order has been cancelled.');
+            window.location.reload();
+        }).catch(error => console.error('Error:', error));
+    }
+
 
     function searchOrders() {
         let keyword = document.getElementById("searchBox").value.toLowerCase();
