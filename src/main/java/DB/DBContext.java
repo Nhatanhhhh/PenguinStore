@@ -8,33 +8,64 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Nguyen Nhat Anh - CE181843
  */
 public class DBContext {
 
     private static Connection conn;
+    
+    public DBContext() {
+        conn = getConn();
+    }
 
     public static Connection getConn() {
-        if (conn == null) {
-            try {
-                String user = "nhatanh";
-                String pass = "123";
-                String url = "jdbc:sqlserver://localhost:1433;databaseName=EbookApp;encrypt=false";
-
-                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-                conn = DriverManager.getConnection(url, user, pass);
-
-            } catch (SQLException | ClassNotFoundException ex) {
-                Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        Connection conn;
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=PenguinDB;user=sa;password=123;encrypt=false";
+            conn = DriverManager.getConnection(url);
+        } catch (Exception ex) {
+            conn = null;
         }
         return conn;
+    }
+
+    public ResultSet execSelectQuery(String query, Object[] params) throws SQLException {
+        Connection connection = getConn();
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+        if (params != null) {
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+        }
+        return preparedStatement.executeQuery();
+    }
+
+    public ResultSet execSelectQuery(String query) throws SQLException {
+        return this.execSelectQuery(query, null);
+    }
+
+    public int execQuery(String query, Object[] params) throws SQLException {
+        if (conn == null) {
+        conn = getConn();
+    }
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+
+        if (params != null) {
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+        }
+        return preparedStatement.executeUpdate();
     }
 
     /**
@@ -62,3 +93,4 @@ public class DBContext {
         return hashedPassword;
     }
 }
+

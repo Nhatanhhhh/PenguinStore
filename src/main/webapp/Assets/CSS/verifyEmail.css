@@ -1,0 +1,83 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 25, 2025, 6:35:54 PM
+    Author     : Nhat_Anh
+*/
+
+.verify-box {
+    display: flex;
+    width: 800px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+.image-container {
+    flex: 1;
+    background: url("/PenguinStore/Image/Account/item11.jpg") no-repeat center center;
+    background-size: cover;
+}
+.verify-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.verify-content h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.verify-content p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+}
+.input-group {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 20px;
+}
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: 0.3s ease;
+}
+.btn-primary {
+    background-color: black;
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #333;
+}
+.btn-link {
+    background: none;
+    color: #007bff;
+    font-size: 14px;
+    text-decoration: underline;
+}
+.btn-link:hover {
+    color: #0056b3;
+}
+
