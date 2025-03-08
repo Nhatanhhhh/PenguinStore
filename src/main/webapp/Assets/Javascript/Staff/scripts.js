@@ -35,10 +35,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // Đợi DataTable load xong, sau đó set màu lại
     table.on('datatable.init', function () {
         document.querySelectorAll("#feedbackTable td").forEach(td => {
-            if (td.textContent.trim() === "Viewed" || td.textContent.trim() === "Responded") {
+            if (td.textContent.trim() === "Viewed" || td.textContent.trim() === "Resolved") {
                 td.style.color = "#28a745"; // Màu xanh
                 td.style.fontWeight = "bold";
-            } else if (td.textContent.trim() === "Not Viewed" || td.textContent.trim() === "Not Responded") {
+            } else if (td.textContent.trim() === "Not Viewed" || td.textContent.trim() === "Pending") {
                 td.style.color = "#dc3545"; // Màu đỏ
                 td.style.fontWeight = "bold";
             }

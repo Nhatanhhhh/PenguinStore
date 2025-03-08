@@ -12,7 +12,7 @@
             <div class="sb-sidenav-menu">
                 <div class="nav">
                     <div class="sb-sidenav-menu-heading">Main</div>
-                    <a class="nav-link" href="${pageContext.request.contextPath}/ListFeedbackForStaff">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/DashBoardForStaff">
                         <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                         Dashboard
                     </a>
@@ -20,7 +20,7 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
                         Order Management
                     </a>
-                    <a class="nav-link" href="ListFeedbackForStaff">
+                    <a class="nav-link" href="DashBoardForStaff">
                         <div class="sb-nav-link-icon"><i class="fas fa-comment-dots"></i></div>
                         Feedback
                     </a>

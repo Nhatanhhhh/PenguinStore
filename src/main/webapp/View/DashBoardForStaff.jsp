@@ -39,6 +39,17 @@
                 vertical-align: middle !important;
             }
 
+            .text-success {
+                color: green !important;
+                font-weight: bold !important;
+            }
+
+            .text-danger {
+                color: red !important;
+                font-weight: bold !important;
+            }
+
+
         </style>
     </head>
     <body class="sb-nav-fixed">
@@ -115,11 +126,12 @@
                                             %>
                                             <td><%= sdf.format(fb.getFeedbackCreateAt())%></td>
                                             <td class="<%= fb.isIsViewed() ? "text-success" : "text-danger"%>">
-                                                <%= fb.isIsViewed() ? "Viewed" : "Not Viewed"%>
+                                                <%= fb.isIsViewed() ? "<i class='fa fa-eye text-success'></i> Viewed" : "<i class='fa fa-eye-slash text-danger'></i> Not Viewed"%>
                                             </td>
                                             <td class="<%= fb.isIsResolved() ? "text-success" : "text-danger"%>">
-                                                <%= fb.isIsResolved() ? "Responded" : "Not Responded"%>
+                                                <%= fb.isIsResolved() ? "<i class='fa fa-check-circle text-success'></i> Resolved" : "<i class='fa fa-hourglass-half text-warning'></i> Pending"%>
                                             </td>
+
 
                                             <td>
                                                 <div class="d-flex justify-content-between">
