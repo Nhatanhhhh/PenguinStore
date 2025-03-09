@@ -12,6 +12,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -58,11 +59,17 @@ public class ViewListFeedback extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         List<Feedback> feedbacks = feedbackDAO.getAllFeedbacks();
 
         request.setAttribute("feedbacks", feedbacks);
-        request.getRequestDispatcher("/View/DashBoardForStaff.jsp").forward(request, response);
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            request.getRequestDispatcher("/View/ListFeedbackAdmin.jsp").forward(request, response);
+        } else {
+            request.getRequestDispatcher("/View/DashBoardForStaff.jsp").forward(request, response);
+        }
     }
 
     /**

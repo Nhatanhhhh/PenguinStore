@@ -83,7 +83,7 @@
                                 <strong>Feedback</strong>
                             </a>
                             <ul id="feedbackMenu" class="nav flex-column collapse">
-                                <li><a class="nav-link" href="#">View Feedbacks</a></li>
+                                <li><a class="nav-link" href="ListFeedbackForStaff">View Feedbacks</a></li>
                             </ul>
                         </li>
 

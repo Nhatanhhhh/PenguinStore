@@ -7,12 +7,13 @@ package Controller;
 import DAOs.FeedbackDAO;
 import DAOs.ProductDAO;
 import DAOs.ProductVariantDAO;
-import Models.Feedback;
 import DAOs.TypeDAO;
+import Models.Feedback;
 import Models.Product;
 import Models.ProductVariant;
 import Models.Type;
 import java.io.IOException;
+import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,9 +44,7 @@ public class ProductController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String id = request.getParameter("id");
-        System.out.println("PRODUCT ID: " + id); // Bổ sung log để debug
-
-        String action = request.getParameter("action");
+        String action = Objects.requireNonNullElse(request.getParameter("action"), "view");
         String typeDetail = request.getParameter("type");
         String categoryDetail = request.getParameter("category");
 
@@ -53,70 +52,47 @@ public class ProductController extends HttpServlet {
         TypeDAO typeDAO = new TypeDAO();
         ProductVariantDAO productVariantDAO = new ProductVariantDAO();
 
-        // Lấy danh sách loại sản phẩm
-        ArrayList<Type> listType = typeDAO.getAll();
+        List<Type> listType = typeDAO.getAll();
         Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
         for (Type type : listType) {
-            String categoryName = type.getCategoryName();
-            if (!categoryMap.containsKey(categoryName)) {
-                categoryMap.put(categoryName, new ArrayList<>());
-            }
-            categoryMap.get(categoryName).add(type);
+            categoryMap.computeIfAbsent(type.getCategoryName(), k -> new ArrayList<>()).add(type);
         }
         request.setAttribute("categoryMap", categoryMap);
 
-        if (Objects.isNull(action)) {
-            action = "view";
-        }
         switch (action) {
             case "view":
-                ArrayList<Product> listProduct = productDAO.readAll();
-                request.setAttribute("listProduct", listProduct);
+                request.setAttribute("listProduct", productDAO.readAll());
                 request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
                 break;
             case "detail":
-                ArrayList<ProductVariant> listDetail = productVariantDAO.viewProductDetail(id);
-                Product product = productDAO.getOneProduct(id);
-
-                double averageRating = FeedbackDAO.getAverageRating(id);
-                int totalReviews = FeedbackDAO.getTotalReviews(id);
-                List<Feedback> feedbackList = FeedbackDAO.getLatestFeedbacks(id);
-
-                request.setAttribute("productDetail", listDetail);
-                request.setAttribute("product", product);
-                request.setAttribute("averageRating", averageRating);
-                request.setAttribute("totalReviews", totalReviews);
-                request.setAttribute("feedbackList", feedbackList);
-                request.getRequestDispatcher("/View/ProductDetail.jsp").forward(request, response);
-                break;
-            case "detailType":
-                if (Objects.isNull(typeDetail) && Objects.isNull(categoryDetail)) {
+                if (id != null) {
+                    request.setAttribute("productDetail", productVariantDAO.viewProductDetail(id));
+                    request.setAttribute("product", productDAO.getOneProduct(id));
+                    request.setAttribute("averageRating", FeedbackDAO.getAverageRating(id));
+                    request.setAttribute("totalReviews", FeedbackDAO.getTotalReviews(id));
+                    request.setAttribute("feedbackList", FeedbackDAO.getLatestFeedbacks(id));
+                    request.getRequestDispatcher("/View/ProductDetail.jsp").forward(request, response);
+                } else {
                     response.sendRedirect(request.getContextPath() + "/Product?action=view");
                 }
-                if (Objects.isNull(typeDetail)) {
+                break;
+            case "detailType":
+                if (categoryDetail != null) {
                     List<String> typeList = new ArrayList<>();
                     for (Type type : listType) {
                         if (type.getCategoryName().equalsIgnoreCase(categoryDetail)) {
                             typeList.add(type.getTypeName());
                         }
                     }
-                    String[] typeForList = typeList.toArray(new String[0]);
-                    ArrayList<Product> productByCategory = productDAO.getFilteredProducts(typeForList, null, null);
-                    request.setAttribute("typeDetail", typeDetail);
-                    request.setAttribute("categoryDetail", categoryDetail);
-                    request.setAttribute("listProduct", productByCategory);
-                    request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
-                } else if (Objects.isNull(categoryDetail)) {
-                    List<String> typeList = new ArrayList<>();
-                    typeList.add(typeDetail);
-                    String[] typeForList = typeList.toArray(new String[0]);
-                    typeForList = Arrays.copyOf(typeForList, typeForList.length + 1);
-                    ArrayList<Product> producttype = productDAO.getFilteredProducts(typeForList, null, null);
-                    request.setAttribute("typeDetail", typeDetail);
-                    request.setAttribute("categoryDetail", categoryDetail);
-                    request.setAttribute("listProduct", producttype);
-                    request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
+                    request.setAttribute("listProduct", productDAO.getFilteredProducts(typeList.toArray(new String[0]), null, null));
+                } else if (typeDetail != null) {
+                    request.setAttribute("listProduct", productDAO.getFilteredProducts(new String[]{typeDetail}, null, null));
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/Product?action=view");
+                    return;
                 }
+                request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
+                break;
             default:
                 response.sendRedirect(request.getContextPath() + "/Product?action=view");
                 break;
@@ -134,19 +110,15 @@ public class ProductController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
-        TypeDAO typeDAO = new TypeDAO();
+        String action = Objects.requireNonNullElse(request.getParameter("action"), "view");
         ProductDAO productDAO = new ProductDAO();
+        TypeDAO typeDAO = new TypeDAO();
 
         String sortCondition = request.getParameter("sortBy");
-        ArrayList<Type> listType = typeDAO.getAll();
+        List<Type> listType = typeDAO.getAll();
         Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
         for (Type type : listType) {
-            String categoryName = type.getCategoryName();
-            if (!categoryMap.containsKey(categoryName)) {
-                categoryMap.put(categoryName, new ArrayList<>());
-            }
-            categoryMap.get(categoryName).add(type);
+            categoryMap.computeIfAbsent(type.getCategoryName(), k -> new ArrayList<>()).add(type);
         }
         request.setAttribute("categoryMap", categoryMap);
 
@@ -155,56 +127,13 @@ public class ProductController extends HttpServlet {
         request.setAttribute("selectedTypes", selectedTypes != null ? Arrays.asList(selectedTypes) : new ArrayList<>());
         request.setAttribute("selectedPrices", selectedPrices != null ? Arrays.asList(selectedPrices) : new ArrayList<>());
 
-        if (Objects.isNull(action)) {
-            action = "view";
+        List<Product> filteredProducts = productDAO.getFilteredProducts(selectedTypes, selectedPrices, sortCondition);
+        if (filteredProducts == null || filteredProducts.isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/Product?action=view");
+            return;
         }
-        switch (action) {
-            case "search":
-                String searchQuery = request.getParameter("searchQuery");
-                ArrayList<Product> listProduct = productDAO.searchProduct(searchQuery);
-                request.setAttribute("listProduct", listProduct);
-                request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
-                break;
-            case "filter":
-                ArrayList<Product> listProductFilter = productDAO.getFilteredProducts(selectedTypes, selectedPrices, sortCondition);
-                request.setAttribute("listProduct", listProductFilter);
-                request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
-                break;
-            case "sort":
-                String sortOption = request.getParameter("sortBy");
-                String typeDetail = request.getParameter("typeDetail");
-                String categoryDetail = request.getParameter("categoryDetail");
-                if ((selectedPrices == null || selectedPrices.length == 0) && (selectedTypes == null || selectedTypes.length == 0)) {
-                    if ((selectedPrices == null || selectedPrices.length == 0) && (selectedTypes == null || selectedTypes.length == 0)) {
-                        if (categoryDetail != null && !categoryDetail.isBlank()) {
-                            List<String> typeList = new ArrayList<>();
-                            for (Type type : listType) {
-                                if (type.getCategoryName().equalsIgnoreCase(categoryDetail)) {
-                                    typeList.add(type.getTypeName());
-                                }
-                            }
-                            String[] typeForList = typeList.toArray(new String[0]);
-                            ArrayList<Product> sortedProducts = productDAO.getFilteredProducts(typeForList, null, sortOption);
-                            request.setAttribute("listProduct", sortedProducts);
-                        } else if (typeDetail != null && !typeDetail.isEmpty()) {
-                            String[] typeForList = {typeDetail};
-                            ArrayList<Product> sortedProducts = productDAO.getFilteredProducts(typeForList, null, sortOption);
-                            request.setAttribute("listProduct", sortedProducts);
-                        }
-                    }
-                } else {
-                    ArrayList<Product> sortedProducts = productDAO.getFilteredProducts(selectedTypes, selectedPrices, sortOption);
-                    request.setAttribute("listProduct", sortedProducts);
-                }
-                request.setAttribute("typeDetail", typeDetail);
-                request.setAttribute("categoryDetail", categoryDetail);
-                request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
-                break;
-            default:
-                ArrayList<Product> defaultProductList = productDAO.getFilteredProducts(null, null, sortCondition);
-                request.setAttribute("listProduct", defaultProductList);
-                request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
-                break;
-        }
+
+        request.setAttribute("listProduct", filteredProducts);
+        request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
     }
 }
