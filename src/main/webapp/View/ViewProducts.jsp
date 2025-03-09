@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -88,7 +89,10 @@
                                         </c:if>
                                         <div class="card-body">
                                             <p class="card-title">${product.productName}</p>
-                                            <p class="card-text text-muted">${product.price} VND</p>
+                                            <p class="card-text text-muted">
+                                            <fmt:setLocale value="vi_VN"/>
+                                            <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true"/> VND
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

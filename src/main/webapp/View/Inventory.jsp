@@ -36,20 +36,15 @@
             <div class="container col-md-9">
                 <div class="container">
                     <h2>Product Images</h2>
-                    <div class="image-container">
-                        <c:forEach var="image" items="${product.imgName}">
-                            <div class="image-item">
-                                <img src="${pageContext.request.contextPath}/uploads/${image.fileName}" class="product-image" alt="Product Image">
-                                <button type="button" class="delete-image" data-image-id="${image.imageID}">×</button>
-                            </div>
-                        </c:forEach>
+                    <c:set var="imgList" value="${fn:split(product.imgName, ',')}" />
+                    <div class="product-images">
+                        <div class="thumbnail-container">
+                            <c:forEach var="img" items="${imgList}">
+                                <img src="Image/Product/${fn:replace(img, ' ', '')}" alt="Thumbnail" >
+                            </c:forEach>
+                        </div>
+                        <img src="Image/Product/${imgList[0]}" class="product-main-img" alt="Product Image" height="300px" width="300px" style="margin-left: 20px">
                     </div>
-                    <form id="uploadImageForm" action="<c:url value='/ManageProduct'/>" method="POST" enctype="multipart/form-data">
-                        <input type="hidden" name="action" value="uploadImage">
-                        <input type="hidden" name="productID" value="${product.productID}">
-                        <input type="file" name="image" accept="image/*" required>
-                        <button type="submit" class="btn btn-primary btn-sm">Upload Image</button>
-                    </form>
                     <h2>Product Information</h2>
                     <form id="editProductForm" action="<c:url value='/ManageProduct'/>" method="POST">
                         <input type="hidden" name="action" value="updateProduct">
@@ -74,7 +69,6 @@
                         <div class="form-group">
                             <label for="type"><strong>Type:</strong>
                                 <input type="text" id="typeName" name="typeName" value="${product.typeName}" readonly></label>
-
                         </div>
                         <button type="button" id="editProductBtn" class="btn btn-primary btn-sm">Edit</button>
                         <input type="submit" id="saveProductBtn" class="btn btn-success btn-sm" value="Save" style="display: none; width: 50px;">
@@ -159,22 +153,7 @@
                             })
                             .catch(error => console.error("Error updating product:", error));
                 });
-                document.querySelectorAll(".delete-image").forEach(button => {
-                    button.addEventListener("click", function () {
-                        if (confirm("Are you sure you want to delete this image?")) {
-                            let imageID = this.getAttribute("data-image-id");
-                            fetch("<c:url value='/ManageProduct'/>", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                                body: new URLSearchParams({ action: "deleteImage", imageID: imageID })
-                            }).then(response => response.text())
-                              .then(data => {
-                                  alert("Image deleted successfully!");
-                                  location.reload();
-                              }).catch(error => console.error("Error deleting image:", error));
-                        }
-                    });
-                });
+
             });
             document.querySelectorAll(".status-dropdown").forEach(dropdown => {
                 dropdown.addEventListener("change", function () {
@@ -199,7 +178,21 @@
                             })
                             .catch(error => console.error("Error updating status:", error));
                 });
-                
+
+            });
+            document.addEventListener("DOMContentLoaded", function () {
+                const thumbnails = document.querySelectorAll(".thumbnail-container img");
+                const mainImage = document.querySelector(".product-main-img");
+
+                thumbnails.forEach(thumbnail => {
+                    thumbnail.addEventListener("click", function () {
+                        mainImage.src = this.src;
+
+                        thumbnails.forEach(img => img.classList.remove("active"));
+
+                        this.classList.add("active");
+                    });
+                });
             });
         </script>
     </body>

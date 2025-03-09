@@ -29,7 +29,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 
 .product-item img {
     width: 100%;
-    height: 400px; /* Gi? hình ?nh ??ng nh?t */
+    height: 400px; /* Gi? hï¿½nh ?nh ??ng nh?t */
     object-fit: cover;
     border-radius: 8px;
 }
@@ -48,5 +48,3 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     font-size: 14px;
     color: gray;
 }
-
-

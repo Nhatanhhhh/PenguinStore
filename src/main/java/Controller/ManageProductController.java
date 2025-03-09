@@ -28,6 +28,8 @@ import java.util.Objects;
 import jakarta.servlet.annotation.MultipartConfig;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,6 +60,17 @@ public class ManageProductController extends HttpServlet {
         SizeDAO sizeDAO = new SizeDAO();
         ColorDAO colorDAO = new ColorDAO();
         TypeDAO typeDAO = new TypeDAO();
+        ArrayList<Type> listTypeA = typeDAO.getAll();
+        Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
+        for (Type type : listTypeA) {
+            String categoryName = type.getCategoryName();
+            if (!categoryMap.containsKey(categoryName)) {
+                categoryMap.put(categoryName, new ArrayList<>());
+            }
+            categoryMap.get(categoryName).add(type);
+        }
+        request.setAttribute("listType", listTypeA);
+        request.setAttribute("categoryMap", categoryMap);
         if (Objects.isNull(action)) {
             action = "view";
         }
@@ -100,7 +113,7 @@ public class ManageProductController extends HttpServlet {
                 }
                 ArrayList<ProductVariant> listDetail = productVariantDAO.viewProductDetail(id);
                 Product product = productDAO.getOneProduct(id);
-              
+
                 request.setAttribute("listType", type);
                 request.setAttribute("productDetail", listDetail);
                 request.setAttribute("product", product);
@@ -137,7 +150,41 @@ public class ManageProductController extends HttpServlet {
 
         switch (action) {
             case "view":
-            case "edit":
+            case "filter":
+                String selectedType = request.getParameter("selectedType");
+                String stockFilter = request.getParameter("stockFilter");
+                ArrayList<Product> listProduct = productDAO.readAll();
+                Map<String, ArrayList<ProductVariant>> productVariantsMap = new HashMap<>();
+                for (Product product : listProduct) {
+                    ArrayList<ProductVariant> variants = productVariantDAO.viewProductDetail(product.getProductID());
+                    productVariantsMap.put(product.getProductID(), variants);
+                }
+                ArrayList<Product> filteredProducts = new ArrayList<>();
+
+                for (Product product : listProduct) {
+                    boolean matchesType = (selectedType == null || selectedType.isEmpty()) || product.getTypeName().equals(selectedType);
+                    boolean matchesStock = true;
+
+                    if (stockFilter != null && !stockFilter.isEmpty()) {
+                        ArrayList<ProductVariant> variants = productVariantsMap.get(product.getProductID());
+                        if (variants != null) {
+                            matchesStock = variants.stream().anyMatch(variant
+                                    -> ("below5".equals(stockFilter) && variant.getStockQuantity() < 5)
+                                    || ("below10".equals(stockFilter) && variant.getStockQuantity() < 10)
+                            );
+                        }
+                    }
+
+                    if (matchesType && matchesStock) {
+                        filteredProducts.add(product);
+                    }
+                }
+                ArrayList<Type> listType = typeDAO.getAll();
+                request.setAttribute("listType", listType);
+                request.setAttribute("listProduct", filteredProducts);
+                request.setAttribute("productVariantsMap", productVariantsMap);
+                request.getRequestDispatcher("/View/ViewProductsAdmin.jsp").forward(request, response);
+
                 break;
 
             case "create":

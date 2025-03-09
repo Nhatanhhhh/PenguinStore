@@ -63,7 +63,7 @@
                 height: 40px;
                 border-radius: 50%;
                 cursor: pointer;
-                border: 2px solid transparent;
+                border: 2px solid #d3d3d3  ;
                 transition: border 0.3s ease-in-out;
             }
 
@@ -259,8 +259,6 @@
                 </div>
             </div>
         </div>
-
-
         <script>
             document.getElementById("productImages").addEventListener("change", function (event) {
                 let files = event.target.files;
@@ -341,11 +339,17 @@
             document.addEventListener("DOMContentLoaded", function () {
                 const form = document.getElementById("create-product-form");
                 const submitBtn = document.querySelector(".submit-btn");
+                const hiddenFileInput = document.getElementById("hiddenFileInput");
 
                 submitBtn.addEventListener("click", function (event) {
                     event.preventDefault(); // Ngăn form submit ngay lập tức
 
-                    // Tạo modal động
+                    if (hiddenFileInput.files.length === 0) {
+                        alert("Please upload at least one image before creating the product!");
+                        return;
+                    }
+
+                    // Tạo modal xác nhận
                     const modal = document.createElement("div");
                     modal.classList.add("modal");
                     modal.innerHTML = `
