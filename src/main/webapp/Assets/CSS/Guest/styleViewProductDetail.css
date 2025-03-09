@@ -8,7 +8,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 */
 
 
-
 .product-container {
     display: flex;
     max-width: 1000px;
@@ -107,9 +106,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 
 .color-circle {
     display: inline-block;
-    width: 25px; 
+    width: 25px;
     height: 25px;
-    border-radius: 50%; 
+    border-radius: 50%;
     border: 2px solid #ccc;
     margin: 5px;
     cursor: pointer;
@@ -157,7 +156,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 .cart-container {
     display: flex;
     align-items: center;
-    gap: 20px; 
+    gap: 20px;
 }
 
 .quantity {
@@ -167,7 +166,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     border-radius: 5px;
     overflow: hidden;
     background: white;
-    width: 120px; 
+    width: 120px;
 }
 
 .quantity button {
@@ -177,7 +176,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     border: none;
     font-size: 16px;
     cursor: pointer;
-/*    border-right: 1px solid #ccc;*/
+    /*    border-right: 1px solid #ccc;*/
 }
 
 .quantity button:last-child {
@@ -185,13 +184,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 }
 
 .quantity input {
-    width: 40px; 
+    width: 40px;
     height: 35px;
     text-align: center;
     font-size: 16px;
     border: none;
     outline: none;
-    appearance: textfield; 
+    appearance: textfield;
 }
 
 .add-to-cart {

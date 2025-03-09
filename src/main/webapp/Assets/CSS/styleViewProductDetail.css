@@ -17,11 +17,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
     margin-bottom: 20px;
+    align-items: center; /* C?n gi?a các ph?n t? */
 }
 
 .product-images {
-    flex: 1;
-    position: relative;
     display: flex;
 }
 
@@ -35,15 +34,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     display: flex;
     flex-direction: column;
     gap: 10px;
-    position: absolute;
-    left: -50px;
-    top: 50%;
-    transform: translateY(-50%);
 }
 
 .thumbnail-container img {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 5px;
     cursor: pointer;
     border: 2px solid transparent;
@@ -54,6 +49,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 .thumbnail-container img.active {
     border-color: #ff5a5f;
 }
+
+.product-main-img {
+    width: 400px;
+    height: 300px;
+    border-radius: 10px;
+    object-fit: cover;
+    transition: opacity 0.3s ease-in-out;
+}
+
 
 .product-info {
     flex: 1;
@@ -68,10 +72,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 .product-info p {
     margin: 5px 0;
     color: #555;
-}
-
-.product-info strong {
-    font-weight: bold;
 }
 
 .price {

@@ -106,7 +106,7 @@
                                 <button type="button" onclick="increaseQuantity()">+</button>
                             </div>
 
-                            <form action="AddToCartServlet" method="post">
+                            <form action="Cart" method="post">
                                 <input type="hidden" name="variantId" id="selectedVariantId" value="${productDetail[0].proVariantID}">
                                 <button type="submit" class="add-to-cart">Add to cart</button>
                             </form>

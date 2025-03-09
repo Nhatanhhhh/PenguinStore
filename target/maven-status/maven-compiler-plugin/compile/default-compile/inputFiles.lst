@@ -16,6 +16,7 @@ D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\DAOs\ProductDAO.j
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Models\Size.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\LoginManagerController.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Models\CartItem.java
+D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\StatisticController.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\DAOs\CategoryDAO.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\DAOs\CheckoutDAO.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\Payment.java
@@ -23,6 +24,7 @@ D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\DTO\OrderDetailDT
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\DAOs\ColorDAO.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\ProductController.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\OrderManagement.java
+D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\DAOs\RevenueDAO.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Models\OrderDetail.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\DAOs\CustomerDAO.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\LogoutServlet.java
@@ -42,6 +44,7 @@ D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Models\Product.ja
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\StaffController.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\DashBoardForStaffServlet.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\ErrorServlet404.java
+D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Models\OrderStatistic.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Service\EmailService.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\OrderHistory.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Models\Feedback.java
@@ -65,6 +68,7 @@ D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\ViewPr
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\GoogleLoginController.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\DAOs\RestockDAO.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\VerifyEmailRSPController.java
+D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Models\RevenueStatistic.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Utils\CookieUtils.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\RegisterController.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\ViewListFeedback.java
@@ -73,6 +77,7 @@ D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\DAOs\ChangePasswo
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Filters\LoginFilter.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Models\Manager.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\AccessDeniedController.java
+D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\DAOs\OrderStatisticDAO.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\OrderDetail.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\VerifyEmailController.java
 D:\Ki_5\SWP391\Project\PenguinStore\PenguinStore\src\main\java\Controller\VVCustomerController.java

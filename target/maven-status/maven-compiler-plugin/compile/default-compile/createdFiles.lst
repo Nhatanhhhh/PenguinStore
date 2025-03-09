@@ -19,6 +19,7 @@ DAOs\RestockDAO.class
 DAOs\UpdateProfileDAO.class
 Models\Restock.class
 Controller\ErrorServlet404.class
+DAOs\OrderStatisticDAO.class
 Models\Feedback.class
 Controller\DashBoardForStaffServlet.class
 Controller\LoginManagerController.class
@@ -27,9 +28,11 @@ Controller\DashBoardForAdminServlet.class
 Controller\TypeController.class
 Controller\VerifyEmailRSPController.class
 DAOs\SizeDAO.class
+Models\RevenueStatistic.class
 Service\EmailService$1.class
 Controller\RestockController.class
 DAOs\ResetPasswordDAO.class
+Models\OrderStatistic.class
 Controller\ViewProfileController.class
 Controller\FeedbackController.class
 DAOs\ProductDAO.class
@@ -53,6 +56,8 @@ Models\ProductVariant.class
 Controller\EditProfileController.class
 DAOs\OrderDAO.class
 DTO\ShowStaffDTO.class
+Controller\StatisticController.class
+DAOs\RevenueDAO.class
 Models\Product.class
 Controller\OrderDetail.class
 DAOs\ChangePasswordDAO.class

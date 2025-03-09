@@ -14,6 +14,22 @@ public class OrderDetailDTO {
     private String dateOrder;
     private String statusOrderName;
     private String fullName;
+    private String statusOID;
+
+    public OrderDetailDTO(double totalAmount, String dateOrder, String statusOrderName, String statusOID) {
+        this.totalAmount = totalAmount;
+        this.dateOrder = dateOrder;
+        this.statusOrderName = statusOrderName;
+        this.statusOID = statusOID;
+    }
+
+    public String getStatusOID() {
+        return statusOID;
+    }
+
+    public void setStatusOID(String statusOID) {
+        this.statusOID = statusOID;
+    }
 
     public OrderDetailDTO(String imgName, String productName, double unitPrice, String colorName, String sizeName, int quantity, double totalAmount, double discountAmount, double finalAmount, String dateOrder, String statusOrderName) {
         this.imgName = imgName;

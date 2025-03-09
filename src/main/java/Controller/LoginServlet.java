@@ -21,7 +21,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Servlet handling user login for both customers and managers.
  *
  * @author Nguyen Nhat Anh - CE181843
  */
@@ -42,6 +41,7 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -54,9 +54,14 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP GET request (not used in login, redirects to the login
-     * page).
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -81,7 +86,7 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
         String rememberMe = request.getParameter("remember-me");
 
-        // Encrypt the password
+        // M� h�a m?t kh?u
         String hashedPassword = DBContext.hashPasswordMD5(password);
         HttpSession session = request.getSession(true);
 
@@ -95,7 +100,9 @@ public class LoginServlet extends HttpServlet {
                 ManagerDAO managerDAO = new ManagerDAO();
                 user = managerDAO.getManagerByUsernameAndPassword(username, hashedPassword);
 
-                if (user == null) {
+                if (user != null) {
+                    Manager manager = (Manager) user;
+                } else {
                     LOGGER.warning("Manager not found or incorrect password.");
                 }
             }
@@ -105,16 +112,17 @@ public class LoginServlet extends HttpServlet {
 
                 if (user instanceof Manager) {
                     Manager manager = (Manager) user;
+                    session.setAttribute("user", manager);
                     session.setAttribute("role", manager.isRole() ? "ADMIN" : "STAFF");
-                    LOGGER.info("Login successful! Role: " + session.getAttribute("role"));
+                    System.out.println("✅ Đăng nhập thành công! Role: " + session.getAttribute("role"));
                     if (manager.isRole()) {
                         response.sendRedirect("DashBoardForAdmin");
                     } else {
-                        response.sendRedirect("ListFeedbackForStaff");
+                        response.sendRedirect("DashBoardForStaff");
                     }
                 } else {
                     session.setAttribute("role", "CUSTOMER");
-                    LOGGER.info("Login as CUSTOMER");
+                    System.out.println("✅ Đăng nhập với vai trò CUSTOMER!");
                     response.sendRedirect(request.getContextPath());
                 }
 
@@ -137,6 +145,7 @@ public class LoginServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Handles login for customers and managers.";
-    }
+        return "Short description";
+    }// </editor-fold>
+
 }

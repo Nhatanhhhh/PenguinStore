@@ -18,7 +18,7 @@
         <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
             <div class="sb-sidenav-menu">
                 <div class="nav">
-                    
+
                     <!-- Management Section -->
                     <div class="sb-sidenav-menu-heading">Manage</div>
                     <ul class="nav flex-column ml-2">
@@ -103,9 +103,10 @@
                                 <strong>Statistic</strong>
                             </a>
                             <ul id="statisticMenu" class="nav flex-column collapse">
-                                <li><a class="nav-link" href="#">Revenue</a></li>
+                                <li><a class="nav-link" href="<c:url value='/Statistic?action=revenueStatistic'/>">Revenue</a></li>
                                 <li><a class="nav-link" href="<c:url value='/Restock?action=restockHistory'/>">Restock History</a></li>
                                 <li><a class="nav-link" href="#">Profit</a></li>
+                                <li><a class="nav-link" href="<c:url value='/Statistic?action=orderStatistic'/>">Order</a></li>
                                 <li><a class="nav-link" href="#">Product</a></li>
                             </ul>
                         </li>

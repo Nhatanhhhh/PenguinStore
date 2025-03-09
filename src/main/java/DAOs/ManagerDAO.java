@@ -29,8 +29,8 @@ public class ManagerDAO {
     public ManagerDAO(DBContext dbContext) {
         this.dbContext = dbContext;
     }
-    
-     public ManagerDAO() {
+
+    public ManagerDAO() {
         this.dbContext = new DBContext();
     }
 
@@ -125,17 +125,16 @@ public class ManagerDAO {
                 + "WHERE managerName = ?";
         String passMD5 = managerChange.getPassword();
         try {
-           
+
             if (!managerName.equals(managerChange.getManagerName())) {
                 Manager checkName = getByManagerName(managerChange.getManagerName());
                 if (checkName != null) {
                     return 0;
-                }else if(!checkName.getPassword().equals(managerChange.getPassword())){
+                } else if (!checkName.getPassword().equals(managerChange.getPassword())) {
                     passMD5 = md5(managerChange.getPassword());
                 }
             }
-            
-            
+
             Object[] updateParams = {
                 managerChange.getManagerName(),
                 passMD5,
@@ -147,9 +146,9 @@ public class ManagerDAO {
                 managerChange.isRole(),
                 managerName
             };
-            
-            return  dbContext.execQuery(sqlUpdate, updateParams);
-           
+
+            return dbContext.execQuery(sqlUpdate, updateParams);
+
         } catch (SQLException e) {
             Logger.getLogger(ManagerDAO.class.getName()).log(Level.SEVERE, null, e);
             return 0;
@@ -174,7 +173,7 @@ public class ManagerDAO {
             manager.getPhoneNumber(),
             manager.getAddress(),
             manager.getDateOfBirth()
-          
+
         };
 
         try {

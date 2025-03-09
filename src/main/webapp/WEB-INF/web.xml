@@ -20,6 +20,7 @@
         <url-pattern>/ChangePassword</url-pattern>
         <url-pattern>/DashBoardForAdmin</url-pattern>
         <url-pattern>/DashBoardForStaff</url-pattern>
+        <url-pattern>/ListFeedbackForStaff</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>AuthorizationFilter</filter-name>
@@ -36,7 +37,6 @@
         <url-pattern>/Feedback</url-pattern>
         <url-pattern>/ChangePassword</url-pattern>
         <url-pattern>/ChangePassword</url-pattern>
-        <url-pattern>/ListFeedbackForStaff</url-pattern>
     </filter-mapping>
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -123,8 +123,12 @@
         <servlet-class>Controller.ErrorServlet500</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ViewListFeedbackController</servlet-name>
+        <servlet-name>ViewListFeedback</servlet-name>
         <servlet-class>Controller.ViewListFeedback</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StatisticController</servlet-name>
+        <servlet-class>Controller.StatisticController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DashBoardForStaffServlet</servlet-name>
@@ -210,6 +214,10 @@
         <url-pattern>/ManageProduct</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>StatisticController</servlet-name>
+        <url-pattern>/Statistic</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>RestockController</servlet-name>
         <url-pattern>/Restock</url-pattern>
     </servlet-mapping>
@@ -250,7 +258,7 @@
         <url-pattern>/500</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ViewListFeedbackController</servlet-name>
+        <servlet-name>ViewListFeedback</servlet-name>
         <url-pattern>/ListFeedbackForStaff</url-pattern>
     </servlet-mapping>
     <servlet-mapping>

@@ -110,5 +110,4 @@ public class ProductVariantDAO extends DBContext {
         }
         return productVariant;
     }
-
 }
