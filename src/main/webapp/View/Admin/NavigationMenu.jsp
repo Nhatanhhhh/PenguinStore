@@ -105,9 +105,8 @@
                             <ul id="statisticMenu" class="nav flex-column collapse">
                                 <li><a class="nav-link" href="<c:url value='/Statistic?action=revenueStatistic'/>">Revenue</a></li>
                                 <li><a class="nav-link" href="<c:url value='/Restock?action=restockHistory'/>">Restock History</a></li>
-                                <li><a class="nav-link" href="#">Profit</a></li>
                                 <li><a class="nav-link" href="<c:url value='/Statistic?action=orderStatistic'/>">Order</a></li>
-                                <li><a class="nav-link" href="#">Product</a></li>
+                                <li><a class="nav-link" href="<c:url value='/Statistic?action=productStatistic'/>">Product</a></li>
                             </ul>
                         </li>
 

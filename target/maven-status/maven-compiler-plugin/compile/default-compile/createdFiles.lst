@@ -24,6 +24,7 @@ Models\Feedback.class
 Controller\DashBoardForStaffServlet.class
 Controller\LoginManagerController.class
 DTO\ShowCusDTO.class
+Models\StatisticProduct.class
 Controller\DashBoardForAdminServlet.class
 Controller\TypeController.class
 Controller\VerifyEmailRSPController.class
@@ -58,6 +59,7 @@ DAOs\OrderDAO.class
 DTO\ShowStaffDTO.class
 Controller\StatisticController.class
 DAOs\RevenueDAO.class
+DAOs\StatisticProductDAO.class
 Models\Product.class
 Controller\OrderDetail.class
 DAOs\ChangePasswordDAO.class

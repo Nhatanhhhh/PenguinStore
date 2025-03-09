@@ -6,8 +6,10 @@ package Controller;
 
 import DAOs.OrderStatisticDAO;
 import DAOs.RevenueDAO;
+import DAOs.StatisticProductDAO;
 import Models.OrderStatistic;
 import Models.RevenueStatistic;
+import Models.StatisticProduct;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,17 +30,17 @@ public class StatisticController extends HttpServlet {
             throws ServletException, IOException {
         OrderStatisticDAO dao = new OrderStatisticDAO();
         RevenueDAO revenueDAO = new RevenueDAO();
+        StatisticProductDAO productDAO = new StatisticProductDAO();
 
-        // Đảm bảo action không bị null, nếu null thì mặc định là "orderStatistic"
         String action = request.getParameter("action");
+        String timeUnit = request.getParameter("timeUnit");
+
         if (action == null || action.isEmpty()) {
-            action = "orderStatistic";
+            action = "orderStatistic"; // Default action
         }
 
-        // Đảm bảo timeUnit không bị null, nếu null thì mặc định là "day"
-        String timeUnit = request.getParameter("timeUnit");
-        if (timeUnit == null || timeUnit.isEmpty()) {
-            timeUnit = "day";
+        if (timeUnit == null || (!timeUnit.equals("day") && !timeUnit.equals("month") && !timeUnit.equals("year"))) {
+            timeUnit = "day"; // Default to daily statistics
         }
 
         switch (action) {
@@ -56,17 +58,30 @@ public class StatisticController extends HttpServlet {
 
             case "revenueStatistic":
                 List<RevenueStatistic> revenuelist;
-                if ("month".equals(timeUnit)) {
-                    revenuelist = revenueDAO.getRevenueByMonth();
-                } else if ("year".equals(timeUnit)) {
-                    revenuelist = revenueDAO.getRevenueByYear();
-                } else {
-                    revenuelist = revenueDAO.getRevenueByDay();
+                switch (timeUnit) {
+                    case "month":
+                        revenuelist = revenueDAO.getRevenueByMonth();
+                        break;
+                    case "year":
+                        revenuelist = revenueDAO.getRevenueByYear();
+                        break;
+                    default:
+                        revenuelist = revenueDAO.getRevenueByDay();
+                        break;
                 }
-
                 request.setAttribute("revenuelist", revenuelist);
                 request.setAttribute("timeUnit", timeUnit);
                 request.getRequestDispatcher("/View/RevenueStatistic.jsp").forward(request, response);
+                break;
+
+            case "productStatistic":
+                List<StatisticProduct> productStatistics = productDAO.getAll(); // Thống kê nhập - xuất
+                List<StatisticProduct> bestSellingProducts = productDAO.getBestSellingProducts(); // Sản phẩm bán chạy nhất
+
+                request.setAttribute("productStatistics", productStatistics);
+                request.setAttribute("bestSellingProducts", bestSellingProducts);
+
+                request.getRequestDispatcher("/View/ProductStatistic.jsp").forward(request, response);
                 break;
 
             default:
@@ -74,5 +89,4 @@ public class StatisticController extends HttpServlet {
                 break;
         }
     }
-
 }
