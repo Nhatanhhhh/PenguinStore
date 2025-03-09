@@ -76,6 +76,10 @@
         <servlet-class>Controller.Payment</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>Statistic</servlet-name>
+        <servlet-class>Controller.Statistic</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>Checkout</servlet-name>
         <servlet-class>Controller.Checkout</servlet-class>
     </servlet>
@@ -117,6 +121,10 @@
     <servlet-mapping>
         <servlet-name>TypeController</servlet-name>
         <url-pattern>/Type</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StatisticController</servlet-name>
+        <url-pattern>/Statistic</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ForgetPasswordController</servlet-name>
