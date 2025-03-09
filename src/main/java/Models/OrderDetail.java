@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class OrderDetail implements Serializable {
+
     private String orderDetailID;
     private int quantity;
     private double unitPrice;
@@ -89,4 +90,3 @@ public class OrderDetail implements Serializable {
         this.productVariantID = productVariantID;
     }
 }
-

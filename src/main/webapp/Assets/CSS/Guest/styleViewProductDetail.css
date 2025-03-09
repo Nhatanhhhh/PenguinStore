@@ -1,0 +1,215 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 23, 2025, 12:13:33 AM
+    Author     : Huynh Cong Nghiem - CE181351
+*/
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    padding: 20px;
+}
+
+
+.product-container {
+    display: flex;
+    max-width: 1000px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.product-images {
+    flex: 1;
+    position: relative;
+    display: flex;
+}
+
+.product-main-img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.thumbnail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: absolute;
+    left: -50px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.thumbnail-container img {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: 0.3s;
+}
+
+.thumbnail-container img:hover,
+.thumbnail-container img.active {
+    border-color: #ff5a5f;
+}
+
+.product-info {
+    flex: 1;
+    padding-left: 40px;
+}
+
+.product-info h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.product-info p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.product-info strong {
+    font-weight: bold;
+}
+
+.price {
+    font-size: 20px;
+    color: #ff5a5f;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.size-options, .color-options {
+    margin-top: 10px;
+}
+
+.size-options button, .color-options button {
+    padding: 8px 15px;
+    border: 2px solid #ddd;
+    background: white;
+    cursor: pointer;
+    margin-right: 5px;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.size-options button:hover,
+.size-options button.active,
+.color-options button:hover,
+.color-options button.active {
+    border-color: activeborder;
+}
+
+
+.color-circle {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.color-options button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.quantity button {
+    width: 30px;
+    height: 30px;
+    background: #ff5a5f;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.quantity button:hover {
+    background: #e04e50;
+}
+
+.quantity input {
+    width: 50px;
+    text-align: center;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    margin: 0 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+
+.cart-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    background: white;
+    width: 120px;
+}
+
+.quantity button {
+    width: 30px;
+    height: 35px;
+    background: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    /*    border-right: 1px solid #ccc;*/
+}
+
+.quantity button:last-child {
+    border-right: none;
+}
+
+.quantity input {
+    width: 40px;
+    height: 35px;
+    text-align: center;
+    font-size: 16px;
+    border: none;
+    outline: none;
+    appearance: textfield;
+}
+
+.add-to-cart {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: 1px solid black;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.add-to-cart:hover {
+    background-color: black;
+    color: white;
+}
