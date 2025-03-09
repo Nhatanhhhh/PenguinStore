@@ -82,7 +82,7 @@
                         </form>
                         <nav class="back-homepage" style="text-align: center; font-size: 20px; margin-bottom: 20px;">
                             <a href="/PenguinStore" style="text-decoration: none; color: gray;">Home </a> &gt;
-                            <span style="color: lightgray;"> All Product</span>
+                            <span style="color: gray;"> All Product</span>
                         </nav>
                         <div class="row row-cols-3 justify-content-start" id="productList">
                             <c:forEach var="product" items="${listProduct}">

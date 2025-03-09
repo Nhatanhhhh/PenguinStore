@@ -30,6 +30,15 @@ import java.util.Objects;
  */
 public class ProductController extends HttpServlet {
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -49,7 +58,10 @@ public class ProductController extends HttpServlet {
         Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
         for (Type type : listType) {
             String categoryName = type.getCategoryName();
-            categoryMap.computeIfAbsent(categoryName, k -> new ArrayList<>()).add(type);
+            if (!categoryMap.containsKey(categoryName)) {
+                categoryMap.put(categoryName, new ArrayList<>());
+            }
+            categoryMap.get(categoryName).add(type);
         }
         request.setAttribute("categoryMap", categoryMap);
 
@@ -81,25 +93,44 @@ public class ProductController extends HttpServlet {
                 if (Objects.isNull(typeDetail) && Objects.isNull(categoryDetail)) {
                     response.sendRedirect(request.getContextPath() + "/Product?action=view");
                 }
-                List<String> typeList = new ArrayList<>();
-                for (Type type : listType) {
-                    if (categoryDetail != null && type.getCategoryName().equalsIgnoreCase(categoryDetail)) {
-                        typeList.add(type.getTypeName());
+                if (Objects.isNull(typeDetail)) {
+                    List<String> typeList = new ArrayList<>();
+                    for (Type type : listType) {
+                        if (type.getCategoryName().equalsIgnoreCase(categoryDetail)) {
+                            typeList.add(type.getTypeName());
+                        }
                     }
+                    String[] typeForList = typeList.toArray(new String[0]);
+                    ArrayList<Product> productByCategory = productDAO.getFilteredProducts(typeForList, null, null);
+                    request.setAttribute("typeDetail", typeDetail);
+                    request.setAttribute("categoryDetail", categoryDetail);
+                    request.setAttribute("listProduct", productByCategory);
+                    request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
+                } else if (Objects.isNull(categoryDetail)) {
+                    List<String> typeList = new ArrayList<>();
+                    typeList.add(typeDetail);
+                    String[] typeForList = typeList.toArray(new String[0]);
+                    typeForList = Arrays.copyOf(typeForList, typeForList.length + 1);
+                    ArrayList<Product> producttype = productDAO.getFilteredProducts(typeForList, null, null);
+                    request.setAttribute("typeDetail", typeDetail);
+                    request.setAttribute("categoryDetail", categoryDetail);
+                    request.setAttribute("listProduct", producttype);
+                    request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
                 }
-                String[] typeForList = typeList.toArray(new String[0]);
-                ArrayList<Product> productByCategory = productDAO.getFilteredProducts(typeForList, null, null);
-                request.setAttribute("typeDetail", typeDetail);
-                request.setAttribute("categoryDetail", categoryDetail);
-                request.setAttribute("listProduct", productByCategory);
-                request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
-                break;
             default:
                 response.sendRedirect(request.getContextPath() + "/Product?action=view");
                 break;
         }
     }
 
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -111,7 +142,11 @@ public class ProductController extends HttpServlet {
         ArrayList<Type> listType = typeDAO.getAll();
         Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
         for (Type type : listType) {
-            categoryMap.computeIfAbsent(type.getCategoryName(), k -> new ArrayList<>()).add(type);
+            String categoryName = type.getCategoryName();
+            if (!categoryMap.containsKey(categoryName)) {
+                categoryMap.put(categoryName, new ArrayList<>());
+            }
+            categoryMap.get(categoryName).add(type);
         }
         request.setAttribute("categoryMap", categoryMap);
 
@@ -136,8 +171,33 @@ public class ProductController extends HttpServlet {
                 request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
                 break;
             case "sort":
-                ArrayList<Product> sortedProducts = productDAO.getFilteredProducts(selectedTypes, selectedPrices, sortCondition);
-                request.setAttribute("listProduct", sortedProducts);
+                String sortOption = request.getParameter("sortBy");
+                String typeDetail = request.getParameter("typeDetail");
+                String categoryDetail = request.getParameter("categoryDetail");
+                if ((selectedPrices == null || selectedPrices.length == 0) && (selectedTypes == null || selectedTypes.length == 0)) {
+                    if ((selectedPrices == null || selectedPrices.length == 0) && (selectedTypes == null || selectedTypes.length == 0)) {
+                        if (categoryDetail != null && !categoryDetail.isBlank()) {
+                            List<String> typeList = new ArrayList<>();
+                            for (Type type : listType) {
+                                if (type.getCategoryName().equalsIgnoreCase(categoryDetail)) {
+                                    typeList.add(type.getTypeName());
+                                }
+                            }
+                            String[] typeForList = typeList.toArray(new String[0]);
+                            ArrayList<Product> sortedProducts = productDAO.getFilteredProducts(typeForList, null, sortOption);
+                            request.setAttribute("listProduct", sortedProducts);
+                        } else if (typeDetail != null && !typeDetail.isEmpty()) {
+                            String[] typeForList = {typeDetail};
+                            ArrayList<Product> sortedProducts = productDAO.getFilteredProducts(typeForList, null, sortOption);
+                            request.setAttribute("listProduct", sortedProducts);
+                        }
+                    }
+                } else {
+                    ArrayList<Product> sortedProducts = productDAO.getFilteredProducts(selectedTypes, selectedPrices, sortOption);
+                    request.setAttribute("listProduct", sortedProducts);
+                }
+                request.setAttribute("typeDetail", typeDetail);
+                request.setAttribute("categoryDetail", categoryDetail);
                 request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
                 break;
             default:
