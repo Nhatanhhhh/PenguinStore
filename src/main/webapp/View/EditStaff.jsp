@@ -70,11 +70,7 @@
 
                                             <div class="mb-3">
                                                 <label for="dateOfBirth" class="form-label">Date of Birth: </label>
-<<<<<<< HEAD
-                                                <input type="text" class="form-control" id="dateOfBirth" name="dateOfBirth" value="${manager.dateOfBirth}" required>
-=======
                                                 <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" value="${manager.dateOfBirth}" required>
->>>>>>> Thuan
                                             </div>
 
                                             <button type="submit" class="btn btn-primary">Update</button>
