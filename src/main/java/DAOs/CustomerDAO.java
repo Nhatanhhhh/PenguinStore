@@ -26,11 +26,11 @@ public class CustomerDAO {
     }
 
     /**
-     * Lấy thông tin khách hàng từ username và password (đã hash)
+     * Retrieve customer information using username and password (hashed)
      *
-     * @param username Tên ngư�?i dùng
-     * @param hashedPassword Mật khẩu đã được mã hóa MD5
-     * @return �?ối tượng Customer nếu tìm thấy, ngược lại null
+     * @param username Username
+     * @param hashedPassword Password encrypted with MD5
+     * @return Customer object if found, otherwise null
      */
     public static Customer getCustomerByUsernameAndPassword(String username, String hashedPassword) {
         Customer customer = null;
@@ -66,7 +66,7 @@ public class CustomerDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // �?óng rs, ps, conn để tránh rò rỉ kết nối
+            // Close rs, ps, conn to avoid connection leaks
             try {
                 if (rs != null) {
                     rs.close();
@@ -86,17 +86,17 @@ public class CustomerDAO {
     }
 
     /**
-     * �?ăng ký ngư�?i dùng mới
+     * Register a new user
      *
-     * @param customer �?ối tượng Customer chứa thông tin ngư�?i dùng
-     * @return True nếu đăng ký thành công, ngược lại False
+     * @param customer Customer object containing user information
+     * @return True if registration is successful, otherwise False
      */
     public static boolean registerCustomer(Customer customer) {
         Connection conn = null;
         PreparedStatement ps = null;
         boolean isSuccess = false;
 
-        // Hash mật khẩu trước khi lưu vào DB
+        // Hash the password before saving to DB
         String hashedPassword = DBContext.hashPasswordMD5(customer.getPassWord());
 
         try {
@@ -123,7 +123,7 @@ public class CustomerDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // �?óng ps, conn
+            // Close ps, conn
             try {
                 if (ps != null) {
                     ps.close();
@@ -139,12 +139,17 @@ public class CustomerDAO {
         return isSuccess;
     }
 
+    /**
+     * Retrieve a list of customers
+     *
+     * @return ArrayList containing customer details
+     */
     public ArrayList<ShowCusDTO> getListCus() {
         ArrayList<ShowCusDTO> getListCustomer = new ArrayList<>();
 
-        String query = "SELECT customerName,fullName,address, email,phoneNumber, state, zip from Customer";
+        String query = "SELECT customerName, fullName, address, email, phoneNumber, state, zip FROM Customer";
 
-        try ( ResultSet rs = dbContext.execSelectQuery(query)) {
+        try (ResultSet rs = dbContext.execSelectQuery(query)) {
             while (rs.next()) {
                 getListCustomer.add(new ShowCusDTO(
                         rs.getString("customerName"),

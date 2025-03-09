@@ -11,14 +11,57 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
+        <style>
+            #layoutSidenav {
+                display: flex;  /* Đảm bảo layout không bị lệch */
+            }
+
+            .col-md-10 {
+                flex-grow: 1;
+                max-width: calc(100% - 250px);  /* Tránh bị lệch */
+                padding-left: 0 !important;
+                margin-left: 0 !important;
+            }
+
+            /* Màu nền đậm như table-dark */
+            #feedbackTable thead {
+                background-color: #343a40 !important; /* Màu đen nhạt của Bootstrap */
+                color: white !important; /* Chữ trắng */
+            }
+
+            /* Căn giữa nội dung trong các cột */
+            #feedbackTable th {
+                text-align: center !important;
+                vertical-align: middle !important;
+            }
+
+            .text-success {
+                color: green !important;
+                font-weight: bold !important;
+            }
+
+            .text-danger {
+                color: red !important;
+                font-weight: bold !important;
+            }
+
+
+        </style>
     </head>
     <body>
-        <%@include file="Admin/HeaderAD.jsp"%>
+        <%
+            Manager manager = (Manager) session.getAttribute("user");
+            String managerName = (manager != null) ? manager.getManagerName() : "Guest";
+            String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
+        %>
+
         <div class="row">
             <div class="col-md-2">
                 <%@include file="Admin/NavigationMenu.jsp"%>
             </div>
             <div class="col-md-10">
+                <%@include file="Admin/HeaderAD.jsp"%>
                 <div class="container mt-4">
                     <div class="row justify-content-center">
                         <div class="col-md-6">
@@ -66,6 +109,7 @@
         </div>
 
 
+        <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
         <script>
             document.getElementById("editForm").addEventListener("submit", function (event) {
                 event.preventDefault();

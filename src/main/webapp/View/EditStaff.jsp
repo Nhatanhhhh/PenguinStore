@@ -10,14 +10,20 @@
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Assets/CSS/Admin/DashBoard.css"/>
     </head>
     <body>
-        <%@include file="Admin/HeaderAD.jsp"%>
+        <%
+            Manager manager = (Manager) session.getAttribute("user");
+            String managerName = (manager != null) ? manager.getManagerName() : "Guest";
+            String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
+        %>
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <%@include file="Admin/NavigationMenu.jsp"%>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-10">
+                <%@include file="Admin/HeaderAD.jsp"%>
                 <div class="container mt-4">
                     <div class="row justify-content-center">
                         <div class="col-md-6">
@@ -87,5 +93,6 @@
 
 
 
+        <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
 </html>

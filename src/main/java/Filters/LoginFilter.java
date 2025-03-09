@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
+ * Filter to check if the user is logged in before allowing access to certain
+ * pages.
  *
  * @author Nguyen Nhat Anh - CE181843
  */
@@ -26,17 +28,16 @@ public class LoginFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        // Kiểm tra session hiện tại
+        // Check the current session
         HttpSession session = req.getSession(false);
 
-        // Kiểm tra xem ngư�?i dùng đã đăng nhập (session có tồn tại và có thuộc tính ngư�?i dùng hoặc googleUser)
-        if (session != null && (session.getAttribute("user") != null)) {
-            // Nếu ngư�?i dùng đã đăng nhập, cho phép tiếp tục request
+        // Verify if the user is logged in (session exists and contains a user attribute)
+        if (session != null && session.getAttribute("user") != null) {
+            // If the user is logged in, allow the request to proceed
             chain.doFilter(request, response);
         } else {
-            // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
+            // If not logged in, redirect to the login page
             res.sendRedirect("/PenguinStore");
         }
     }
-
 }

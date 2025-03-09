@@ -7,19 +7,81 @@
         <title>List of Types</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/base.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/style.css"/>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/Assets/CSS/Admin/DashBoeard.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Staff/styles.css"/>
+        <style>
+            #layoutSidenav {
+                display: flex;
+                min-height: 100vh; /* Giữ chiều cao tự động */
+            }
+
+            /* Sidebar Navigation */
+            .col-md-2 {
+                display: flex;
+                flex-direction: column; /* Giúp navigation tự động mở rộng */
+                flex-grow: 1;
+                min-height: 100vh; /* Luôn chiếm toàn bộ chiều cao màn hình */
+                padding-right: 0;
+            }
+
+            /* Content Section */
+            .col-md-10 {
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                padding-left: 0 !important;
+                margin-left: 0 !important;
+                padding-right: 0 !important; /* Đảm bảo padding right bằng 0 */
+            }
+
+            /* Đảm bảo header cố định và nội dung mở rộng */
+            .content {
+                flex-grow: 1;
+                overflow: auto; /* Giữ nội dung cuộn khi cần */
+                padding: 20px; /* Thêm khoảng cách cho đẹp */
+            }
+
+            /* Màu nền đậm như table-dark */
+            #feedbackTable thead {
+                background-color: #343a40 !important; /* Màu đen nhạt của Bootstrap */
+                color: white !important; /* Chữ trắng */
+            }
+
+            /* Căn giữa nội dung trong các cột */
+            #feedbackTable th {
+                text-align: center !important;
+                vertical-align: middle !important;
+            }
+
+            .text-success {
+                color: green !important;
+                font-weight: bold !important;
+            }
+
+            .text-danger {
+                color: red !important;
+                font-weight: bold !important;
+            }
+
+
+        </style>
     </head>
     <body>
-        <%@include file="Admin/HeaderAD.jsp"%>
+
+        <%
+            Manager manager = (Manager) session.getAttribute("user");
+            String managerName = (manager != null) ? manager.getManagerName() : "Guest";
+            String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
+        %>
 
         <div class="row">
             <div class="col-md-2">
                 <%@include file="Admin/NavigationMenu.jsp"%>
-
+                
             </div>
             <div class="col-md-10">
+                <%@include file="Admin/HeaderAD.jsp"%>
                 <div class="container mt-4">
                     <h2>List Type</h2>
                     <table class="table table-bordered">
@@ -56,5 +118,6 @@
         </div>
 
 
+        <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
 </html>

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package Controller;
 
 import DAOs.CartDAO;
@@ -20,66 +16,37 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 /**
+ * Servlet handling adding products to the shopping cart.
  *
  * @author Le Minh Loc CE180992
  */
 public class AddToCartServlet extends HttpServlet {
 
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
-
+            // TODO: Implement logic if needed
         }
     }
 
+    /**
+     * Handles HTTP GET requests.
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-//    @Override
-//    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-//            throws ServletException, IOException {
-//        HttpSession session = request.getSession();
-//
-//        // Nếu chưa đăng nhập, chuyển hướng v�? trang đăng nhập
-//        if (session == null || session.getAttribute("user") == null) {
-//            response.sendRedirect("View/LoginCustomer.jsp");
-//            return;
-//        }
-//
-//        Customer customer = (Customer) session.getAttribute("user");
-//        String customerID = customer.getCustomerID();
-//
-//        try {
-//            String productID = request.getParameter("productId");
-//            String proVariantID = request.getParameter("proVariantID");
-//            int quantity = Integer.parseInt(request.getParameter("quantity"));
-//
-//            Cart cartItem = new Cart(customerID, productID, proVariantID, quantity);
-//            CartDAO cartDAO = new CartDAO();
-//
-//            boolean added = cartDAO.addToCart(cartItem);
-//
-//            if (added) {
-//                response.sendRedirect("Cart.jsp?message=added_success");
-//            } else {
-//                response.sendRedirect("Cart.jsp?message=add_failed");
-//            }
-//        } catch (NumberFormatException e) {
-//            e.printStackTrace();
-//            response.sendRedirect("ProductDetail.jsp?error=invalid_data");
-//        }
-//    }
-//
-//    @Override
-//    public String getServletInfo() {
-//        return "Short description";
-//    }// </editor-fold>
-//
-//}
+    /**
+     * Handles HTTP POST requests to add a product to the cart.
+     */
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         Customer customer = (Customer) session.getAttribute("user");
@@ -91,7 +58,7 @@ public class AddToCartServlet extends HttpServlet {
         String productID = request.getParameter("productID");
         String proVariantID = request.getParameter("variantId");
         String quantityStr = request.getParameter("quantity");
-        System.out.println("cusid:" + customerID);
+
         if (customerID == null || productID == null || proVariantID == null || quantityStr == null) {
             response.sendRedirect("ProductDetail.jsp?error=MissingData");
             return;
@@ -100,7 +67,7 @@ public class AddToCartServlet extends HttpServlet {
         int quantity = Integer.parseInt(quantityStr);
 
         try ( Connection conn = DBContext.getConn()) {
-            // Kiểm tra xem sản phẩm đã có trong gi�? hàng chưa
+            // Check if the product already exists in the cart
             String checkSql = "SELECT quantity FROM Cart WHERE customerID = ? AND productID = ? AND proVariantID = ?";
             PreparedStatement checkPs = conn.prepareStatement(checkSql);
             checkPs.setString(1, customerID);
@@ -109,7 +76,7 @@ public class AddToCartServlet extends HttpServlet {
             ResultSet rs = checkPs.executeQuery();
 
             if (rs.next()) {
-                // Nếu sản phẩm đã có, cập nhật số lượng
+                // If the product exists, update the quantity
                 int existingQuantity = rs.getInt("quantity");
                 int newQuantity = existingQuantity + quantity;
 
@@ -121,7 +88,7 @@ public class AddToCartServlet extends HttpServlet {
                 updatePs.setString(4, proVariantID);
                 updatePs.executeUpdate();
             } else {
-                // Nếu sản phẩm chưa có, thêm mới vào gi�? hàng
+                // If the product does not exist, add a new entry
                 String insertSql = "INSERT INTO Cart (customerID, productID, proVariantID, quantity) VALUES (?, ?, ?, ?)";
                 PreparedStatement insertPs = conn.prepareStatement(insertSql);
                 insertPs.setString(1, customerID);
@@ -131,12 +98,20 @@ public class AddToCartServlet extends HttpServlet {
                 insertPs.executeUpdate();
             }
 
-            // Hiển thị thông báo thành công kèm hai nút "Checkout" và "View Cart"
+            // Redirect to the product page with a success message
             response.sendRedirect("Product?id=" + productID + "&message=success");
 
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("ProductDetail.jsp?error=DatabaseError");
         }
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     */
+    @Override
+    public String getServletInfo() {
+        return "Handles adding products to the cart";
     }
 }

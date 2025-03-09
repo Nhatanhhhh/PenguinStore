@@ -1,27 +1,50 @@
+<%@page import="Models.Manager"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Header Example</title>
-        <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/Assets/CSS/Admin/style.css"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Admin Header</title>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/bootstrap.css">
+        <style>
+            /* Khi hover vào menu dropdown, đổi màu nền và màu chữ */
+            .dropdown-menu .dropdown-item:hover {
+                background-color: black !important; /* Màu nền đen */
+                color: white !important; /* Màu chữ trắng */
+            }
+
+            /* Khi hover vào menu chính (tức là thẻ `<a>` dropdown-toggle), giữ nguyên màu */
+            .nav-item.dropdown:hover .nav-link {
+                color: black !important; /* Màu chữ đen */
+            }
+
+        </style>
     </head>
     <body>
-        <header class="header row">
-            <div class="logo col-md-3">
-                <span class="mdi mdi-penguin"></span>
-                <span>PENGUIN</span>
-            </div>
-            <div class="search-bar col-md-5 d-flex justify-content-center">
-                <input type="text" placeholder="" />
-            </div>
-            <div class="header-icons col-md-4 d-flex justify-content-end">
-                <a href="" class="icon user-icon"><i class="fa-solid fa-user-tie"></i></a>
-                <a href="${pageContext.request.contextPath}/Logout" class="logout-button">Logout</a>
-            </div>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="DashBoardForAdmin">
+                    <i class="fas fa-user-tie"></i> Admin Panel
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="staffDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-user"></i> Account
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right animate-dropdown" aria-labelledby="staffDropdown">
+                                <a class="dropdown-item text-danger" href="Logout">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+                        </li>
 
-        </header>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </body>
 </html>

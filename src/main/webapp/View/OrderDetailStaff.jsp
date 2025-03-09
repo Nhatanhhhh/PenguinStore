@@ -3,12 +3,12 @@
     Created on : Mar 8, 2025, 11:25:57 AM
     Author     : Le Minh Loc CE180992
 --%>
-
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="DTO.OrderDetailDTO" %>
 <html>
     <head>
-        <meta charset="utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <title>Order Detail</title>
@@ -179,7 +179,7 @@
             </div>
 
             <% } else { %>
-            <div class="ods-no-data">KhÙng cÛ d? li?u</div>
+            <div class="ods-no-data">Kh√¥ng c√≥ d? li?u</div>
             <% }%>
         </div>
 
@@ -223,7 +223,7 @@
     }
 
     .ods-product img {
-        width: 80px; /* ?i?u ch?nh l?i width gi?ng ph?n trÍn */
+        width: 80px; /* ?i?u ch?nh l?i width gi?ng ph?n tr√™n */
         height: auto;
         border-radius: 5px;
     }
@@ -315,7 +315,7 @@
         color: gray;
     }
 
-    /* ??m b?o tr?ng th·i ch?a th‡nh cÙng/th?t b?i v?n hi?n th? m‡u x·m */
+    /* ??m b?o tr?ng th√°i ch?a th√†nh c√¥ng/th?t b?i v?n hi?n th? m√†u x√°m */
     .progress-step:not(.completed):not(.failed) i,
     .progress-step:not(.completed):not(.failed) p,
     .progress-arrow:not(.completed) i {

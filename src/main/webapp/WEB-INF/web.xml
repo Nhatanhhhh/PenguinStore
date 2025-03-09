@@ -36,7 +36,7 @@
         <url-pattern>/Feedback</url-pattern>
         <url-pattern>/ChangePassword</url-pattern>
         <url-pattern>/ChangePassword</url-pattern>
-        
+        <url-pattern>/ListFeedbackForStaff</url-pattern>
     </filter-mapping>
     <servlet>
         <servlet-name>LoginServlet</servlet-name>

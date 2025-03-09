@@ -15,7 +15,7 @@ public class ImageDAO extends DBContext {
 
     public int insertImage(String listImgName, String nameProduct) throws SQLException {
         int rs = 0;
-        if ( listImgName == null || listImgName.isEmpty()) {
+        if (listImgName == null || listImgName.isEmpty()) {
             return rs;
         }
         String[] imgArray = listImgName.split(",");

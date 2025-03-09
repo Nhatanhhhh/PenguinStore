@@ -9,16 +9,20 @@
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/Assets/CSS/Admin/DashBoeard.css"/>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Assets/CSS/Admin/DashBoard.css"/>
     </head>
     <body>
-        <%@include file="Admin/HeaderAD.jsp"%>
-
+        <%
+            Manager manager = (Manager) session.getAttribute("user");
+            String managerName = (manager != null) ? manager.getManagerName() : "Guest";
+            String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
+        %>
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <%@include file="Admin/NavigationMenu.jsp"%>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-10">
+                <%@include file="Admin/HeaderAD.jsp"%>
                 <div class="container mt-4">
                     <h2>List Customer</h2>
                     <table class="table table-bordered">
@@ -36,20 +40,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                        <c:forEach var="customer" items="${listCus}">
-                            <tr>
+                            <c:forEach var="customer" items="${listCus}">
+                                <tr>
 
-                                <td>${customer.customerName}</td>
+                                    <td>${customer.customerName}</td>
 
-                                <td>${customer.fullName}</td>
-                                <td>${customer.address}</td>
-                                <td>${customer.email}</td>
-                                <td>${customer.phoneNumber}</td>
-                                <td>${customer.state}</td>
-                                <td>${customer.zip}</td>
-                               
-                            </tr>
-                        </c:forEach>
+                                    <td>${customer.fullName}</td>
+                                    <td>${customer.address}</td>
+                                    <td>${customer.email}</td>
+                                    <td>${customer.phoneNumber}</td>
+                                    <td>${customer.state}</td>
+                                    <td>${customer.zip}</td>
+
+                                </tr>
+                            </c:forEach>
                         </tbody>
                     </table>
                     <c:if test="${empty listCus}">
@@ -61,5 +65,6 @@
         </div>
 
 
+        <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
 </html>

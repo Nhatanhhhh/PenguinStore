@@ -51,20 +51,15 @@
 
                         <input type="text" id="proVariantID" name="proVariantID" value="${proVariantID}" style="display: none;" readonly required>
                         <br><br>
-
                         <label for="quantity">Quantity:</label>
                         <input type="number" name="quantity" required />
-
                         <label for="price">Cost:</label>
                         <input type="number" step="0.01" name="price" required />
-
                         <button type="submit">Restock</button>
-                        <a href="<c:url value='/'/>" class="btn btn-secondary">Cancel</a>
+                        <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
                     </form>
                 </div>
             </div>
-
         </div>
     </body>
-
 </html>

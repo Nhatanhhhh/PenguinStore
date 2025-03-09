@@ -1,3 +1,4 @@
+<%@page import="Models.Manager"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
@@ -10,6 +11,12 @@
         <%@include file="/Assets/CSS/icon.jsp"%>
     </head>
     <body>
+        <%
+            Manager manager = (Manager) session.getAttribute("user");
+            String managerName = (manager != null) ? manager.getManagerName() : "Guest";
+            String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
+        %>
+
         <div class="container mt-4">
             <div class="row justify-content-center">
                 <div class="col-md-6">

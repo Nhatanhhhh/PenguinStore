@@ -7,6 +7,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     Author     : Huynh Cong Nghiem - CE181351
 */
 
+
+
 .product-container {
     display: flex;
     max-width: 1000px;
@@ -102,11 +104,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     border-color: activeborder;
 }
 
+
 .color-circle {
     display: inline-block;
-    width: 25px;
+    width: 25px; 
     height: 25px;
-    border-radius: 50%;
+    border-radius: 50%; 
     border: 2px solid #ccc;
     margin: 5px;
     cursor: pointer;
@@ -150,10 +153,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     border-radius: 5px;
 }
 
+
 .cart-container {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 20px; 
 }
 
 .quantity {
@@ -163,7 +167,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     border-radius: 5px;
     overflow: hidden;
     background: white;
-    width: 120px;
+    width: 120px; 
 }
 
 .quantity button {
@@ -173,7 +177,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     border: none;
     font-size: 16px;
     cursor: pointer;
-    /*    border-right: 1px solid #ccc;*/
+/*    border-right: 1px solid #ccc;*/
 }
 
 .quantity button:last-child {
@@ -181,13 +185,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 }
 
 .quantity input {
-    width: 40px;
+    width: 40px; 
     height: 35px;
     text-align: center;
     font-size: 16px;
     border: none;
     outline: none;
-    appearance: textfield;
+    appearance: textfield; 
 }
 
 .add-to-cart {
@@ -204,73 +208,4 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 .add-to-cart:hover {
     background-color: black;
     color: white;
-}
-
-/* Bổ sung từ Loc1 - Thêm hiệu ứng thông báo khi thêm vào gi�? hàng */
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border-left: 5px solid #28a745;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-.alert-success a {
-    margin: 10px 5px;
-    text-decoration: none;
-    font-weight: bold;
-    padding: 8px 15px;
-    border-radius: 5px;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    transition: background 0.3s;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-
-.btn-success {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    transition: background 0.3s;
-}
-
-.btn-success:hover {
-    background-color: #218838;
-}
-
-.btn-warning {
-    background-color: #ffc107;
-    color: #212529;
-    border: none;
-    transition: background 0.3s;
-}
-
-.btn-warning:hover {
-    background-color: #e0a800;
-}
-
-/* Hiệu ứng fade-in cho thông báo */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }

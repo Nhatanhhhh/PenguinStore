@@ -29,13 +29,19 @@
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/restockstyles.css"/>
-        <%@include file="Admin/HeaderAD.jsp"%>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
 
+        <%
+            Manager manager = (Manager) session.getAttribute("user");
+            String managerName = (manager != null) ? manager.getManagerName() : "Guest";
+            String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
+        %>
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <%@include file="Admin/NavigationMenu.jsp"%>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-10">
+                <%@include file="Admin/HeaderAD.jsp"%>
                 <h2 class="text-center">Restock History</h2>
                 <div class="container">
                     <c:if test="${empty restockHistory}">
@@ -61,13 +67,13 @@
                                 </tr>
                             </c:forEach>
                         </table>
-                        <a href="<c:url value='/'/>" class="btn btn-secondary">Cancel</a>
+                        <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
                     </c:if>
                 </div>
 
             </div>
         </div>
 
-
+        <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
 </html>

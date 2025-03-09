@@ -63,7 +63,7 @@ public class OrderDAO {
         return orderID;
     }
 
-    //Use for Staff
+    // Use for Staff
     public List<Order> getAllOrders() {
         List<Order> orderList = new ArrayList<>();
         String query = "SELECT o.orderID, c.fullName, o.orderDate, o.finalAmount, s.statusName "
@@ -73,7 +73,6 @@ public class OrderDAO {
                 + "ORDER BY o.orderDate DESC";
 
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(query);  ResultSet rs = ps.executeQuery()) {
-
             while (rs.next()) {
                 Order order = new Order();
                 order.setOrderID(rs.getString("orderID"));
@@ -88,8 +87,8 @@ public class OrderDAO {
         }
         return orderList;
     }
-    // Lấy statusOID từ statusName
 
+    // Lấy statusOID từ statusName
     public String getStatusOIDByName(String statusName) {
         String query = "SELECT statusOID FROM StatusOrder WHERE statusName = ?";
         try ( Connection conn = db.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
@@ -104,7 +103,7 @@ public class OrderDAO {
         return null;
     }
 
-// Cập nhật trạng thái đơn hàng
+    // Cập nhật trạng thái đơn hàng
     public boolean updateOrderStatus(String orderID, String statusOID) {
         String query = "UPDATE [Order] SET statusOID = ? WHERE orderID = ?";
         try ( Connection conn = db.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
@@ -116,5 +115,4 @@ public class OrderDAO {
         }
         return false;
     }
-
 }

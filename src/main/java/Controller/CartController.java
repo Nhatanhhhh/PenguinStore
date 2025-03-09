@@ -14,11 +14,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 /**
+ * CartController handles user cart operations, including viewing, deleting, and
+ * clearing the shopping cart.
  *
  * @author PC
  */
 public class CartController extends HttpServlet {
 
+    /**
+     * Handles HTTP GET requests to display the cart contents.
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
@@ -33,7 +38,7 @@ public class CartController extends HttpServlet {
         CartDAO cartDAO = new CartDAO();
         List<CartItem> cartItems = cartDAO.viewCart(customerID);
 
-        // Tạo Map để lưu productID tương ứng với từng CartItem
+        // Create a Map to store productID corresponding to each CartItem
         Map<CartItem, String> productIDs = new HashMap<>();
         for (CartItem item : cartItems) {
             String productID = cartDAO.getProductIDByItem(item);
@@ -47,6 +52,9 @@ public class CartController extends HttpServlet {
         request.getRequestDispatcher("View/Cart.jsp").forward(request, response);
     }
 
+    /**
+     * Handles HTTP POST requests for cart actions (delete, clear).
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -64,22 +72,22 @@ public class CartController extends HttpServlet {
         CartDAO cartDAO = new CartDAO();
 
         if ("delete".equals(action)) {
-            // Xóa sản phẩm kh�?i gi�? hàng
+            // Remove a product from the cart
             String productID = request.getParameter("productID");
             if (productID != null && !productID.isEmpty()) {
                 cartDAO.removeFromCart(customerID, productID);
             }
         } else if ("clear".equals(action)) {
-            // Xóa toàn bộ gi�? hàng
+            // Clear the entire cart
             cartDAO.clearCart(customerID);
             response.sendRedirect(request.getContextPath() + "/Cart");
             return;
         }
 
-        // Load lại gi�? hàng sau khi cập nhật
+        // Reload the cart after updates
         List<CartItem> cartItems = cartDAO.viewCart(customerID);
 
-        // Cập nhật Map chứa productID
+        // Update the Map containing productIDs
         Map<CartItem, String> productIDs = new HashMap<>();
         for (CartItem item : cartItems) {
             String productID = cartDAO.getProductIDByItem(item);
@@ -93,9 +101,13 @@ public class CartController extends HttpServlet {
         request.getRequestDispatcher("View/Cart.jsp").forward(request, response);
     }
 
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return A string containing servlet description.
+     */
     @Override
     public String getServletInfo() {
         return "Cart Controller handles cart operations";
     }
-
 }
