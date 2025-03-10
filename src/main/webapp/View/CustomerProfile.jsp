@@ -1,3 +1,4 @@
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@page import="Models.Customer" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -18,6 +19,19 @@
         %>
 
         <h1 class="text-center mb-4" style="font-size: 35px;">Account</h1>
+        <c:if test="${not empty sessionScope.message}">
+            <div class="alert alert-${sessionScope.messageType} alert-dismissible fade show" role="alert">
+                ${sessionScope.message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <% session.removeAttribute("message");
+        session.removeAttribute("messageType");%>
+        </c:if>
+
+
+
         <div class="container mt-3">
             <div class="account-information">
                 <div class="row">

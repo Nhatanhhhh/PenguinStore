@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Models;
 
 import java.util.Date;
@@ -24,10 +20,16 @@ public class Feedback {
     private boolean isResolved;
     private boolean isViewed;
 
+    // Thuộc tính mới
+    private String imgName;
+    private double price;
+    private String sizeName;
+
     public Feedback() {
     }
 
-    public Feedback(String feedbackID, String customerID, String productID, String orderID, String comment, String customerName, String getProductName, double rating, Date feedbackCreateAt, boolean isResolved, boolean isViewed) {
+    public Feedback(String feedbackID, String customerID, String productID, String orderID, String comment, String customerName, String getProductName,
+            double rating, Date feedbackCreateAt, boolean isResolved, boolean isViewed, String imgName, double price, String sizeName) {
         this.feedbackID = feedbackID;
         this.customerID = customerID;
         this.productID = productID;
@@ -39,6 +41,9 @@ public class Feedback {
         this.feedbackCreateAt = feedbackCreateAt;
         this.isResolved = isResolved;
         this.isViewed = isViewed;
+        this.imgName = imgName;
+        this.price = price;
+        this.sizeName = sizeName;
     }
 
     public String getFeedbackID() {
@@ -89,12 +94,12 @@ public class Feedback {
         this.customerName = customerName;
     }
 
-    public String getGetProductName() {
+    public String getProductName() {  // Đổi từ getGetProductName thành getProductName
         return getProductName;
     }
 
-    public void setGetProductName(String getProductName) {
-        this.getProductName = getProductName;
+    public void setProductName(String productName) {  // Đổi từ setGetProductName thành setProductName
+        this.getProductName = productName;
     }
 
     public double getRating() {
@@ -129,8 +134,48 @@ public class Feedback {
         this.isViewed = isViewed;
     }
 
+    // Getter và Setter mới
+    public String getImgName() {
+        return imgName;
+    }
+
+    public void setImgName(String imgName) {
+        this.imgName = imgName;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public String getSizeName() {
+        return sizeName;
+    }
+
+    public void setSizeName(String sizeName) {
+        this.sizeName = sizeName;
+    }
+
     @Override
     public String toString() {
-        return "Feedback{" + "feedbackID=" + feedbackID + ", customerID=" + customerID + ", productID=" + productID + ", orderID=" + orderID + ", comment=" + comment + ", customerName=" + customerName + ", getProductName=" + getProductName + ", rating=" + rating + ", feedbackCreateAt=" + feedbackCreateAt + ", isResolved=" + isResolved + ", isViewed=" + isViewed + '}';
+        return "Feedback{"
+                + "feedbackID='" + feedbackID + '\''
+                + ", customerID='" + customerID + '\''
+                + ", productID='" + productID + '\''
+                + ", orderID='" + orderID + '\''
+                + ", comment='" + comment + '\''
+                + ", customerName='" + customerName + '\''
+                + ", getProductName='" + getProductName + '\''
+                + ", rating=" + rating
+                + ", feedbackCreateAt=" + feedbackCreateAt
+                + ", isResolved=" + isResolved
+                + ", isViewed=" + isViewed
+                + ", imgName='" + imgName + '\''
+                + ", price=" + price
+                + ", sizeName='" + sizeName + '\''
+                + '}';
     }
 }

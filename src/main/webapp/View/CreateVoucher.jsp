@@ -75,6 +75,6 @@
                     </div>
                 </div>
             </div>
-
+            <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
 </html>

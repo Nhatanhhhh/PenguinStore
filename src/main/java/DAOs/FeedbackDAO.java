@@ -230,7 +230,7 @@ public class FeedbackDAO {
                 Feedback feedback = new Feedback();
                 feedback.setFeedbackID(rs.getString("feedbackID"));
                 feedback.setCustomerName(rs.getString("customerName"));
-                feedback.setGetProductName(rs.getString("productName"));
+                feedback.setProductName(rs.getString("productName"));
                 feedback.setComment(rs.getString("comment"));
                 feedback.setRating(rs.getDouble("rating"));
                 feedback.setFeedbackCreateAt(rs.getTimestamp("feedbackCreateAt"));
@@ -243,6 +243,55 @@ public class FeedbackDAO {
             e.printStackTrace();
         }
         return feedbackList;
+    }
+
+    public static boolean isProductInOrder(String orderID, String productID) {
+        String sql = "SELECT COUNT(*) FROM OrderDetail od "
+                + "JOIN ProductVariants pv ON od.productVariantID = pv.proVariantID "
+                + "WHERE od.orderID = ? AND pv.productID = ?";
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, orderID);
+            ps.setString(2, productID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static List<Feedback> getProductsByOrderID(String orderID) {
+        List<Feedback> productList = new ArrayList<>();
+        String sql = "SELECT DISTINCT p.productID, p.productName, img.imgName, p.price, s.sizeName, o.orderID "
+                + "FROM OrderDetail od "
+                + "JOIN [Order] o ON od.orderID = o.orderID "
+                + "JOIN ProductVariants pv ON od.productVariantID = pv.proVariantID "
+                + "JOIN Product p ON pv.productID = p.productID "
+                + "LEFT JOIN Size s ON pv.sizeID = s.sizeID "
+                + "LEFT JOIN Image img ON p.productID = img.productID "
+                + "WHERE o.orderID = ?";
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, orderID);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Feedback feedback = new Feedback();
+                feedback.setProductID(rs.getString("productID"));
+                feedback.setOrderID(rs.getString("orderID"));
+                feedback.setProductName(rs.getString("productName"));
+                feedback.setImgName(rs.getString("imgName"));
+                feedback.setPrice(rs.getDouble("price"));
+                feedback.setSizeName(rs.getString("sizeName"));
+
+                productList.add(feedback);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productList;
     }
 
 }

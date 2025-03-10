@@ -73,45 +73,26 @@ public class FeedbackController extends HttpServlet {
             return;
         }
 
-        Customer customer = (Customer) session.getAttribute("user");
-        String customerID = customer.getCustomerID();
+        String orderID = request.getParameter("orderID");
+        if (orderID != null && !orderID.isEmpty()) {
+            // Lấy danh sách sản phẩm theo orderID mà không lấy feedback
+            List<Feedback> productList = FeedbackDAO.getProductsByOrderID(orderID);
 
-        List<Feedback> feedbackList = FeedbackDAO.getOrderedProductsForFeedback(customerID);
-        System.out.println("Feedback List Size: " + feedbackList.size());
-        Set<String> uniqueProducts = new HashSet<>();
-        for (Feedback feedback : feedbackList) {
-            System.out.println("Feedback Product ID: " + feedback.getProductID());
-            uniqueProducts.add(feedback.getProductID());
-        }
-        System.out.println("Unique Products: " + uniqueProducts.size()); // Kiểm tra số lượng sản phẩm duy nhất
-        request.setAttribute("feedbackList", feedbackList);
-
-        // Duyệt qua danh sách feedback để lấy thông tin chi tiết sản phẩm
-        for (Feedback feedback : feedbackList) {
-            if (feedback.getProductID() != null) {
-                Product product = FeedbackDAO.getProductByID(feedback.getProductID());
-                Size size = FeedbackDAO.getSizeByProductVariant(feedback.getProductID());
-
-                if (product != null) {
-                    System.out.println("Product found: " + product.getProductName());
-                    request.setAttribute("product_" + feedback.getProductID(), product);
-                } else {
-                    System.out.println("Product not found for ID: " + feedback.getProductID());
-                }
-
-                if (size != null) {
-                    System.out.println("Size found: " + size.getSizeName());
-                    request.setAttribute("size_" + feedback.getProductID(), size);
-                } else {
-                    System.out.println("Size not found for Product ID: " + feedback.getProductID());
-                }
+            if (productList != null && !productList.isEmpty()) {
+                request.setAttribute("productList", productList);
+                request.getRequestDispatcher("View/Feedback.jsp").forward(request, response);
+                return;
+            } else {
+                session.setAttribute("message", "Không tìm thấy sản phẩm cho đơn hàng này!");
+                session.setAttribute("messageType", "error");
+                response.sendRedirect("OrderHistory");
+                return;
             }
         }
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("View/Feedback.jsp");
-        dispatcher.forward(request, response);
-
-        dispatcher.forward(request, response);
+        session.setAttribute("message", "OrderID không hợp lệ!");
+        session.setAttribute("messageType", "error");
+        response.sendRedirect("OrderHistory");
     }
 
     /**
@@ -125,54 +106,7 @@ public class FeedbackController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            System.out.println("Error: User session is NULL, redirecting to login.");
-            response.sendRedirect("Login");
-            return;
-        }
-
-        Customer customer = (Customer) session.getAttribute("user");
-        String customerID = customer.getCustomerID(); // Lấy từ session
-        String productID = request.getParameter("productID");
-        String orderID = request.getParameter("orderID");
-        String comment = request.getParameter("review");
-        double rating = Double.parseDouble(request.getParameter("rating"));
-
-        // Kiểm tra xem customerID có hợp lệ không
-        if (customerID == null || customerID.trim().isEmpty()) {
-            System.out.println("Error: customerID is NULL or empty.");
-            response.sendRedirect("error.jsp");
-            return;
-        }
-        LocalDate today = LocalDate.now();
-
-        System.out.println("customerID: " + customerID);
-        System.out.println("productID: " + productID);
-        System.out.println("orderID: " + orderID);
-
-        Feedback feedback = new Feedback();
-        feedback.setFeedbackID(java.util.UUID.randomUUID().toString());
-        feedback.setCustomerID(customerID);
-        feedback.setProductID(productID);
-        feedback.setOrderID(orderID);
-        feedback.setComment(comment);
-        feedback.setRating(rating);
-        feedback.setFeedbackCreateAt(Date.valueOf(today)); 
-        feedback.setIsResolved(false);
-        feedback.setIsViewed(false);
-
-        boolean isSaved = FeedbackDAO.saveFeedback(feedback);
-
-        if (isSaved) {
-            session.setAttribute("message", "Send feedback successfully!");
-            session.setAttribute("messageType", "success");
-        } else {
-            session.setAttribute("message", "Send feedback failure! Please try again.");
-            session.setAttribute("messageType", "error");
-        }
-
-        response.sendRedirect("Feedback");
+        processRequest(request, response);
     }
 
     /**

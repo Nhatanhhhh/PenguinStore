@@ -21,6 +21,8 @@
         <url-pattern>/DashBoardForAdmin</url-pattern>
         <url-pattern>/DashBoardForStaff</url-pattern>
         <url-pattern>/ListFeedbackForStaff</url-pattern>
+        <url-pattern>/ManageProduct</url-pattern>
+        <url-pattern>/Type</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>AuthorizationFilter</filter-name>
@@ -35,8 +37,10 @@
         <url-pattern>/Order</url-pattern>
         <url-pattern>/EditProfile</url-pattern>
         <url-pattern>/Feedback</url-pattern>
-        <url-pattern>/ChangePassword</url-pattern>
-        <url-pattern>/ChangePassword</url-pattern>
+        <url-pattern>/ListFeedbackForStaff</url-pattern>
+        <url-pattern>/ManageProduct</url-pattern>
+        <url-pattern>/Statistic</url-pattern>
+        <url-pattern>/Type</url-pattern>
     </filter-mapping>
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -161,6 +165,10 @@
     <servlet>
         <servlet-name>OrderDeatilStaff</servlet-name>
         <servlet-class>Controller.OrderDetailStaff</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateFeedbackController</servlet-name>
+        <servlet-class>Controller.CreateFeedbackController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
@@ -292,6 +300,10 @@
     <servlet-mapping>
         <servlet-name>OrderDeatilStaff</servlet-name>
         <url-pattern>/OrderDetailStaff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateFeedbackController</servlet-name>
+        <url-pattern>/CreateFeedback</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

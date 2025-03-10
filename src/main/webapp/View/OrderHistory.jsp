@@ -158,8 +158,11 @@
                                     <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
                                     <button type="submit" class="button button-outline-dark">View Order</button>
                                 </form>
-                                <% if ("Delivery successful".equals(order.getStatusName())) { %>
-                                <button class="button button-dark">Write A Review</button>
+                                <% if ("Delivery successful".equals(order.getStatusName())) {%>
+                                <form action="<%= request.getContextPath()%>/Feedback" method="GET">
+                                    <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
+                                    <button class="button button-dark">Write A Review</button>
+                                </form>
                                 <% } else { %>
                                 <button class="btn btn-cancel">Cancel Order</button>
                                 <% } %>

@@ -47,18 +47,15 @@ public class ProductController extends HttpServlet {
         String action = Objects.requireNonNullElse(request.getParameter("action"), "view");
         String typeDetail = request.getParameter("type");
         String categoryDetail = request.getParameter("category");
-
         ProductDAO productDAO = new ProductDAO();
         TypeDAO typeDAO = new TypeDAO();
         ProductVariantDAO productVariantDAO = new ProductVariantDAO();
-
         List<Type> listType = typeDAO.getAll();
         Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
         for (Type type : listType) {
             categoryMap.computeIfAbsent(type.getCategoryName(), k -> new ArrayList<>()).add(type);
         }
         request.setAttribute("categoryMap", categoryMap);
-
         switch (action) {
             case "view":
                 request.setAttribute("listProduct", productDAO.readAll());

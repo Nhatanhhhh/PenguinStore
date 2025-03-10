@@ -12,170 +12,187 @@
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/customer.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/feedback.css"/>
+
+        <style>
+            .rating {
+                display: flex;
+                justify-content: center;
+                flex-direction: row-reverse; /* Sao từ trái sang phải */
+                gap: 5px;
+                font-size: 30px;
+                cursor: pointer;
+            }
+
+            .rating input {
+                display: none;
+            }
+
+            .rating label {
+                color: #ccc;
+                transition: color 0.3s, transform 0.2s;
+                cursor: pointer;
+            }
+
+            .rating label:hover,
+            .rating label:hover ~ label {
+                color: gold;
+                transform: scale(1.2);
+            }
+
+            .rating input:checked ~ label {
+                color: gold;
+            }
+
+
+            .submit-btn {
+                width: 100%;
+                padding: 10px;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+                background-color: #000;
+                color: white;
+                cursor: not-allowed;
+                opacity: 0.5;
+                transition: opacity 0.3s, background-color 0.3s;
+            }
+
+            .submit-btn.active {
+                opacity: 1;
+                cursor: pointer;
+                background-color: #198754;
+            }
+
+            .submit-btn.active:hover {
+                background-color: #145c32;
+            }
+        </style>
     </head>
     <body>
         <%@include file="Header.jsp"%>
         <h1 class="text-center mb-4" style="font-size: 35px;">Feedback</h1>
 
-        <%-- Hiển thị thông báo nếu có --%>
         <c:if test="${not empty sessionScope.message}">
-            <div class="alert ${sessionScope.messageType == 'success' ? 'alert-success' : 'alert-danger'} alert-dismissible fade show" role="alert">
+            <div class="alert alert-${sessionScope.messageType}">
                 ${sessionScope.message}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="hideAlert()">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
-            <%-- Chỉ xóa message sau khi hiển thị --%>
-            <c:remove var="message" scope="session"/>
-            <c:remove var="messageType" scope="session"/>
+            <% session.removeAttribute("message");
+                session.removeAttribute("messageType");%>
         </c:if>
 
         <div class="container mt-4 mb-4 pb-4">
             <c:choose>
-                <c:when test="${not empty feedbackList}">
-                    <c:forEach var="feedback" items="${feedbackList}">
-                        <c:if test="${not empty feedback.productID}">
-                            <c:set var="productKey" value="product_${feedback.productID}" />
-                            <c:set var="sizeKey" value="size_${feedback.productID}" />
-                            <c:set var="product" value="${requestScope[productKey]}" />
-                            <c:set var="size" value="${requestScope[sizeKey]}" />
-                        </c:if>
-
+                <c:when test="${not empty productList}">
+                    <c:forEach var="product" items="${productList}">
                         <div class="card p-3 mb-3">
                             <div class="row">
                                 <div class="col-md-2">
-                                    <img src="<%= request.getContextPath()%>/Image/Product/${product.imgName}" class="img-fluid" alt="Product Image">
+                                    <img src="<%= request.getContextPath()%>/Image/Product/${product.imgName}" 
+                                         class="img-fluid rounded" alt="Product Image">
                                 </div>
                                 <div class="col-md-8">
                                     <h5><strong>${product.productName}</strong></h5>
-                                    <p>Size: ${size.sizeName}</p>
-                                </div>
-                                <div class="col-md-2 text-right">
-                                    <h5><strong>$${product.price}</strong></h5>
+                                    <p>Size: <strong>${product.sizeName}</strong></p>
+                                    <p>Price: <strong>${product.price}</strong></p>
                                 </div>
                             </div>
                         </div>
 
-                        <c:choose>
-                            <c:when test="${empty feedback.comment}">
-                                <!-- Nếu chưa có feedback, cho phép đánh giá -->
-                                <form action="<%= request.getContextPath()%>/Feedback" method="POST">
-                                    <input type="hidden" name="customerID" value="${customer.customerID}">
-                                    <input type="hidden" name="productID" value="${feedback.productID}">
-                                    <input type="hidden" name="orderID" value="${feedback.orderID}">
+                        <!-- Form để submit đánh giá -->
+                        <form action="<%= request.getContextPath()%>/CreateFeedback" method="POST" class="feedback-form">
+                            <input type="hidden" name="productID" value="${product.productID}">
+                            <input type="hidden" name="orderID" value="${product.orderID}">
 
-                                    <!-- Rating Section -->
-                                    <div class="rating-section">
-                                        <div class="rating-label">Product quality</div>
-                                        <div class="star-rating">
-                                            <input type="radio" name="rating" id="star5-${feedback.productID}" value="5">
-                                            <label for="star5-${feedback.productID}" title="Great">★</label>
-                                            <input type="radio" name="rating" id="star4-${feedback.productID}" value="4">
-                                            <label for="star4-${feedback.productID}" title="Good">★</label>
-                                            <input type="radio" name="rating" id="star3-${feedback.productID}" value="3">
-                                            <label for="star3-${feedback.productID}" title="Medium">★</label>
-                                            <input type="radio" name="rating" id="star2-${feedback.productID}" value="2">
-                                            <label for="star2-${feedback.productID}" title="Bad">★</label>
-                                            <input type="radio" name="rating" id="star1-${feedback.productID}" value="1">
-                                            <label for="star1-${feedback.productID}" title="Very Bad">★</label>
-                                        </div>
-                                    </div>
+                            <!-- Chọn số sao -->
+                            <div class="text-center mb-3">
+                                <label>Rate this product:</label>
+                                <div class="rating">
+                                    <input type="radio" name="rating-${product.productID}" id="star1-${product.productID}" value="1">
+                                    <label for="star1-${product.productID}">★</label>
 
-                                    <!-- Feedback content -->
-                                    <div class="input-group">
-                                        <textarea id="review" name="review" rows="8" placeholder="Enter the evaluation content"
-                                                  class="form-control" maxlength="500"></textarea>
-                                    </div>
+                                    <input type="radio" name="rating-${product.productID}" id="star2-${product.productID}" value="2">
+                                    <label for="star2-${product.productID}">★</label>
 
-                                    <p id="error-message" style="color: red; display: none;">Your feedback must contain at least 2 valid sentences.</p>
+                                    <input type="radio" name="rating-${product.productID}" id="star3-${product.productID}" value="3">
+                                    <label for="star3-${product.productID}">★</label>
 
-                                    <div class="mt-3 text-right">
-                                        <button type="submit" class="button button-dark" id="submit-btn" disabled>Submit Feedback</button>
-                                    </div>
+                                    <input type="radio" name="rating-${product.productID}" id="star4-${product.productID}" value="4">
+                                    <label for="star4-${product.productID}">★</label>
 
-                                </form>
-                            </c:when>
-                            <c:otherwise>
-                                <!-- Nếu đã có feedback, hiển thị rating và comment -->
-                                <div class="mt-3">
-                                    <h6><strong>Assess: </strong></h6>
-                                    <div class="star-rating">
-                                        <c:forEach var="i" begin="1" end="5">
-                                            <c:choose>
-                                                <c:when test="${i <= feedback.rating}">
-                                                    <span class="star checked">★</span>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <span class="star">★</span>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </c:forEach>
-                                    </div>
+                                    <input type="radio" name="rating-${product.productID}" id="star5-${product.productID}" value="5">
+                                    <label for="star5-${product.productID}">★</label>
                                 </div>
+                            </div>
 
-                                <div class="mt-3">
-                                    <h6><strong>Comment:</strong></h6>
-                                    <p>${feedback.comment}</p>
-                                </div>
-                            </c:otherwise>
-                        </c:choose>
+                            <!-- Nhập đánh giá -->
+                            <div class="form-group">
+                                <textarea id="review-${product.productID}" name="review" rows="4"
+                                          class="form-control review-input" placeholder="Write your review here..."></textarea>
+                            </div>
+
+                            <button type="submit" class="submit-btn mt-3" disabled>Submit Feedback</button>
+                        </form>
                     </c:forEach>
                 </c:when>
                 <c:otherwise>
-                    <p class="text-center">There are no feedback</p>
+                    <p class="text-center">No products found for this order.</p>
                 </c:otherwise>
             </c:choose>
         </div>
-
 
         <%@include file="Footer.jsp"%>
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
 
         <script>
-            setTimeout(function () {
-                let alert = document.querySelector('.alert');
-                if (alert) {
-                    alert.style.display = 'none';
-                }
-            }, 5000); // Ẩn sau 5 giây
-
-            function hideAlert() {
-                let alert = document.querySelector('.alert');
-                if (alert) {
-                    alert.style.display = 'none';
-                }
-            }
-
             document.addEventListener("DOMContentLoaded", function () {
-                let textarea = document.getElementById("review");
-                let submitBtn = document.getElementById("submit-btn");
-                let errorMessage = document.getElementById("error-message");
+                let forms = document.querySelectorAll(".feedback-form");
 
-                textarea.addEventListener("input", function () {
-                    let feedback = textarea.value.trim();
+                forms.forEach(form => {
+                    let stars = form.querySelectorAll(".rating input");
+                    let submitBtn = form.querySelector(".submit-btn");
+                    let reviewInput = form.querySelector(".review-input");
 
-                    // Tách câu dựa trên dấu câu kết thúc (. ! ?)
-                    let sentences = feedback.split(/[.!?]/).map(sentence => sentence.trim()).filter(sentence => sentence.length > 0);
+                    function checkFormValidity() {
+                        let selectedRating = form.querySelector(".rating input:checked");
+                        let reviewText = reviewInput.value.trim();
+                        let isValid = selectedRating && reviewText.length >= 10; // Ít nhất 10 ký tự để gửi
 
-                    // Kiểm tra số lượng từ trong mỗi câu (mỗi câu ít nhất 2 từ)
-                    let validSentences = sentences.filter(sentence => sentence.split(/\s+/).length >= 2);
+                        console.log("Checking form validity...");
+                        console.log("Selected Rating: ", selectedRating ? selectedRating.value : "None");
+                        console.log("Review Length: ", reviewText.length);
 
-                    // Ngăn chặn spam (không cho phép nhập lặp một ký tự quá nhiều lần như "aaaaaaa")
-                    let spamPattern = /^([a-zA-Z])\1{2,}$/;
-                    let isSpam = feedback.split(/\s+/).some(word => spamPattern.test(word));
-
-                    // Điều kiện hợp lệ: ít nhất 1 câu, mỗi câu có ít nhất 2 từ, tổng số câu không quá 50, và không có spam
-                    if (validSentences.length >= 1 && validSentences.length <= 50 && !isSpam) {
-                        submitBtn.disabled = false;
-                        errorMessage.style.display = "none";
-                    } else {
-                        submitBtn.disabled = true;
-                        errorMessage.style.display = "block";
-                        errorMessage.textContent = "Feedback must have at least 1 valid sentence with at least 2 words, and at most 50 sentences.";
+                        if (isValid) {
+                            submitBtn.disabled = false;
+                            submitBtn.classList.add("active");
+                        } else {
+                            submitBtn.disabled = true;
+                            submitBtn.classList.remove("active");
+                        }
                     }
+
+                    stars.forEach(star => {
+                        star.addEventListener("change", checkFormValidity);
+                    });
+
+                    reviewInput.addEventListener("input", checkFormValidity);
+
+                    // ✅ Thêm console log và đảm bảo alert luôn hiển thị khi có lỗi
+                    form.addEventListener("submit", function (event) {
+                        let selectedRating = form.querySelector(".rating input:checked");
+                        let reviewText = reviewInput.value.trim();
+
+                        console.log("Submitting form...");
+                        console.log("Selected Rating: ", selectedRating ? selectedRating.value : "None");
+                        console.log("Review Length: ", reviewText.length);
+
+                        if (!selectedRating || reviewText.length < 10) {
+                            event.preventDefault();
+                            alert("⚠️ Vui lòng chọn số sao và nhập ít nhất 10 ký tự trước khi gửi!");
+                            return;
+                        }
+                    });
                 });
             });
-
         </script>
 
     </body>

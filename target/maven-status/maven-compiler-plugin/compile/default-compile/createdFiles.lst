@@ -25,6 +25,7 @@ Controller\DashBoardForStaffServlet.class
 Controller\LoginManagerController.class
 DTO\ShowCusDTO.class
 Models\StatisticProduct.class
+Controller\CreateFeedbackController.class
 Controller\DashBoardForAdminServlet.class
 Controller\TypeController.class
 Controller\VerifyEmailRSPController.class

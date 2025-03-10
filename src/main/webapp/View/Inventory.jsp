@@ -28,15 +28,15 @@
 
             #layoutSidenav {
                 display: flex;
-                min-height: 100vh; /* Giữ chiều cao tự động */
+                min-height: 100vh;
             }
 
             /* Sidebar Navigation */
             .col-md-2 {
                 display: flex;
-                flex-direction: column; /* Giúp navigation tự động mở rộng */
+                flex-direction: column;
                 flex-grow: 1;
-                min-height: 100vh; /* Luôn chiếm toàn bộ chiều cao màn hình */
+                min-height: 100vh;
                 padding-right: 0;
             }
 
@@ -47,7 +47,7 @@
                 flex-direction: column;
                 padding-left: 0 !important;
                 margin-left: 0 !important;
-                padding-right: 0 !important; /* Đảm bảo padding right bằng 0 */
+                padding-right: 0 !important;
             }
         </style>
     </head>
@@ -65,20 +65,15 @@
                 <%@include file="Admin/HeaderAD.jsp"%>
                 <div class="container p-3">
                     <h2>Product Images</h2>
-                    <div class="image-container">
-                        <c:forEach var="image" items="${product.imgName}">
-                            <div class="image-item">
-                                <img src="${pageContext.request.contextPath}/uploads/${image.fileName}" class="product-image" alt="Product Image">
-                                <button type="button" class="delete-image" data-image-id="${image.imageID}">×</button>
-                            </div>
-                        </c:forEach>
+                    <c:set var="imgList" value="${fn:split(product.imgName, ',')}" />
+                    <div class="product-images">
+                        <div class="thumbnail-container">
+                            <c:forEach var="img" items="${imgList}">
+                                <img src="Image/Product/${fn:replace(img, ' ', '')}" alt="Thumbnail" >
+                            </c:forEach>
+                        </div>
+                        <img src="Image/Product/${imgList[0]}" class="product-main-img" alt="Product Image" height="300px" width="300px" style="margin-left: 20px">
                     </div>
-                    <form id="uploadImageForm" action="<c:url value='/ManageProduct'/>" method="POST" enctype="multipart/form-data">
-                        <input type="hidden" name="action" value="uploadImage">
-                        <input type="hidden" name="productID" value="${product.productID}">
-                        <input type="file" name="image" accept="image/*" required>
-                        <button type="submit" class="btn btn-primary btn-sm">Upload Image</button>
-                    </form>
                     <h2>Product Information</h2>
                     <form id="editProductForm" action="<c:url value='/ManageProduct'/>" method="POST">
                         <input type="hidden" name="action" value="updateProduct">
@@ -142,6 +137,7 @@
                             </c:forEach>
                         </tbody>
                     </table>
+
                 </div>
             </div>
         </div>
@@ -152,6 +148,8 @@
                 const cancelButton = document.getElementById("cancelEditBtn");
                 const form = document.getElementById("editProductForm");
                 const inputs = document.querySelectorAll("#productName, #description, #price");
+                const thumbnails = document.querySelectorAll(".thumbnail-container img");
+                const mainImage = document.querySelector(".product-main-img");
                 let originalValues = {};
                 editButton.addEventListener("click", function () {
                     // Lưu giá trị ban đầu
@@ -188,20 +186,13 @@
                             })
                             .catch(error => console.error("Error updating product:", error));
                 });
-                document.querySelectorAll(".delete-image").forEach(button => {
-                    button.addEventListener("click", function () {
-                        if (confirm("Are you sure you want to delete this image?")) {
-                            let imageID = this.getAttribute("data-image-id");
-                            fetch("<c:url value='/ManageProduct'/>", {
-                                method: "POST",
-                                headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                                body: new URLSearchParams({action: "deleteImage", imageID: imageID})
-                            }).then(response => response.text())
-                                    .then(data => {
-                                        alert("Image deleted successfully!");
-                                        location.reload();
-                                    }).catch(error => console.error("Error deleting image:", error));
-                        }
+                thumbnails.forEach(thumbnail => {
+                    thumbnail.addEventListener("click", function () {
+                        mainImage.src = this.src;
+
+                        thumbnails.forEach(img => img.classList.remove("active"));
+
+                        this.classList.add("active");
                     });
                 });
             });

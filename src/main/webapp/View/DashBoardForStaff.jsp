@@ -118,7 +118,7 @@
                                         %>
                                         <tr>
                                             <td><%= fb.getCustomerName()%></td>
-                                            <td><%= fb.getGetProductName()%></td>
+                                            <td><%= fb.getProductName()%></td>
                                             <td><%= fb.getComment()%></td>
                                             <td><%= fb.getRating()%></td>
                                             <%
