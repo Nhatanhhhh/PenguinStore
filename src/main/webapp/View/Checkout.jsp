@@ -84,6 +84,51 @@
 
 </html>
 <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let subtotal = parseFloat(document.getElementById("subtotal").textContent);
+        let shippingFee = 40.00;
+        let discount = 0.00;
+
+        function updateTotal() {
+            let total = subtotal + shippingFee - discount;
+            document.getElementById("total").textContent = "$" + total.toFixed(2);
+            document.getElementById("hiddenTotal").value = total.toFixed(2);
+        }
+
+        document.getElementById("applyVoucher").addEventListener("click", function () {
+            let voucherCode = document.getElementById("voucher").value;
+            if (!voucherCode) {
+                alert("Vui lòng nh?p mã voucher!");
+                return;
+            }
+
+            $.ajax({
+                url: "<%= request.getContextPath()%>/UseVoucher",
+                type: "GET",
+                data: {
+                    voucherCode: voucherCode,
+                    subtotal: parseFloat(document.getElementById("subtotal").textContent)
+                },
+                dataType: "json",
+                success: function (response) {
+                    if (response.status === "error") {
+                        alert(response.message);
+                        document.getElementById("discount").textContent = "$0.00";
+                    } else {
+                        document.getElementById("discount").textContent = "$" + response.discount.toFixed(2);
+                    }
+                },
+                error: function () {
+                    alert("L?i khi ki?m tra voucher!");
+                }
+            });
+        });
+
+
+        updateTotal();
+    });
+
     document.addEventListener("DOMContentLoaded", function () {
         let params = new URLSearchParams(window.location.search);
         let voucherCode = params.get("voucher");
@@ -91,8 +136,4 @@
             document.getElementById("voucher").value = voucherCode; // ?i?n mã vào ô input
         }
     });
-    function confirmUseVoucher(voucherCode) {
-        localStorage.setItem("selectedVoucher", voucherCode); // L?u mã voucher vào localStorage
-        window.location.href = "<%= request.getContextPath()%>/Checkout"; // Chuy?n h??ng ??n trang Checkout
-    }
 </script>

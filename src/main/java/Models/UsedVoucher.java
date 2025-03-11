@@ -34,6 +34,21 @@ public class UsedVoucher {
         this.status = status;
     }
 
+    public UsedVoucher(String usedVoucherID, String voucherID, String customerID, String voucherCode, Date usedAt, int status, double discountPer, double maxDiscountAmount, double discountAmount, double minOrderValue, Date validFrom, Date validUntil) {
+        this.usedVoucherID = usedVoucherID;
+        this.voucherID = voucherID;
+        this.customerID = customerID;
+        this.voucherCode = voucherCode;
+        this.usedAt = usedAt;
+        this.status = status;
+        this.discountPer = discountPer;
+        this.maxDiscountAmount = maxDiscountAmount;
+        this.discountAmount = discountAmount;
+        this.minOrderValue = minOrderValue;
+        this.validFrom = validFrom;
+        this.validUntil = validUntil;
+    }
+
     // Constructor
     public UsedVoucher(String voucherID, double discountPer, double maxDiscountAmount, double discountAmount, double minOrderValue, Date validFrom, Date validUntil, int status) {
         this.voucherID = voucherID;

@@ -36,7 +36,6 @@
         <url-pattern>/Feedback</url-pattern>
         <url-pattern>/ChangePassword</url-pattern>
         <url-pattern>/ChangePassword</url-pattern>
-        
     </filter-mapping>
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -161,6 +160,14 @@
     <servlet>
         <servlet-name>OrderDeatil</servlet-name>
         <servlet-class>Controller.OrderDetail</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>VoucherServlet</servlet-name>
+        <servlet-class>Controller.VoucherServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UseVoucher</servlet-name>
+        <servlet-class>Controller.UseVoucher</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
@@ -292,6 +299,14 @@
     <servlet-mapping>
         <servlet-name>OrderDeatil</servlet-name>
         <url-pattern>/OrderDetail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>VoucherServlet</servlet-name>
+        <url-pattern>/VoucherServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UseVoucher</servlet-name>
+        <url-pattern>/UseVoucher</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

@@ -20,7 +20,7 @@
     <body>
         <%@include file="Header.jsp"%>
 
-        <%                Customer customer = (Customer) session.getAttribute("user");
+        <%                Customer customer = (Customer) session.getAttribute("user");  
         %>
         <h1 class="text-center mb-4" style="font-size: 35px;">Your Voucher</h1>
 

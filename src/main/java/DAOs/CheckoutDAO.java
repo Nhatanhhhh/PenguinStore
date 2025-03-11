@@ -124,4 +124,40 @@ public class CheckoutDAO {
         }
         return null;
     }
+
+   public UsedVoucher getUsedVoucherByCode(String customerID, String voucherCode) {
+    String query = "SELECT uv.[usedVoucherID], uv.[voucherID], uv.[customerID], uv.[usedAt], uv.[status], " +
+                   "v.[voucherCode], v.[discountPer], v.[discountAmount], v.[minOrderValue], " +
+                   "v.[validFrom], v.[validUntil], v.[maxDiscountAmount] " +
+                   "FROM dbo.[UsedVoucher] uv " +
+                   "JOIN dbo.[Vouchers] v ON uv.[voucherID] = v.[voucherID] " +
+                   "WHERE uv.[customerID] = ? AND v.[voucherCode] = ?";
+
+    try (Connection conn = DBContext.getConn();
+         PreparedStatement ps = conn.prepareStatement(query)) {
+        ps.setString(1, customerID);
+        ps.setString(2, voucherCode);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return new UsedVoucher(
+                rs.getString("usedVoucherID"),
+                rs.getString("voucherID"),
+                rs.getString("customerID"),
+                rs.getString("voucherCode"),
+                rs.getDate("usedAt"),
+                rs.getInt("status"),
+                rs.getDouble("discountPer"),
+                rs.getDouble("maxDiscountAmount"),
+                rs.getDouble("discountAmount"),
+                rs.getDouble("minOrderValue"),
+                rs.getDate("validFrom"),
+                rs.getDate("validUntil")
+            );
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+
 }
