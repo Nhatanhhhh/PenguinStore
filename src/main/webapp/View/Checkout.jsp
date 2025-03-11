@@ -33,7 +33,7 @@
                     <input type="hidden" name="discount" id="hiddenDiscount">
                     <input type="hidden" name="total" id="hiddenTotal">
 
-                    <button type="submit" id="payNow">Pay Now</button>
+                    <button type="submit" id="payNow">Order Now</button>
                 </form>
             </div>
             <div class="summary-section">
@@ -55,11 +55,14 @@
                 <% }%>
                 <hr>
                 <p>Subtotal: $<span id="subtotal"><%= String.format("%.2f", subtotal)%></span></p>
-                <p>My Voucher <a href="#" id="viewVoucher">View</a></p>
+                <a href="<%= request.getContextPath()%>/VVCustomer" class="btn btn-primary">
+                    View Vouchers
+                </a>
 
-                <div style="display: flex; gap: 10px;">
+
+                <div style="display: flex; gap: 10px; align-items: center;">
                     <input type="text" id="voucher" placeholder="Voucher code">
-                    <button id="applyVoucher" style="display: none;">Apply</button>
+                    <button type="button" id="applyVoucher" class="btn btn-danger btn-sm" style="width: 60px;">Apply</button>
                 </div>
 
                 <p>Voucher Discount: <span id="discount">$0</span></p>
@@ -69,99 +72,27 @@
                 <p>Your cart is empty!</p>
                 <% }%>
             </div>
+
         </div>
-
-        <!-- Modal Hi?n Th? Voucher -->
-        <div id="voucherModal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Available Vouchers</h2>
-                <div id="voucherList">
-                    <% List<Voucher> vouchers = (List<Voucher>) request.getAttribute("vouchers"); %>
-                    <% if (vouchers != null && !vouchers.isEmpty()) { %>
-                        <% for (Voucher voucher : vouchers) { %>
-                            <div class="voucher-item" 
-                                 data-code="<%= voucher.getVoucherCode()%>" 
-                                 data-discount-per="<%= voucher.getDiscountPer()%>"
-                                 data-discount-amount="<%= voucher.getDiscountAmount()%>"
-                                 data-min-order="<%= voucher.getMinOrderValue()%>">
-                                <strong><%= voucher.getVoucherCode()%></strong> - 
-                                <%= voucher.getDiscountPer()%>% off (Max $<%= voucher.getDiscountAmount()%>) <br>
-                                Min Order: $<%= voucher.getMinOrderValue()%>
-                                <% if (voucher.isVoucherStatus()) { %>
-                                    <button class="useVoucher">Use</button>
-                                <% } else { %>
-                                    <span style="color: red;">Expired</span>
-                                <% } %>
-                            </div>
-                        <% } %>
-                    <% } else { %>
-                        <p>No available vouchers.</p>
-                    <% } %>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            document.getElementById('viewVoucher').addEventListener('click', function (e) {
-                e.preventDefault();
-                document.getElementById('voucherModal').style.display = 'block';
-            });
-
-            document.querySelector('.close').addEventListener('click', function () {
-                document.getElementById('voucherModal').style.display = 'none';
-            });
-
-            document.querySelectorAll('.useVoucher').forEach(button => {
-                button.addEventListener('click', function () {
-                    let voucherItem = this.closest('.voucher-item');
-                    let code = voucherItem.getAttribute('data-code');
-                    let discountPer = parseFloat(voucherItem.getAttribute('data-discount-per'));
-                    let discountAmount = parseFloat(voucherItem.getAttribute('data-discount-amount'));
-                    let minOrder = parseFloat(voucherItem.getAttribute('data-min-order'));
-
-                    document.getElementById('voucher').value = code;
-                    document.getElementById('applyVoucher').style.display = 'inline-block';
-
-                    document.getElementById('applyVoucher').setAttribute('data-discount-per', discountPer);
-                    document.getElementById('applyVoucher').setAttribute('data-discount-amount', discountAmount);
-                    document.getElementById('applyVoucher').setAttribute('data-min-order', minOrder);
-
-                    document.getElementById('voucherModal').style.display = 'none';
-                });
-            });
-
-            document.getElementById('applyVoucher').addEventListener('click', function () {
-                let subtotal = parseFloat(document.getElementById('subtotal').textContent);
-                let discountPer = parseFloat(this.getAttribute('data-discount-per'));
-                let discountAmount = parseFloat(this.getAttribute('data-discount-amount'));
-                let minOrder = parseFloat(this.getAttribute('data-min-order'));
-
-                let discount = 0;
-                if (subtotal >= minOrder) {
-                    discount = (subtotal * discountPer) / 100;
-                    if (discount > discountAmount) {
-                        discount = discountAmount;
-                    }
-                } else {
-                    alert(`Your order must be at least $${minOrder} to apply this voucher.`);
-                    return;
-                }
-
-                document.getElementById('discount').textContent = '$' + discount.toFixed(2);
-                updateTotal();
-            });
-
-            function updateTotal() {
-                let subtotal = parseFloat(document.getElementById('subtotal').textContent);
-                let discount = parseFloat(document.getElementById('discount').textContent.replace('$', '')) || 0;
-                let shipping = 40;
-                let total = subtotal - discount + shipping;
-
-                document.getElementById('total').textContent = '$' + total.toFixed(2);
-            }
-        </script>
 
         <%@include file="Footer.jsp"%>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     </body>
+
 </html>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let params = new URLSearchParams(window.location.search);
+        let voucherCode = params.get("voucher");
+        if (voucherCode) {
+            document.getElementById("voucher").value = voucherCode; // ?i?n mã vào ô input
+        }
+    });
+    function confirmUseVoucher(voucherCode) {
+        localStorage.setItem("selectedVoucher", voucherCode); // L?u mã voucher vào localStorage
+        window.location.href = "<%= request.getContextPath()%>/Checkout"; // Chuy?n h??ng ??n trang Checkout
+    }
+</script>

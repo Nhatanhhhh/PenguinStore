@@ -6,11 +6,14 @@ package Controller;
 
 import DAOs.CartDAO;
 import DAOs.CheckoutDAO;
+import DAOs.VVCustomerDAO;
 import DAOs.VoucherDAO;
 import Models.Cart;
 import Models.CartItem;
 import Models.Customer;
+import Models.UsedVoucher;
 import Models.Voucher;
+import com.nimbusds.jose.shaded.json.JSONObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -38,7 +41,6 @@ public class Checkout extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect("View/LoginCustomer.jsp");
@@ -51,11 +53,13 @@ public class Checkout extends HttpServlet {
         CartDAO cartDAO = new CartDAO();
         List<CartItem> cartItems = cartDAO.viewCart(customerID);
 
-        // Lấy danh sách voucher từ VoucherDAO
-        VoucherDAO voucherDAO = new VoucherDAO();
-        List<Voucher> vouchers = voucherDAO.getAll();
+        CheckoutDAO checkoutDAO = new CheckoutDAO();
+        List<UsedVoucher> vouchers = checkoutDAO.getVoucherCheckout(customerID);
 
-        // Gửi danh sách voucher đến trang JSP
+        // Debug danh sách voucher
+        System.out.println("Vouchers: " + vouchers);
+
+        // Gửi dữ liệu tới JSP
         request.setAttribute("cartItems", cartItems);
         request.setAttribute("vouchers", vouchers);
         request.getRequestDispatcher("View/Checkout.jsp").forward(request, response);
@@ -72,14 +76,34 @@ public class Checkout extends HttpServlet {
 
         Customer customer = (Customer) session.getAttribute("user");
         String customerID = customer.getCustomerID();
+        String voucherCode = request.getParameter("voucherCode");
 
         System.out.println(customerID);
+
+        CheckoutDAO dao = new CheckoutDAO();
+        UsedVoucher voucher = dao.getVoucherByCode(voucherCode, customerID);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        JSONObject jsonResponse = new JSONObject();
+
+        if (voucher != null) {
+            jsonResponse.put("valid", true);
+            jsonResponse.put("discountPer", voucher.getDiscountPer());
+            jsonResponse.put("discountAmount", voucher.getDiscountAmount());
+            jsonResponse.put("minOrderValue", voucher.getMinOrderValue());
+            jsonResponse.put("maxDiscountAmount", voucher.getMaxDiscountAmount());
+        } else {
+            jsonResponse.put("valid", false);
+        }
+        response.getWriter().write(jsonResponse.toString());
 
         CartDAO cartDAO = new CartDAO();
         List<CartItem> cartItems = cartDAO.viewCart(customerID);
 
-        request.setAttribute("cartItems", cartItems);
-        request.getRequestDispatcher("View/Checkout.jsp").forward(request, response);
+        request.setAttribute(
+                "cartItems", cartItems);
+        request.getRequestDispatcher(
+                "View/Checkout.jsp").forward(request, response);
     }
 
     @Override

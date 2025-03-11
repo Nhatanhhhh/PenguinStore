@@ -39,47 +39,6 @@ public class AddToCartServlet extends HttpServlet {
         processRequest(request, response);
     }
 
-//    @Override
-//    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-//            throws ServletException, IOException {
-//        HttpSession session = request.getSession();
-//
-//        // Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập
-//        if (session == null || session.getAttribute("user") == null) {
-//            response.sendRedirect("View/LoginCustomer.jsp");
-//            return;
-//        }
-//
-//        Customer customer = (Customer) session.getAttribute("user");
-//        String customerID = customer.getCustomerID();
-//
-//        try {
-//            String productID = request.getParameter("productId");
-//            String proVariantID = request.getParameter("proVariantID");
-//            int quantity = Integer.parseInt(request.getParameter("quantity"));
-//
-//            Cart cartItem = new Cart(customerID, productID, proVariantID, quantity);
-//            CartDAO cartDAO = new CartDAO();
-//
-//            boolean added = cartDAO.addToCart(cartItem);
-//
-//            if (added) {
-//                response.sendRedirect("Cart.jsp?message=added_success");
-//            } else {
-//                response.sendRedirect("Cart.jsp?message=add_failed");
-//            }
-//        } catch (NumberFormatException e) {
-//            e.printStackTrace();
-//            response.sendRedirect("ProductDetail.jsp?error=invalid_data");
-//        }
-//    }
-//
-//    @Override
-//    public String getServletInfo() {
-//        return "Short description";
-//    }// </editor-fold>
-//
-//}
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         Customer customer = (Customer) session.getAttribute("user");

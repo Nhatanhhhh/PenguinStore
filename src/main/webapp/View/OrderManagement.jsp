@@ -241,6 +241,28 @@
             </div> <!-- End row -->
         </div>
 
+
+        <div class="modal fade" id="confirmDeliveryModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Delivery</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Do you confirm <strong>That the delivery was successful</strong>? <br> 
+                        <span class="text-danger">This state is uneditable!</span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-success" id="confirmDeliveryBtn">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
         <script src="<%= request.getContextPath()%>/Assets/Javascript/Staff/scripts.js"></script>
     </body>
@@ -254,27 +276,22 @@
                                                         let row = button.closest('tr');
                                                         selectedStatus = row.querySelector('select').value;
 
-                                                        let modal = new bootstrap.Modal(document.getElementById('confirmModal'));
-                                                        modal.show();
+                                                        if (selectedStatus === "Delivery successful") {
+                                                            let modal = new bootstrap.Modal(document.getElementById('confirmDeliveryModal'));
+                                                            modal.show();
+                                                        } else {
+                                                            let modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+                                                            modal.show();
+                                                        }
                                                     }
 
-                                                    document.getElementById('confirmUpdateBtn').addEventListener('click', function () {
-                                                        fetch('<%= request.getContextPath()%>/OrderManagement', {
-                                                            method: 'POST',
-                                                            headers: {
-                                                                'Content-Type': 'application/x-www-form-urlencoded'
-                                                            },
-                                                            body: 'orderID=' + selectedOrderId + '&statusName=' + encodeURIComponent(selectedStatus)  // ?úng tham s?
-                                                        })
-                                                                .then(response => response.text()).then(data => {
-                                                            alert('Order status updated successfully');
-                                                            window.location.reload();
-                                                        }).catch(error => console.error('Error:', error));
-
-                                                        let modal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
-                                                        modal.hide();
+                                                    document.getElementById('confirmDeliveryBtn').addEventListener('click', function () {
+                                                        updateOrderStatus();
                                                     });
 
+                                                    document.getElementById('confirmUpdateBtn').addEventListener('click', function () {
+                                                        updateOrderStatus();
+                                                    });
 
                                                     function filterOrders() {
                                                         let filter = document.getElementById("filterStatus").value.toLowerCase();
@@ -339,4 +356,26 @@
                                                             row.style.display = text.includes(keyword) ? "" : "none";
                                                         });
                                                     }
+
+
+
+
+                                                    function updateOrderStatus() {
+                                                        fetch('<%= request.getContextPath()%>/OrderManagement', {
+                                                            method: 'POST',
+                                                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                                            body: 'orderID=' + selectedOrderId + '&statusName=' + encodeURIComponent(selectedStatus)
+                                                        }).then(response => response.text()).then(data => {
+                                                            alert('Order status updated successfully');
+                                                            window.location.reload();
+                                                        }).catch(error => console.error('Error:', error));
+
+                                                        let deliveryModal = bootstrap.Modal.getInstance(document.getElementById('confirmDeliveryModal'));
+                                                        let normalModal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+                                                        if (deliveryModal)
+                                                            deliveryModal.hide();
+                                                        if (normalModal)
+                                                            normalModal.hide();
+                                                    }
+
 </script>

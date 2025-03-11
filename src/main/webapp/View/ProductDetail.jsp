@@ -33,6 +33,15 @@
             .card:hover {
                 transform: scale(1.05);
             }
+            .size-btn.selected {
+                border: 2px solid #ffd700 !important;
+                box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            }
+
+            .color-circle.selected {
+                box-shadow: 0 0 0 2px #ffd700;
+                border-radius: 50%;
+            }
         </style>
     </head>
     <body>
@@ -86,6 +95,30 @@
 
                         <c:set var="uniqueSizes" value="" />
                         <c:set var="uniqueColors" value="" />
+
+                        <c:if test="${not empty productDetail}">
+                            <c:set var="hasSize" value="false"/>
+                            <c:set var="sizeSet" value="<%= new java.util.TreeSet<String>()%>" scope="request"/>
+
+                            <c:forEach var="variant" items="${productDetail}">
+                                <c:if test="${not empty variant.sizeName}">
+                                    <c:set var="hasSize" value="true"/>
+                                    <% ((java.util.TreeSet<String>) request.getAttribute("sizeSet")).add(pageContext.getAttribute("variant").getClass().getMethod("getSizeName").invoke(pageContext.getAttribute("variant")).toString());%>
+                                </c:if>
+                            </c:forEach>
+
+                            <c:if test="${hasSize}">
+                                <div class="options">
+                                    <label><strong>Size:</strong></label>
+                                    <div class="size-options">
+                                        <c:forEach var="size" items="${sizeSet}">
+                                            <button class="size-btn">${size}</button>
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                            </c:if>
+                        </c:if>
+
 
                         <div class="options">
                             <label><strong>Color:</strong></label>
@@ -240,4 +273,3 @@
         </script>
     </body>
 </html>
-
