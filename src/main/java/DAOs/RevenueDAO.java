@@ -51,7 +51,7 @@ public class RevenueDAO extends DBContext {
         try ( ResultSet rs = execSelectQuery(query)) {
 
             while (rs.next()) {
-                list.add(new RevenueStatistic("Tháng " + rs.getInt("OrderMonth"), rs.getDouble("Revenue")));
+                list.add(new RevenueStatistic("Month " + rs.getInt("OrderMonth"), rs.getDouble("Revenue")));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -71,7 +71,7 @@ public class RevenueDAO extends DBContext {
         try ( ResultSet rs = execSelectQuery(query)) {
 
             while (rs.next()) {
-                list.add(new RevenueStatistic("Năm " + rs.getInt("OrderYear"), rs.getDouble("Revenue")));
+                list.add(new RevenueStatistic("Year " + rs.getInt("OrderYear"), rs.getDouble("Revenue")));
             }
         } catch (Exception e) {
             e.printStackTrace();

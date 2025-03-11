@@ -22,7 +22,7 @@
         <%@include file="Admin/HeaderAD.jsp"%>
         <div class="body-product row">
             <div class="col-md-3">
-                <%@include file="Admin/NavigationMenu.jsp"%>
+                <%@include file="NavigationMenu.jsp"%>
             </div>
             <div class="container mt-5 mb-5 col-md-9">
                 <div class="container">

@@ -15,11 +15,12 @@
         <title>Edit Type</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/base.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/style.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
     </head>
     <body>
-        <%@include file="/View/HeaderAD.jsp"%>
+
+        <%@include file="Admin/HeaderAD.jsp"%>
         <div class="row">
             <div class="col-md-2">
                 <%@include file="/View/NavigationMenu.jsp"%>
@@ -53,6 +54,7 @@
                                             </div>
 
                                             <div class="mb-3">
+
                                                 <label for="discountAmount" class="form-label">Discount Amount:</label>
                                                 <input type="number" class="form-control" id="discountAmount" name="discountAmount" value="${voucher.discountAmount}" step="0.1" min="0" required>
                                             </div>
@@ -63,16 +65,16 @@
                                             </div>
 
                                             <div class="mb-3">
-                                            <label>Date created:</label>
-                                            <input type="text" name="validFrom_display" value="${voucher.validFrom}" disabled> <br>
-                                            <input type="hidden" class="form-control" id="validFrom" name="validFrom" value="${voucher.validFrom}">
+                                                <label>Date created:</label>
+                                                <input type="text" name="validFrom_display" value="${voucher.validFrom}" disabled> <br>
+                                                <input type="hidden" class="form-control" id="validFrom" name="validFrom" value="${voucher.validFrom}">
                                             </div>
-                                            
+
                                             <div class="mb-3">
                                                 <label for="validUntil">Valid Until:</label>
-                                                <input type="date" class="form-control" id="validUntil" name="validUntil" value="${voucher.validUntil}" required><br>
+                                                <input type="date" class="form-control" id="validUntil" name="validUntil" min="${voucher.validFrom}" value="${voucher.validUntil}" required><br>
                                             </div>
-                                            
+
                                             <div class="mb-3">
                                                 <label for="maxDiscountAmount" class="form-label">Maximum Discount Amount:</label>
                                                 <input type="number" class="form-control" id="maxDiscountAmount" name="maxDiscountAmount" value="${voucher.maxDiscountAmount}" step="0.1" min="0" required>

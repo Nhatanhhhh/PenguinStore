@@ -1,75 +1,72 @@
-/*
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
-*/
-/* 
-    Created on : Feb 22, 2025, 6:08:28 PM
-    Author     : Do Van Luan - CE180457
-*/
-
 /* Sidebar container */
 .sidebar {
-    margin-top: 0px;
     width: 250px;
-    height: 100vh; /* Full height */
-    background-color: #111; /* Dark background */
-    color: white; /* White text */
+    height: 100vh;
+    background: linear-gradient(180deg, #2c3e50, #1a252f);
+    color: white;
     padding: 20px;
     position: fixed;
-    overflow-y: auto; /* Scroll if needed */
+    overflow-y: auto;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Main headers (Manage, Statistical) */
+/* Main headers */
 .sidebar h2 {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #444;
+    padding-bottom: 5px;
 }
 
-/* Remove default list styles */
+/* List styling */
 .sidebar ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
 }
 
-/* Main list items */
 .sidebar ul > li {
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background 0.3s ease, padding-left 0.3s;
 }
 
-/* Dropdown list */
+/* Hover effect */
+.sidebar ul > li:hover {
+    background: #34495e;
+    padding-left: 15px;
+}
+
+/* Dropdown styling */
 .sidebar ul .dropdown {
     list-style: none;
-    padding-left: 15px; /* Indentation */
-    display: none; /* Hide initially */
+    padding-left: 15px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
 }
 
-/* Dropdown links */
-.sidebar ul .dropdown li {
-    font-size: 14px;
-    font-weight: normal;
-    margin: 5px 0;
-}
-
-/* Dropdown links styling */
 .sidebar ul .dropdown li a {
     text-decoration: none;
-    color: #ddd; /* Lighter gray */
+    color: #bbb;
     display: block;
-    padding: 5px 0;
+    padding: 8px 0;
+    transition: color 0.3s ease, padding-left 0.3s;
 }
 
-/* Hover effects */
 .sidebar ul .dropdown li a:hover {
     color: #fff;
-    text-decoration: underline;
+    padding-left: 10px;
 }
 
 /* Show dropdown when hovering */
 .sidebar ul > li:hover .dropdown {
-    display: block;
+    max-height: 500px;
 }

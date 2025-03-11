@@ -10,7 +10,7 @@
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/Assets/CSS/Admin/navigation.css"/>
+        
     </head>
     <body>
         <div class="sidebar">
@@ -56,14 +56,15 @@
                     </ul>
                 </li>
             </ul>
-
+                    <br>
+                    <br>
             <h2>Statistic</h2>
             <ul>
                 <li><a href="<c:url value='/Statistic?action=revenueStatistic'/>">Revenue</a></li>
                 <li><a href="<c:url value='/Restock?action=restockHistory'/>">Restock History</a></li>
                 <li><a href="#">Profit</a></li>
                 <li><a href="<c:url value='/Statistic?action=orderStatistic'/>">Order</a></li>
-                <li><a href="#">Product</a></li>
+                <li><a href="<c:url value='/Statistic?action=productStatistic'/>">Product</a></li> 
             </ul>
         </div>
 

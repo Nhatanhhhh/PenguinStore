@@ -16,7 +16,7 @@
         <%@include file="Admin/HeaderAD.jsp"%>
         <div class="row">
             <div class="col-md-2">
-                <%@include file="Admin/NavigationMenu.jsp"%>
+                <%@include file="NavigationMenu.jsp"%>
             </div>
             <div class="col-md-10">
                 <div class="container mt-4">

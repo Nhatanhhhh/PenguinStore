@@ -87,21 +87,24 @@ public class RestockDAO extends DBContext {
     public ArrayList<Restock> getRestockHistory() {
         ArrayList<Restock> list = new ArrayList<>();
         String query = "SELECT \n"
-                + "	Product.productName, \n"
+                + "    Product.productName, \n"
                 + "    Restock.restockID, \n"
                 + "    Restock.proVariantID, \n"
                 + "    Restock.quantity, \n"
                 + "    Restock.price, \n"
-                + "	Restock.totalCost,\n"
-                + "    Restock.restockDate\n"
+                + "    Restock.totalCost, \n"
+                + "    Restock.restockDate, \n"
+                + "    Size.sizeName, \n"
+                + "    Color.colorName \n"
                 + "FROM \n"
                 + "    Product \n"
                 + "INNER JOIN ProductVariants ON Product.productID = ProductVariants.productID \n"
-                + "INNER JOIN Restock ON ProductVariants.proVariantID = Restock.proVariantID\n"
+                + "INNER JOIN Restock ON ProductVariants.proVariantID = Restock.proVariantID \n"
+                + "INNER JOIN Size ON ProductVariants.sizeID = Size.sizeID \n"
+                + "INNER JOIN Color ON ProductVariants.colorID = Color.colorID \n"
                 + "ORDER BY Restock.restockDate DESC;";
 
         try ( ResultSet rs = execSelectQuery(query)) {
-
             while (rs.next()) {
                 list.add(new Restock(
                         rs.getString("productName"),
@@ -110,13 +113,15 @@ public class RestockDAO extends DBContext {
                         rs.getInt("quantity"),
                         rs.getDouble("price"),
                         rs.getDouble("totalCost"),
-                        rs.getDate("restockDate").toLocalDate()
-                )
-                );
+                        rs.getDate("restockDate").toLocalDate(),
+                        rs.getString("sizeName"), // Lấy sizeName từ ResultSet
+                        rs.getString("colorName") // Lấy colorName từ ResultSet
+                ));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
     }
+
 }
