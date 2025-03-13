@@ -29,7 +29,7 @@
 
                                            <div class="mb-3">
                                                 <label for="password" class="form-label">Password:</label>
-                                                <input type="text" class="form-control" id="password" name="password">
+                                                <input type="password" class="form-control" id="password" name="password">
                                             </div>
                                             
                                             <div class="mb-3">
@@ -44,10 +44,10 @@
                                             
                                            <div class="mb-3">
                                                 <label for="phoneNumber" class="form-label">Phone Number: </label>
-                                                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" 
+                                                <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" 
                                                       
                                                        pattern="^0[0-9]{9}$"
-                                                       title="The phone number must start with 0 and 10 digits." required>
+                                                       title="Số điện thoại phải bắt đầu bằng số 0 và có 10 chữ số." required>
                                             </div>
                                             
                                             <div class="mb-3">
@@ -57,7 +57,7 @@
                                             
                                             <div class="mb-3">
                                                 <label for="dateOfBirth" class="form-label">Date of Birth: </label>
-                                                <input type="text" class="form-control" id="dateOfBirth" name="dateOfBirth"  required>
+                                                <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth"  required>
                                             </div>
 
                                 <button type="submit" class="btn btn-success">Create</button>

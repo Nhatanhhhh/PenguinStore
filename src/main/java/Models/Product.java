@@ -18,6 +18,18 @@ public class Product {
     private String imgName;
     private String typeName;
     private String typeID;
+    private boolean isSale;
+
+    public Product(String productID, String productName, String description, double price,  String typeName, String categoryName,String imgName, boolean isSale) {
+        this.productID = productID;
+        this.productName = productName;
+        this.description = description;
+        this.price = price;
+        this.typeName = typeName;
+        this.categoryName = categoryName;
+        this.imgName = imgName;
+        this.isSale = isSale;
+    }
 
     public Product(String productID, String productName, String description, double price, String typeName, String categoryName, String imgName) {
         this.productID = productID;
@@ -44,6 +56,14 @@ public class Product {
     }
 
     public Product() {
+    }
+
+    public boolean isIsSale() {
+        return isSale;
+    }
+
+    public void setIsSale(boolean isSale) {
+        this.isSale = isSale;
     }
 
     public String getTypeID() {

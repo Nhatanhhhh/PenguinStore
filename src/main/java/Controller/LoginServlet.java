@@ -63,9 +63,6 @@ public class LoginServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    /**
-     * Handles the HTTP GET request (not used in login, redirects to homepage).
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -112,18 +109,24 @@ public class LoginServlet extends HttpServlet {
 
             if (user != null) {
                 session.setAttribute("user", user);
-                setRememberMeCookies(response, username, hashedPassword, rememberMe);
 
                 if (user instanceof Manager) {
                     Manager manager = (Manager) user;
-                    if (manager.isRole() == true) {
-                        response.sendRedirect("View/DashBoardForAdmin.jsp");
+                    session.setAttribute("user", manager);
+                    session.setAttribute("role", manager.isRole() ? "ADMIN" : "STAFF");
+                    System.out.println("✅ Đăng nhập thành công! Role: " + session.getAttribute("role"));
+                    if (manager.isRole()) {
+                        response.sendRedirect("DashBoardForAdmin");
                     } else {
-                        response.sendRedirect("View/DashBoardForStaff.jsp");
+                        response.sendRedirect("DashBoardForStaff");
                     }
                 } else {
+                    session.setAttribute("role", "CUSTOMER");
+                    System.out.println("✅ Đăng nhập với vai trò CUSTOMER!");
                     response.sendRedirect(request.getContextPath());
                 }
+
+                setRememberMeCookies(response, username, hashedPassword, rememberMe);
             } else {
                 session.setAttribute("errorMessage", "Incorrect username or password.");
                 response.sendRedirect("customer".equalsIgnoreCase(userType) ? "View/LoginCustomer.jsp" : "View/LoginManager.jsp");

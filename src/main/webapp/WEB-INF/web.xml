@@ -4,21 +4,44 @@
         <filter-name>LoginFilter</filter-name>
         <filter-class>Filters.LoginFilter</filter-class>
     </filter>
+    <filter>
+        <filter-name>AuthorizationFilter</filter-name>
+        <filter-class>Filters.AuthorizationFilter</filter-class>
+    </filter>
     <filter-mapping>
         <filter-name>LoginFilter</filter-name>
         <url-pattern>/Cart</url-pattern>
         <url-pattern>/Checkout</url-pattern>
         <url-pattern>/Payment</url-pattern>
         <url-pattern>/ViewProfile</url-pattern>
-
+        <url-pattern>/Order</url-pattern>
         <url-pattern>/EditProfile</url-pattern>
-        <url-pattern>/View/DashBoardForAdmin.jsp</url-pattern>
-        <url-pattern>/View/DashBoardForStaff.jsp</url-pattern>
+        <url-pattern>/Feedback</url-pattern>
+        <url-pattern>/ChangePassword</url-pattern>
+        <url-pattern>/DashBoardForAdmin</url-pattern>
+        <url-pattern>/DashBoardForStaff</url-pattern>
+        <url-pattern>/ListFeedbackForStaff</url-pattern>
+        <url-pattern>/ManageProduct</url-pattern>
+        <url-pattern>/Type</url-pattern>
     </filter-mapping>
-<!--    <servlet>
-        <servlet-name>CustomerServlet</servlet-name>
-        <servlet-class>Controller.CustomerServlet</servlet-class>
-    </servlet>-->
+    <filter-mapping>
+        <filter-name>AuthorizationFilter</filter-name>
+        <url-pattern>/DashBoardForAdmin</url-pattern>
+        <url-pattern>/DashBoardForStaff</url-pattern>
+        <url-pattern>/ManageProduct</url-pattern>
+        <url-pattern>/Restock</url-pattern>
+        <url-pattern>/Cart</url-pattern>
+        <url-pattern>/Checkout</url-pattern>
+        <url-pattern>/Payment</url-pattern>
+        <url-pattern>/ViewProfile</url-pattern>
+        <url-pattern>/Order</url-pattern>
+        <url-pattern>/EditProfile</url-pattern>
+        <url-pattern>/Feedback</url-pattern>
+        <url-pattern>/ListFeedbackForStaff</url-pattern>
+        <url-pattern>/ManageProduct</url-pattern>
+        <url-pattern>/Statistic</url-pattern>
+        <url-pattern>/Type</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>Controller.LoginServlet</servlet-class>
@@ -46,10 +69,6 @@
     <servlet>
         <servlet-name>ForgetPasswordController</servlet-name>
         <servlet-class>Controller.ForgetPasswordController</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ChangePasswordController</servlet-name>
-        <servlet-class>Controller.ChangePasswordController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ResetPasswordController</servlet-name>
@@ -91,6 +110,66 @@
         <servlet-name>StaffController</servlet-name>
         <servlet-class>Controller.StaffController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FeedbackController</servlet-name>
+        <servlet-class>Controller.FeedbackController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LoginManagerController</servlet-name>
+        <servlet-class>Controller.LoginManagerController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ErrorServlet404</servlet-name>
+        <servlet-class>Controller.ErrorServlet404</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ErrorServlet500</servlet-name>
+        <servlet-class>Controller.ErrorServlet500</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ViewListFeedback</servlet-name>
+        <servlet-class>Controller.ViewListFeedback</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StatisticController</servlet-name>
+        <servlet-class>Controller.StatisticController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DashBoardForStaffServlet</servlet-name>
+        <servlet-class>Controller.DashBoardForStaffServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DashBoardForAdminServlet</servlet-name>
+        <servlet-class>Controller.DashBoardForAdminServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChangePasswordController</servlet-name>
+        <servlet-class>Controller.ChangePasswordController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AccessDeniedController</servlet-name>
+        <servlet-class>Controller.AccessDeniedController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetVariantIDServlet</servlet-name>
+        <servlet-class>Controller.GetVariantIDServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ViewOrderStaff</servlet-name>
+        <servlet-class>Controller.ViewOrderStaff</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrderManagement</servlet-name>
+        <servlet-class>Controller.OrderManagement</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrderDeatilStaff</servlet-name>
+        <servlet-class>Controller.OrderDetailStaff</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateFeedbackController</servlet-name>
+        <servlet-class>Controller.CreateFeedbackController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/Logout</url-pattern>
@@ -103,25 +182,21 @@
         <servlet-name>OrderHistory</servlet-name>
         <url-pattern>/OrderHistory</url-pattern>
     </servlet-mapping>
-<!--    <servlet-mapping>
-        <servlet-name>CustomerServlet</servlet-name>
-        <url-pattern>/CustomerServlet</url-pattern>
-    </servlet-mapping>-->
-    <servlet-mapping>
-        <servlet-name>ProductController</servlet-name>
-        <url-pattern>/Product</url-pattern>
-    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>View/index.jsp</welcome-file>
     </welcome-file-list>
     <!--<error-page>
         <error-code>404</error-code>
-        <location>/View/error/404.jsp</location>
+        <location>/404</location>
     </error-page>
     <error-page>
         <error-code>500</error-code>
-        <location>/View/error/500.jsp</location>
+        <location>/500</location>
     </error-page>-->
+    <servlet-mapping>
+        <servlet-name>ProductController</servlet-name>
+        <url-pattern>/Product</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>TypeController</servlet-name>
         <url-pattern>/Type</url-pattern>
@@ -147,6 +222,10 @@
         <url-pattern>/ManageProduct</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>StatisticController</servlet-name>
+        <url-pattern>/Statistic</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>RestockController</servlet-name>
         <url-pattern>/Restock</url-pattern>
     </servlet-mapping>
@@ -169,6 +248,62 @@
     <servlet-mapping>
         <servlet-name>StaffController</servlet-name>
         <url-pattern>/Staff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FeedbackController</servlet-name>
+        <url-pattern>/Feedback</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginManagerController</servlet-name>
+        <url-pattern>/LoginManager</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ErrorServlet404</servlet-name>
+        <url-pattern>/404</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ErrorServlet500</servlet-name>
+        <url-pattern>/500</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ViewListFeedback</servlet-name>
+        <url-pattern>/ListFeedbackForStaff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DashBoardForStaffServlet</servlet-name>
+        <url-pattern>/DashBoardForStaff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DashBoardForAdminServlet</servlet-name>
+        <url-pattern>/DashBoardForAdmin</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChangePasswordController</servlet-name>
+        <url-pattern>/ChangePassword</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AccessDeniedController</servlet-name>
+        <url-pattern>/AccessDenied</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetVariantIDServlet</servlet-name>
+        <url-pattern>/GetVariantIDServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ViewOrderStaff</servlet-name>
+        <url-pattern>/ViewOrderStaff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrderManagement</servlet-name>
+        <url-pattern>/OrderManagement</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrderDeatilStaff</servlet-name>
+        <url-pattern>/OrderDetailStaff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateFeedbackController</servlet-name>
+        <url-pattern>/CreateFeedback</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

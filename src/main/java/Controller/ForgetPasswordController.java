@@ -76,7 +76,7 @@ public class ForgetPasswordController extends HttpServlet {
         String emailValidationMessage = validateEmail(email);
         if (!emailValidationMessage.isEmpty()) {
             request.setAttribute("errorMessage", emailValidationMessage);
-            request.getRequestDispatcher("View/ForgetPassword.jsp").forward(request, response);
+            request.getRequestDispatcher("ForgetPassword").forward(request, response);
             return;
         } else {
             try {
@@ -84,7 +84,7 @@ public class ForgetPasswordController extends HttpServlet {
 
                 if (!emailExists) {
                     request.setAttribute("errorMessage", "Email does not exist in the system!");
-                    request.getRequestDispatcher("View/ForgetPassword.jsp").forward(request, response);
+                    request.getRequestDispatcher("ForgetPassword").forward(request, response);
                 } else {
                     int verificationCode = (int) (Math.random() * 900000) + 100000;
                     String verificationCodeStr = String.valueOf(verificationCode);
@@ -97,7 +97,7 @@ public class ForgetPasswordController extends HttpServlet {
             }
         }
 
-        response.sendRedirect("View/VerifyEmailRSP.jsp");
+        response.sendRedirect("VerifyEmailRSP");
     }
 
     private String validateEmail(String email) {

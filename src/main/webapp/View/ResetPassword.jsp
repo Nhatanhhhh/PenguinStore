@@ -33,14 +33,24 @@
                         </div>
                     </c:if>
 
-                    <form action="<%= request.getContextPath()%>/ResetPassword" method="POST">
+                    <form action="<%= request.getContextPath()%>/ResetPassword" method="POST" id="passwordForm">
                         <div class="mb-3 input-container">
                             <label for="new-password" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="new-password" name="new-password" placeholder="Enter new password" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="new-password" name="new-password" placeholder="Enter new password" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('new-password')">
+                                    <i class="fa fa-eye" id="eye-new-password"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="mb-3 input-container">
                             <label for="confirm-password" class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" id="confirm-password" name="confirm-password" placeholder="Confirm new password" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="confirm-password" name="confirm-password" placeholder="Confirm new password" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('confirm-password')">
+                                    <i class="fa fa-eye" id="eye-confirm-password"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="buttons">
                             <button type="submit" class="btn btn-outline-dark">Update Password</button>
@@ -53,86 +63,37 @@
 
         <script>
             function confirmChangePassword() {
-            let newPassword = document.getElementById("new-password").value;
-            let confirmPassword = document.getElementById("confirm-password").value;
-            if (newPassword.length < 6) {
-            alert("Password must be at least 6 characters long.");
-            return false;
-            }
-            if (newPassword !== confirmPassword) {
-            alert("Passwords do not match.");
-            return false;
-            }
-            return true;
+                let newPassword = document.getElementById("new-password").value;
+                let confirmPassword = document.getElementById("confirm-password").value;
+                if (newPassword.length < 6) {
+                    alert("Password must be at least 6 characters long.");
+                    return false;
+                }
+                if (newPassword !== confirmPassword) {
+                    alert("Passwords do not match.");
+                    return false;
+                }
+                return true;
             }
         </script>
-        <c:if test="${not empty successMessage}">
-            <script>
-                setTimeout(function () {
-                window.location.href = '/;
-                }, 5000); // Chuyển sau 5 giây
+        <script>
+            function togglePassword(fieldId) {
+                let passwordField = document.getElementById(fieldId);
+                let eyeIcon = document.getElementById("eye-" + fieldId);
+                passwordField.type = passwordField.type === "password" ? "text" : "password";
+                eyeIcon.classList.toggle("fa-eye");
+                eyeIcon.classList.toggle("fa-eye-slash");
+            }
 
-                document.addEventListener("DOMContentLoaded", function () {
-                const password = document.getElementById("new-password");
-                const confirmPassword = document.getElementById("confirm-password");
-                const passwordStrength = document.createElement("div");
-                passwordStrength.id = "passwordStrength";
-                passwordStrength.style.marginTop = "5px";
-                password.insertAdjacentElement("afterend", passwordStrength);
-                const passwordError = document.createElement("div");
-                passwordError.id = "passwordError";
-                passwordError.style.color = "red";
-                passwordError.style.display = "none";
-                confirmPassword.insertAdjacentElement("afterend", passwordError);
-                function validatePasswordStrength() {
-                const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-                if (password.value.length < 8) {
-                passwordStrength.innerText = "⚠️ Password must be at least 8 characters long.";
-                passwordStrength.style.color = "red";
-                passwordStrength.style.display = "block";
-                return false;
-                } else if (!strongRegex.test(password.value)) {
-                passwordStrength.innerText = "⚠️ Must contain uppercase, lowercase, number, and special character.";
-                passwordStrength.style.color = "orange";
-                passwordStrength.style.display = "block";
-                return false;
-                } else {
-                passwordStrength.innerText = "✅ Strong password.";
-                passwordStrength.style.color = "green";
-                passwordStrength.style.display = "block";
-                return true;
-                }
-                }
+            document.getElementById("toggleSwitch").addEventListener("change", function () {
+                let form = document.getElementById("passwordForm");
+                let inputs = form.querySelectorAll("input");
+                let button = form.querySelector("button[type='submit']");
+                let isEnabled = this.checked;
+                inputs.forEach(input => input.disabled = !isEnabled);
+                button.disabled = !isEnabled;
+            });
+        </script>
 
-                function validatePasswordMatch() {
-                if (password.value !== confirmPassword.value) {
-                passwordError.innerText = "⚠️ Passwords do not match.";
-                passwordError.style.display = "block";
-                confirmPassword.classList.add("input-error");
-                return false;
-                } else {
-                passwordError.style.display = "none";
-                confirmPassword.classList.remove("input-error");
-                return true;
-                }
-                }
-
-                function validateForm(event) {
-                if (!validatePasswordStrength() || !validatePasswordMatch()) {
-                event.preventDefault();
-                alert("Please fix password issues before submitting.");
-                }
-                }
-
-                password.addEventListener("input", function () {
-                validatePasswordStrength();
-                validatePasswordMatch();
-                });
-                confirmPassword.addEventListener("input", validatePasswordMatch);
-                document.querySelector("form").addEventListener("submit", validateForm);
-                });
-
-            </script>
-        </c:if>
     </body>
 </html>

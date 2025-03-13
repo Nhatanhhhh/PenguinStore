@@ -8,6 +8,7 @@ import DAOs.CartDAO;
 import DAOs.OrderDAO;
 import DAOs.OrderDetailDAO;
 import Models.Cart;
+import Models.Customer;
 import Models.Order;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Servlet handling the payment process.
  *
  * @author PC
  */
@@ -38,22 +40,41 @@ public class Payment extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
+            /* TODO: Implement the payment processing logic here */
         }
     }
 
+    /**
+     * Handles the HTTP GET request (not used in this process).
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
+    /**
+     * Handles the HTTP POST request for processing payment.
+     *
+     * @param request The HTTP request containing payment details.
+     * @param response The HTTP response to redirect or display errors.
+     * @throws ServletException If a servlet-specific error occurs.
+     * @throws IOException If an I/O error occurs.
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         HttpSession session = request.getSession();
-        String customerIDStr = (String) session.getAttribute("customerID");
-        int customerID = Integer.parseInt(customerIDStr);
+
+        // Redirect to login page if the user is not logged in
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("View/LoginCustomer.jsp");
+            return;
+        }
+
+        Customer customer = (Customer) session.getAttribute("user");
+        String customerID = customer.getCustomerID();
 
         CartDAO cartDAO = new CartDAO();
         OrderDAO orderDAO = new OrderDAO();
@@ -61,6 +82,7 @@ public class Payment extends HttpServlet {
 
         List<Cart> cartList = cartDAO.getCartByCustomerID(customerID);
 
+        // Redirect if the cart is empty
         if (cartList.isEmpty()) {
             response.sendRedirect("Cart.jsp?message=Cart is empty");
             return;
@@ -71,7 +93,7 @@ public class Payment extends HttpServlet {
             totalAmount += cartDAO.getProductPrice(cart.getProductID()) * cart.getQuantity();
         }
 
-        double discount = 0; // Nếu có voucher, xử lý tại đây
+        double discount = 0; // If there is a voucher, apply discount logic here
         double finalAmount = totalAmount - discount;
 
         Order order = new Order();
@@ -83,12 +105,15 @@ public class Payment extends HttpServlet {
         order.setStatusOID("Pending");
         order.setVoucherID(null);
 
+        // Create a new order and retrieve the order ID
         String orderID = orderDAO.createOrder(order);
 
+        // Save order details for each item in the cart
         for (Cart cart : cartList) {
             orderDetailDAO.addOrderDetail(orderID, cart.getProductID(), cart.getQuantity());
         }
 
+        // Clear the cart after successful order placement
         cartDAO.clearCart(customerID);
 
         response.sendRedirect("CheckoutSuccess.jsp?orderID=" + orderID);
@@ -97,11 +122,10 @@ public class Payment extends HttpServlet {
     /**
      * Returns a short description of the servlet.
      *
-     * @return a String containing servlet description
+     * @return A string containing the servlet description.
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Handles the payment process for orders.";
+    }
 }

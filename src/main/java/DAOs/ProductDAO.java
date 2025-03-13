@@ -13,6 +13,9 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,14 +23,49 @@ import java.util.List;
  */
 public class ProductDAO extends DBContext {
 
+    //Method get all product for admin
     public ArrayList<Product> readAll() {
         ArrayList<Product> products = new ArrayList<>();
-        String sql = "SELECT p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName, \n"
-                + "    STRING_AGG(i.imgName, ', ') AS imgName\n"
+        String sql = "SELECT p.productID, p.productName, p.description, p.price, \n"
+                + "       p.isSale,\n"
+                + "       tp.typeName, c.categoryName, \n"
+                + "       STRING_AGG(i.imgName, ', ') AS imgName\n"
                 + "FROM Product p\n"
                 + "JOIN TypeProduct tp ON p.typeID = tp.typeID\n"
                 + "JOIN Category c ON tp.categoryID = c.categoryID\n"
                 + "LEFT JOIN Image i ON p.productID = i.productID\n"
+                + "GROUP BY p.productID, p.productName, p.description, p.price, \n"
+                + "         p.isSale, -- Thêm vào GROUP BY\n"
+                + "         tp.typeName, c.categoryName, p.dateCreate\n"
+                + "ORDER BY p.dateCreate DESC;";
+        try ( ResultSet rs = execSelectQuery(sql)) {
+            while (rs.next()) {
+                String productID = rs.getString("productID");
+                String productName = rs.getString("productName");
+                String description = rs.getString("description");
+                double price = rs.getDouble("price");
+                String typeName = rs.getString("typeName");
+                String categoryName = rs.getString("categoryName");
+                String imgName = rs.getString("imgName");
+                boolean isSale = rs.getBoolean("isSale");
+                Product product = new Product(productID, productName, description, price, typeName, categoryName, imgName, isSale);
+                products.add(product);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, "Error get product", ex);
+        }
+        return products;
+    }
+
+    public ArrayList<Product> getProductCustomer() {
+        ArrayList<Product> products = new ArrayList<>();
+        String sql = "SELECT p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName, \n"
+                + "       STRING_AGG(i.imgName, ', ') AS imgName\n"
+                + "FROM Product p\n"
+                + "JOIN TypeProduct tp ON p.typeID = tp.typeID\n"
+                + "JOIN Category c ON tp.categoryID = c.categoryID\n"
+                + "LEFT JOIN Image i ON p.productID = i.productID\n"
+                + "WHERE p.isSale = 1\n"
                 + "GROUP BY p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName, p.dateCreate\n"
                 + "ORDER BY p.dateCreate DESC;";
         try ( ResultSet rs = execSelectQuery(sql)) {
@@ -42,21 +80,23 @@ public class ProductDAO extends DBContext {
                 Product product = new Product(productID, productName, description, price, typeName, categoryName, imgName);
                 products.add(product);
             }
-        } catch (Exception e) {
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, "Error get product", ex);
         }
         return products;
     }
 
     public Product getOneProduct(String id) {
         Product product = new Product();
-        String sql = "SELECT p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName, \n"
-                + "    STRING_AGG(i.imgName, ', ') AS imgName\n"
+        String sql = "SELECT p.productID, p.productName, p.description, p.price, p.isSale, \n"
+                + "       tp.typeName, c.categoryName, \n"
+                + "       STRING_AGG(i.imgName, ', ') AS imgName\n"
                 + "FROM Product p\n"
                 + "JOIN TypeProduct tp ON p.typeID = tp.typeID\n"
                 + "JOIN Category c ON tp.categoryID = c.categoryID\n"
                 + "LEFT JOIN Image i ON p.productID = i.productID\n"
                 + "WHERE p.productID = ?\n"
-                + "GROUP BY p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName";
+                + "GROUP BY p.productID, p.productName, p.description, p.price, p.isSale, tp.typeName, c.categoryName;";
         Object param[] = {id};
         try ( ResultSet rs = execSelectQuery(sql, param)) {
             while (rs.next()) {
@@ -67,25 +107,28 @@ public class ProductDAO extends DBContext {
                 String typeName = rs.getString("typeName");
                 String categoryName = rs.getString("categoryName");
                 String imgName = rs.getString("imgName");
-                product = new Product(productID, productName, description, price, typeName, categoryName, imgName);
+                boolean isSale = rs.getBoolean("isSale");
+                product = new Product(productID, productName, description, price, typeName, categoryName, imgName, isSale);
             }
-        } catch (Exception e) {
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, "Error get product", ex);
         }
         return product;
     }
 
     public ArrayList<Product> searchProduct(String keysearch) {
         ArrayList<Product> products = new ArrayList<>();
-        String sql = "SELECT p.productID, p.productName, p.description, p.price, "
-                + "tp.typeName, c.categoryName, "
-                + "STRING_AGG(i.imgName, ', ') AS imgName "
-                + "FROM Product p "
-                + "JOIN TypeProduct tp ON p.typeID = tp.typeID "
-                + "JOIN Category c ON tp.categoryID = c.categoryID "
-                + "LEFT JOIN Image i ON p.productID = i.productID "
-                + "WHERE (? IS NULL OR p.productName LIKE ? "
-                + "OR tp.typeName LIKE ? OR c.categoryName LIKE ?) "
-                + "GROUP BY p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName";
+        String sql = "SELECT p.productID, p.productName, p.description, p.price, \n"
+                + "       tp.typeName, c.categoryName, \n"
+                + "       STRING_AGG(i.imgName, ', ') AS imgName \n"
+                + "FROM Product p \n"
+                + "JOIN TypeProduct tp ON p.typeID = tp.typeID \n"
+                + "JOIN Category c ON tp.categoryID = c.categoryID \n"
+                + "LEFT JOIN Image i ON p.productID = i.productID \n"
+                + "WHERE p.isSale = 1 \n"
+                + "AND (? IS NULL OR p.productName LIKE ? \n"
+                + "OR tp.typeName LIKE ? OR c.categoryName LIKE ?) \n"
+                + "GROUP BY p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName;";
         Object param[] = {keysearch, keysearch, keysearch, keysearch};
         try ( ResultSet rs = execSelectQuery(sql, param)) {
             while (rs.next()) {
@@ -99,7 +142,8 @@ public class ProductDAO extends DBContext {
                 Product product = new Product(productID, productName, description, price, typeName, categoryName, imgName);
                 products.add(product);
             }
-        } catch (Exception e) {
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, "Error get product", ex);
         }
         return products;
     }
@@ -146,7 +190,7 @@ public class ProductDAO extends DBContext {
                 + "JOIN TypeProduct tp ON p.typeID = tp.typeID "
                 + "JOIN Category c ON tp.categoryID = c.categoryID "
                 + "LEFT JOIN Image i ON p.productID = i.productID "
-                + "WHERE 1=1");
+                + "WHERE 1=1 AND p.isSale = 1");
         if (types != null && types.length > 0) {
             query.append(" AND typeName IN (");
             query.append(String.join(", ", Collections.nCopies(types.length, "?")));
@@ -177,7 +221,6 @@ public class ProductDAO extends DBContext {
         } else {
             query.append(" ORDER BY p.dateCreate DESC");
         }
-        System.out.println(query);
         Object[] params = paramList.toArray();
         try ( ResultSet rs = execSelectQuery(query.toString(), params)) {
             while (rs.next()) {
@@ -191,8 +234,21 @@ public class ProductDAO extends DBContext {
                 Product product = new Product(productID, productName, description, price, typeName, categoryName, imgName);
                 productList.add(product);
             }
-        } catch (Exception e) {
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, "Error get product", ex);
         }
         return productList;
+    }
+
+    public boolean updateSaleStatus(String productID, boolean isSale) {
+        String sql = "UPDATE Product SET isSale = ? WHERE productID = ?";
+        Object params[] = {isSale, productID};
+        try {
+            execQuery(sql, params);
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

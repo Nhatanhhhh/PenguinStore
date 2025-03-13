@@ -6,26 +6,19 @@
         <title>Page Not Found Error</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/Guest/style.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/error.css"/>
     </head>
     <body>
-        <section class="py-3 py-md-5 min-vh-100 d-flex justify-content-center align-items-center">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="text-center">
-                            <h2 class="d-flex justify-content-center align-items-center gap-2 mb-4">
-                                <span class="display-1 fw-bold">4</span>
-                                <i class="bi bi-exclamation-circle-fill text-danger display-2"></i>
-                                <span class="display-1 fw-bold bsb-flip-h">4</span>
-                            </h2>
-                            <h3 class="h2 mb-2">Oops! You're lost.</h3>
-                            <p class="mb-5">The page you are looking for was not found.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div data-aos="zoom-in-up" id="notfound">
+		<div class="notfound">
+			<div class="notfound-404">
+				<h1>404</h1>
+			</div>
+			<h2>We are sorry, Page not found!</h2>
+			<p>The page you are looking for might have been removed had its name changed or is temporarily unavailable.</p>
+                        <a class="button button-dark" href="<%= request.getContextPath()%>"> Back To Homepage</a>
+		</div>
+	</div>
 
         <script>
             <%@include file="/Assets/CSS/bootstrap.js.jsp"%>

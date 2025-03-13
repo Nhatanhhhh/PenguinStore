@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package Controller;
 
 import java.io.IOException;
@@ -14,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 /**
+ * Servlet handling user logout.
  *
  * @author Nguyen Nhat Anh - CE181843
  */
@@ -32,7 +29,6 @@ public class LogoutServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -45,9 +41,8 @@ public class LogoutServlet extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP GET request for user logout.
      *
      * @param request servlet request
      * @param response servlet response
@@ -62,7 +57,7 @@ public class LogoutServlet extends HttpServlet {
             session.invalidate();
         }
 
-        // Xoá tất cả các cookie (bao gồm cookie remember me nếu có)
+        // Delete all cookies (including the remember-me cookie if present)
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -73,17 +68,12 @@ public class LogoutServlet extends HttpServlet {
             }
         }
 
-        // Chuyển hướng về trang đăng nhập kèm thông báo đăng xuất thành công
-        response.sendRedirect(request.getContextPath() + "/View/LoginCustomer.jsp?logoutSuccess=true");
+        // Redirect to the login page with a logout success message
+        response.sendRedirect(request.getContextPath() + "/Login?logoutSuccess=true");
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Handles the HTTP POST request by calling doGet to process logout.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -98,7 +88,6 @@ public class LogoutServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Handles user logout by invalidating session and clearing cookies.";
+    }
 }

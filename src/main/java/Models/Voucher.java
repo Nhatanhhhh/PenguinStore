@@ -6,11 +6,13 @@ package Models;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 /**
  *
  * @author Do Van Luan - CE180457
  */
 public class Voucher {
+
     private String voucherID;
     private String voucherCode;
     private double discountPer;
@@ -33,8 +35,6 @@ public class Voucher {
         this.voucherStatus = voucherStatus;
     }
 
-    
-    
     public Voucher(String voucherCode, double discountPer, double discountAmount, double minOrderValue, LocalDate validFrom, LocalDate validUntil, double maxDiscountAmount, boolean voucherStatus) {
         this.voucherCode = voucherCode;
         this.discountPer = discountPer;
@@ -55,8 +55,6 @@ public class Voucher {
         this.validUntil = validUntil;
         this.maxDiscountAmount = maxDiscountAmount;
     }
-
-    
 
     public Voucher() {
     }
@@ -116,8 +114,8 @@ public class Voucher {
     public void setMaxDiscountAmount(double maxDiscountAmount) {
         this.maxDiscountAmount = maxDiscountAmount;
     }
-    
-     public boolean isVoucherStatus() {
+
+    public boolean isVoucherStatus() {
         return voucherStatus;
     }
 
@@ -132,6 +130,5 @@ public class Voucher {
     public void setVoucherID(String voucherID) {
         this.voucherID = voucherID;
     }
-    
-    
+
 }

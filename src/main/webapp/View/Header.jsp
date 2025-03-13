@@ -84,7 +84,7 @@
                 </a>
             </div>
             <div class="search-bar col-md-5">
-                <input type="text" placeholder=""/>
+                <input type="text" id="searchInput" name="keysearch" placeholder="Enter name, type to search product..." autocomplete="off"/>
             </div>
 
 

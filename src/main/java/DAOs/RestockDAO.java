@@ -13,7 +13,7 @@ import Models.Restock;
 import java.sql.ResultSet;
 
 /**
- * RestockDAO d�ng ?? c?p nh?t l?i s? l??ng h�ng trong kho.
+ * RestockDAO d?ng ?? c?p nh?t l?i s? l??ng h?ng trong kho.
  *
  * @author Do Van Luan
  */
@@ -86,19 +86,33 @@ public class RestockDAO extends DBContext {
 
     public ArrayList<Restock> getRestockHistory() {
         ArrayList<Restock> list = new ArrayList<>();
-        String query = "SELECT * FROM Restock ORDER BY restockDate DESC";
+        String query = "SELECT \n"
+                + "	Product.productName, \n"
+                + "    Restock.restockID, \n"
+                + "    Restock.proVariantID, \n"
+                + "    Restock.quantity, \n"
+                + "    Restock.price, \n"
+                + "	Restock.totalCost,\n"
+                + "    Restock.restockDate\n"
+                + "FROM \n"
+                + "    Product \n"
+                + "INNER JOIN ProductVariants ON Product.productID = ProductVariants.productID \n"
+                + "INNER JOIN Restock ON ProductVariants.proVariantID = Restock.proVariantID\n"
+                + "ORDER BY Restock.restockDate DESC;";
 
         try ( ResultSet rs = execSelectQuery(query)) {
 
             while (rs.next()) {
                 list.add(new Restock(
+                        rs.getString("productName"),
                         rs.getString("restockID"),
                         rs.getString("proVariantID"),
                         rs.getInt("quantity"),
                         rs.getDouble("price"),
                         rs.getDouble("totalCost"),
                         rs.getDate("restockDate").toLocalDate()
-                ));
+                )
+                );
             }
         } catch (SQLException e) {
             e.printStackTrace();

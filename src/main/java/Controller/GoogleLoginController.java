@@ -29,8 +29,8 @@ import java.util.logging.Logger;
 @WebServlet(name = "GoogleLogin", urlPatterns = {"/GoogleLogin"})
 public class GoogleLoginController extends HttpServlet {
 
-    private static final String CLIENT_ID = "";
-    private static final String CLIENT_SECRET = "";
+    private static final String CLIENT_ID = "481523146636-vh5s2vjv8fm9hb8dtgi9e3f66711192u.apps.googleusercontent.com";
+    private static final String CLIENT_SECRET = "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";
     private static final String REDIRECT_URI = "http://localhost:9999/PenguinStore/GoogleLogin";
     private final JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
 
@@ -75,6 +75,8 @@ public class GoogleLoginController extends HttpServlet {
                 if (customer != null) {
                     HttpSession session = request.getSession(true);
                     session.setAttribute("user", customer);
+                    session.setAttribute("role", "CUSTOMER");
+                    response.sendRedirect("/PenguinStore");
                 } else {
                     request.setAttribute("errorMessage", "Can not authenticate users. Please try again.");
                     request.getRequestDispatcher("View/LoginCustomer.jsp").forward(request, response);
