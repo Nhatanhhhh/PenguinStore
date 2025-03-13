@@ -1,12 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package Controller;
 
-import DAOs.CartDAO;
 import DB.DBContext;
-import Models.Cart;
 import Models.Customer;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -28,8 +22,7 @@ public class AddToCartServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-
+        try (PrintWriter out = response.getWriter()) {
         }
     }
 
@@ -39,6 +32,7 @@ public class AddToCartServlet extends HttpServlet {
         processRequest(request, response);
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         Customer customer = (Customer) session.getAttribute("user");
@@ -46,20 +40,43 @@ public class AddToCartServlet extends HttpServlet {
             response.sendRedirect("View/LoginCustomer.jsp");
             return;
         }
+
         String customerID = customer.getCustomerID();
         String productID = request.getParameter("productID");
-        String proVariantID = request.getParameter("variantId");
+        String sizeName = request.getParameter("size");
+        String colorName = request.getParameter("color");
         String quantityStr = request.getParameter("quantity");
-        System.out.println("cusid:" + customerID);
-        if (customerID == null || productID == null || proVariantID == null || quantityStr == null) {
+
+        if (customerID == null || productID == null || sizeName == null || colorName == null || quantityStr == null) {
             response.sendRedirect("ProductDetail.jsp?error=MissingData");
             return;
         }
 
         int quantity = Integer.parseInt(quantityStr);
+        String proVariantID = null;
 
-        try ( Connection conn = DBContext.getConn()) {
-            // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+        try (Connection conn = DBContext.getConn()) {
+            // 🔹 Truy vấn proVariantID từ database dựa trên sizeName, colorName, productID
+            String variantQuery = "SELECT pv.proVariantID FROM dbo.ProductVariants pv " +
+                                  "JOIN dbo.Size s ON pv.sizeID = s.sizeID " +
+                                  "JOIN dbo.Color c ON pv.colorID = c.colorID " +
+                                  "WHERE s.sizeName = ? AND c.colorName = ? AND pv.productID = ?";
+            PreparedStatement variantPs = conn.prepareStatement(variantQuery);
+            variantPs.setString(1, sizeName);
+            variantPs.setString(2, colorName);
+            variantPs.setString(3, productID);
+
+            ResultSet variantRs = variantPs.executeQuery();
+            if (variantRs.next()) {
+                proVariantID = variantRs.getString("proVariantID");
+            }
+
+            if (proVariantID == null) {
+                response.sendRedirect("ProductDetail.jsp?error=InvalidVariant");
+                return;
+            }
+
+            // 🔹 Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
             String checkSql = "SELECT quantity FROM Cart WHERE customerID = ? AND productID = ? AND proVariantID = ?";
             PreparedStatement checkPs = conn.prepareStatement(checkSql);
             checkPs.setString(1, customerID);
@@ -90,7 +107,7 @@ public class AddToCartServlet extends HttpServlet {
                 insertPs.executeUpdate();
             }
 
-            // Hiển thị thông báo thành công kèm hai nút "Checkout" và "View Cart"
+            // Chuyển hướng về trang sản phẩm kèm thông báo thành công
             response.sendRedirect("Product?id=" + productID + "&message=success");
 
         } catch (Exception e) {
