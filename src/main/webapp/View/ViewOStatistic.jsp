@@ -10,6 +10,9 @@
 <html>
     <head>
         <title>Order Statistic</title>
+        <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
+        <%@include file="/Assets/CSS/icon.jsp"%>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <style>
             table {
@@ -27,15 +30,19 @@
         </style>
     </head>
     <body>
-        <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
-        <%@include file="/Assets/CSS/icon.jsp"%>
-        <%@include file="Admin/HeaderAD.jsp"%>
+
+        <%
+            Manager manager = (Manager) session.getAttribute("user");
+            String managerName = (manager != null) ? manager.getManagerName() : "Guest";
+            String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
+        %>
 
         <div class="row">
-            <div class="col-md-3">
-                <%@include file="NavigationMenu.jsp"%>
+            <div class="col-md-2">
+                <%@include file="Admin/NavigationMenu.jsp"%>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-10">
+                <%@include file="Admin/HeaderAD.jsp"%>
                 <h2 class="text-center">ORDER STATISTICS</h2>
                 <form action="Statistic" method="get">
                     <input type="hidden" name="action" value="orderStatistic">
@@ -50,19 +57,25 @@
                         <c:when test="${not empty statistics}">
                             <canvas id="orderChart" width="50" height="10"></canvas>
                             <table>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Order Quantity</th>
-                                </tr>
-                                <c:set var="totalOrders" value="0"/>
-                                <c:forEach var="stat" items="${statistics}">
+                                <div id="pagination"></div>
+                                <thead>
                                     <tr>
-                                        <td>${stat.orderDate}</td>
-                                        <td>${stat.orderCount}</td>
+                                        <th>Time</th>
+                                        <th>Order Quantity</th>
                                     </tr>
-                                    <c:set var="totalOrders" value="${totalOrders + stat.orderCount}"/>
-                                </c:forEach>
+                                </thead>
+                                <tbody>
+                                    <c:set var="totalOrders" value="0"/>
+                                    <c:forEach var="stat" items="${statistics}">
+                                        <tr>
+                                            <td>${stat.orderDate}</td>
+                                            <td>${stat.orderCount}</td>
+                                        </tr>
+                                        <c:set var="totalOrders" value="${totalOrders + stat.orderCount}"/>
+                                    </c:forEach>
+                                </tbody>
                             </table>
+
                             <h3>Total Orders: ${totalOrders}</h3>
                         </c:when>
                         <c:otherwise>
@@ -70,13 +83,15 @@
                         </c:otherwise>
                     </c:choose>
                 </div>
+
+                <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
                 <script>
                     var labels = [];
                     var orderData = [];
 
                     <c:forEach var="stat" items="${statistics}">
                     labels.push("${stat.orderDate}");
-                    orderData.push(${stat.orderCount});
+                    orderData.push(Math.round(${stat.orderCount})); // Ép kiểu số nguyên
                     </c:forEach>
 
                     var ctx = document.getElementById('orderChart').getContext('2d');
@@ -95,13 +110,60 @@
                         options: {
                             scales: {
                                 y: {
-                                    beginAtZero: true
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1, // Bước nhảy 1 đơn vị
+                                        precision: 0 // Không hiển thị số lẻ
+                                    }
                                 }
                             }
                         }
                     });
                 </script>
+
             </div>
         </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var rowsPerPage = 5; // Số hàng trên mỗi trang
+                var table = document.querySelector("table");
+                var tbody = table.querySelector("tbody"); // Lấy tbody trước
+                if (!tbody)
+                    return; // Nếu không có tbody thì dừng
+
+                var rows = tbody.querySelectorAll("tr"); // Lấy tất cả hàng trong tbody
+                var totalRows = rows.length;
+                var totalPages = Math.ceil(totalRows / rowsPerPage);
+                var paginationDiv = document.getElementById("pagination");
+
+                function showPage(page) {
+                    var start = (page - 1) * rowsPerPage;
+                    var end = start + rowsPerPage;
+                    rows.forEach((row, index) => {
+                        row.style.display = (index >= start && index < end) ? "" : "none";
+                    });
+                }
+
+                function createPaginationButtons() {
+                    paginationDiv.innerHTML = "";
+                    for (let i = 1; i <= totalPages; i++) {
+                        let button = document.createElement("button");
+                        button.textContent = i;
+                        button.classList.add("pagination-btn");
+                        button.addEventListener("click", function () {
+                            showPage(i);
+                        });
+                        paginationDiv.appendChild(button);
+                    }
+                }
+
+                if (totalPages > 1) {
+                    showPage(1);
+                    createPaginationButtons();
+                }
+            });
+
+        </script>
+
     </body>
 </html>

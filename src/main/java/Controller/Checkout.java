@@ -4,9 +4,13 @@
  */
 package Controller;
 
+import DAOs.CartDAO;
 import DAOs.CheckoutDAO;
+import DAOs.VoucherDAO;
 import Models.Cart;
+import Models.CartItem;
 import Models.Customer;
+import Models.Voucher;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -24,15 +28,6 @@ public class Checkout extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -53,38 +48,40 @@ public class Checkout extends HttpServlet {
         Customer customer = (Customer) session.getAttribute("user");
         String customerID = customer.getCustomerID();
 
-        CheckoutDAO checkoutDAO = new CheckoutDAO();
+        CartDAO cartDAO = new CartDAO();
+        List<CartItem> cartItems = cartDAO.viewCart(customerID);
 
+        // Lấy danh sách voucher từ VoucherDAO
+        VoucherDAO voucherDAO = new VoucherDAO();
+        List<Voucher> vouchers = voucherDAO.getAll();
 
-        // Lấy danh sách sản phẩm trong giỏ hàng
-        List<Cart> cartItems = checkoutDAO.getCartItems(customerID);
-
-        // Tính tổng giá trị đơn hàng
-        double subtotal = checkoutDAO.calculateSubtotal(customerID);
-        double shippingFee = 10.0;
-        double total = subtotal + shippingFee;
-
-        // Gửi dữ liệu đến JSP
-        request.setAttribute("customer", customer);
+        // Gửi danh sách voucher đến trang JSP
         request.setAttribute("cartItems", cartItems);
-        request.setAttribute("subtotal", subtotal);
-        request.setAttribute("shippingFee", shippingFee);
-        request.setAttribute("total", total);
-
+        request.setAttribute("vouchers", vouchers);
         request.getRequestDispatcher("View/Checkout.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("View/LoginCustomer.jsp");
+            return;
+        }
+
+        Customer customer = (Customer) session.getAttribute("user");
+        String customerID = customer.getCustomerID();
+
+        System.out.println(customerID);
+
+        CartDAO cartDAO = new CartDAO();
+        List<CartItem> cartItems = cartDAO.viewCart(customerID);
+
+        request.setAttribute("cartItems", cartItems);
+        request.getRequestDispatcher("View/Checkout.jsp").forward(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";

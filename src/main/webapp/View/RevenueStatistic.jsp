@@ -7,37 +7,57 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+
 <!DOCTYPE html>
 <html>
     <head>
         <title>Revenue</title>
+        <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
+        <%@include file="/Assets/CSS/icon.jsp"%>
+
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/restockstyles.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <style>
+            .table-container {
+                max-height: 400px;
+                overflow-y: auto;
+                overflow-x: auto;
+                border: 1px solid #ccc;
+            }
+
             table {
                 width: 100%;
                 border-collapse: collapse;
             }
+
             th, td {
                 border: 1px solid black;
                 padding: 10px;
                 text-align: center;
+                white-space: nowrap; /* Ngăn chữ bị xuống dòng */
             }
+
             th {
                 background-color: lightgray;
             }
+
         </style>
     </head>
     <body>
-        <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
-        <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/restockstyles.css"/>
-        <%@include file="Admin/HeaderAD.jsp"%>
+
+        <%
+            Manager manager = (Manager) session.getAttribute("user");
+            String managerName = (manager != null) ? manager.getManagerName() : "Guest";
+            String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
+        %>
 
         <div class="row">
-            <div class="col-md-3">
-                <%@include file="NavigationMenu.jsp"%>
+            <div class="col-md-2">
+                <%@include file="Admin/NavigationMenu.jsp"%>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-10">
+                <%@include file="Admin/HeaderAD.jsp"%>
                 <h2 class="text-center">REVENUE</h2>
 
                 <form action="Statistic" method="get">
@@ -56,29 +76,33 @@
                             <canvas id="revenueChart" width="50" height="10"></canvas>
 
 
-                            <table border="1">
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Revenue (VND)</th>
-                                </tr>
-                                <c:set var="totalRevenue" value="0"/>
-                                <c:forEach var="stat" items="${revenuelist}">
+                            <div class="table-container">
+                                <table border="1">
                                     <tr>
-                                        <td>${stat.timePeriod}</td>
-                                        <td>
-                                            <fmt:formatNumber value="${stat.revenue}" type="currency" currencySymbol="₫"/>
-                                        </td>
+                                        <th>Time</th>
+                                        <th>Revenue (VND)</th>
                                     </tr>
-                                    <c:set var="totalRevenue" value="${totalRevenue + stat.revenue}"/>
-                                </c:forEach>
-                            </table>
-                            <h3>Total Revenue: <fmt:formatNumber value="${totalRevenue}" type="currency" currencySymbol="₫"/></h3>
+                                    <c:set var="totalRevenue" value="0"/>
+                                    <c:forEach var="stat" items="${revenuelist}">
+                                        <tr>
+                                            <td>${stat.timePeriod}</td> 
+                                            <td><fmt:formatNumber value="${stat.revenue}" pattern="#,###" /> ₫</td>
+                                        </tr>
+                                        <c:set var="totalRevenue" value="${totalRevenue + stat.revenue}"/>
+                                        
+                                    </c:forEach>
+                                </table>
+                            </div>
+
+                            <h3>Total Revenue: <fmt:formatNumber value="${totalRevenue}" pattern="#,###" /> ₫</h3>
                         </c:when>
                         <c:otherwise>
                             <p>There are no statistical data for this time period.</p>
                         </c:otherwise>
                     </c:choose>
                 </div>
+
+                <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
                 <script>
 
                     var labels = [];

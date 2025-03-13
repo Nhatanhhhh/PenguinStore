@@ -16,18 +16,18 @@
 
 body {
     color: var(--color-text);
-    line-height: 1.8; /* Cải thiện độ dễ đọc */
+    line-height: 1.8; /* Cải thiện độ dễ đ�?c */
     font-family: var(--font);
     background-color: #fff !important;
 }
 
-a{
+a {
     text-decoration: none;
     color: var(--color-text);
     transition: all 0.3s ease 0s;
 }
 
-a:hover{
+a:hover {
     text-decoration: none;
     color: #555555;
 }
@@ -48,7 +48,7 @@ a:hover{
     display: inline-block;
     padding: 8px 20px;
     border-radius: 45px;
-    border: 2px solid var(--color-text); /* Vi?n thay v� n?n */
+    border: 2px solid var(--color-text);
     background: transparent;
     color: var(--color-text);
     font-size: 13px;
@@ -82,22 +82,22 @@ a:hover{
     color: var(--color-two);
 }
 
-.button-two{
+.button-two {
     background: var(--color-two);
     color: #fff;
 }
 
-.button-two:hover{
+.button-two:hover {
     background: var(--color-one);
     color: #fff;
 }
 
-.button-one{
+.button-one {
     background: var(--color-one);
     color: #fff;
 }
 
-.button-one:hover{
+.button-one:hover {
     background: var(--color-two);
     color: #fff;
 }
@@ -105,7 +105,7 @@ a:hover{
 /* End Button */
 
 /* Box Head */
-.box-head{
+.box-head {
     text-align: center;
     margin-bottom: 30px;
 }
@@ -115,9 +115,8 @@ a:hover{
     margin-bottom: 0;
 }
 
-.box-head .inner-desc{
+.box-head .inner-desc {
     font-size: 15px;
     margin-top: 10px;
 }
 /* End Box Head */
-

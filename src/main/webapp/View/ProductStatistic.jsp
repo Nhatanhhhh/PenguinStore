@@ -10,18 +10,12 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
+        <%@include file="/Assets/CSS/icon.jsp"%>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
         <title>Product Import/Export Statistics</title>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <style>
-            body {
-                font-family: Arial, sans-serif;
-                text-align: center;
-                margin: 20px;
-            }
-            .container {
-                width: 80%;
-                margin: auto;
-            }
             .chart-container {
                 width: 100%;
                 max-width: 800px;
@@ -57,16 +51,23 @@
         </style>
     </head>
     <body>
-        <%@include file="Admin/HeaderAD.jsp"%>
 
+
+        <%
+            Manager manager = (Manager) session.getAttribute("user");
+            String managerName = (manager != null) ? manager.getManagerName() : "Guest";
+            String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
+        %>
         <div class="container-fuild">
             <div class="row">
-                <div class="col-md-3">
-                    <%@include file="NavigationMenu.jsp"%>
+                <div class="col-md-2">
+                    <%@include file="Admin/NavigationMenu.jsp"%>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-10">
+                    <%@include file="Admin/HeaderAD.jsp"%>
+                    <h2 class="text-center">Product Import/Export Statistics</h2>
 
-                    <h2>Product Import/Export Statistics</h2>
+
 
                     <!-- Line Chart for Import/Export Statistics -->
                     <div class="chart-container">
@@ -104,7 +105,7 @@
                     </div>
 
 
-                    <h2 style="margin-top: 30px;">Best Selling Products </h2>
+                    <h2 class="text-center" style="margin-top: 30px;">Best Selling Products </h2>
 
                     <div class="table-container">
                         <table>
@@ -183,6 +184,6 @@
                 </div>
             </div>
         </div>
+        <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
 </html>
-

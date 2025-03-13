@@ -12,7 +12,7 @@ public class StatisticProduct {
 
     private String timePeriod;
     private String productName;
-    private String sizeName; 
+    private String sizeName;
     private String colorName;
     private int soldQuantity;
     private int importedQuantity;

@@ -6,6 +6,7 @@ package Controller;
 
 import DAOs.ManagerDAO;
 import DAOs.TypeDAO;
+import DB.DBContext;
 import DTO.ShowStaffDTO;
 import Models.Manager;
 import Models.Type;
@@ -27,13 +28,27 @@ import java.util.Objects;
  */
 @WebServlet(name = "StaffController", urlPatterns = {"/Staff"})
 public class StaffController extends HttpServlet {
-
+    
+    private DBContext db;
+    
+     @Override
+    public void init() throws ServletException {
+        super.init();
+        db = new DBContext();  
+        System.out.println("DBContext init: " + db);
+        try {
+           db.getConn();  
+       } catch (Exception e) {
+           throw new ServletException("Failed", e);
+       }
+    }
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
         String managerName = request.getParameter("id");
-        ManagerDAO managerDAO = new ManagerDAO();
+        ManagerDAO managerDAO = new ManagerDAO(db);
 
         if (Objects.isNull(action)) {
             action = "list"; // Default to listing types
@@ -44,7 +59,7 @@ public class StaffController extends HttpServlet {
 
                 ArrayList<ShowStaffDTO> managerList = managerDAO.getNameAndEmail();
                 request.setAttribute("managerList", managerList);
-                request.getRequestDispatcher("View/ListStaff.jsp").forward(request, response);
+                request.getRequestDispatcher("/View/ListStaff.jsp").forward(request, response);
                 break;
 
             case "detail":
@@ -62,7 +77,7 @@ public class StaffController extends HttpServlet {
                 }
 
                 request.setAttribute("managerDetail", managerDetail);
-                request.getRequestDispatcher("View/DetailStaff.jsp").forward(request, response);
+                request.getRequestDispatcher("/View/DetailStaff.jsp").forward(request, response);
                 break;
 
             case "edit":
@@ -71,24 +86,25 @@ public class StaffController extends HttpServlet {
                 System.out.println("Query String: " + request.getQueryString());
 
                 if (managerName == null || managerName.trim().isEmpty()) {
-                    request.getRequestDispatcher("View/EditStaff.jsp").forward(request, response);
+                    request.getRequestDispatcher("/View/EditStaff.jsp").forward(request, response);
 
                     return;
                 }
 
                 Manager existingManager = managerDAO.getByManagerName(managerName);
-
+                
+                
                 if (existingManager == null) {
-                    request.getRequestDispatcher("View/EditStaff.jsp").forward(request, response);
+                    request.getRequestDispatcher("/View/EditStaff.jsp").forward(request, response);
                     return;
                 }
 
                 request.setAttribute("manager", existingManager);
-                request.getRequestDispatcher("View/EditStaff.jsp").forward(request, response);
+                request.getRequestDispatcher("/View/EditStaff.jsp").forward(request, response);
                 break;
 
             case "create":
-                request.getRequestDispatcher("View/CreateStaff.jsp").forward(request, response);
+                request.getRequestDispatcher("/View/CreateStaff.jsp").forward(request, response);
                 break;
             default:
                 response.sendRedirect(request.getContextPath() + "/Staff?action=list");
@@ -99,7 +115,8 @@ public class StaffController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        ManagerDAO managerDAO = new ManagerDAO();
+       
+        ManagerDAO managerDAO = new ManagerDAO(db);
 
         if (Objects.isNull(action)) {
             action = "list"; // Default action
@@ -109,11 +126,11 @@ public class StaffController extends HttpServlet {
             case "list":
                 ArrayList<ShowStaffDTO> managerList = managerDAO.getNameAndEmail();
                 request.setAttribute("managerList", managerList);
-                request.getRequestDispatcher("View/ListStaff.jsp").forward(request, response);
+                request.getRequestDispatcher("/View/ListStaff.jsp").forward(request, response);
                 break;
 
             case "create":
-                
+
                 String managerNameCreate = request.getParameter("managerName");
                 String password = request.getParameter("password");
                 String fullName = request.getParameter("fullName");
@@ -124,24 +141,27 @@ public class StaffController extends HttpServlet {
 
                 if (managerNameCreate == null || managerNameCreate.trim().isEmpty() || password == null || password.trim().isEmpty()) {
                     request.setAttribute("error", "Please Enter your data.");
-                    request.getRequestDispatcher("View/CreateStaff.jsp").forward(request, response);
+                    request.getRequestDispatcher("/View/CreateStaff.jsp").forward(request, response);
                     return;
                 }
 
                 Manager managerCreate = new Manager(null, managerNameCreate, password, fullName, email, phoneNumber, address, dateCreate, false);
 
-                boolean rowsAffected = managerDAO.insert(managerCreate);
+                int rowsAffected = managerDAO.insert(managerCreate);
+                System.out.println("gia tri create tra ve: " + rowsAffected);
                 // Ki?m tra k?t qu?
-                if (rowsAffected == true) {
+                if (rowsAffected > 0) {
                     response.sendRedirect(request.getContextPath() + "/Staff?action=list");
                 } else {
                     request.setAttribute("error", "Create invalue! Phease try again.");
-                    request.getRequestDispatcher("View/CreateStaff.jsp").forward(request, response);
+                    request.getRequestDispatcher("/View/CreateStaff.jsp").forward(request, response);
                 }
                 break;
 
             case "edit":
+               
                 String managerName = request.getParameter("managerName");
+ 
                 String date = convertToFullDateTime(request.getParameter("dateOfBirth"));
                 Manager managerUpdate = new Manager(null,
                         request.getParameter("managerName"),
@@ -153,7 +173,12 @@ public class StaffController extends HttpServlet {
                         date,
                         false);
 
-                managerDAO.updateByManagerName(managerName, managerUpdate);
+                try {
+                     int check = managerDAO.updateByManagerName(managerName, managerUpdate);
+                     System.out.println("Check: "  +check);
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
 
                 response.sendRedirect(request.getContextPath() + "/Staff?action=list");
                 break;

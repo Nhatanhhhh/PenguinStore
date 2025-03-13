@@ -3,7 +3,6 @@ package DAOs;
 import DB.DBContext;
 import Models.Cart;
 import Models.CartItem;
-import Models.ProductVariant;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,23 +12,24 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Loc_LM
- */
 public class CartDAO {
 
     private DBContext db = new DBContext();
 
-
     public List<CartItem> viewCart(String customerID) {
         List<CartItem> cartItems = new ArrayList<>();
-        String sql = "SELECT p.productName, p.price, c.colorName, ca.quantity "
+        String sql = "SELECT p.productName, "
+                + "       p.price, "
+                + "       ca.quantity, "
+                + "       c.colorName, "
+                + "       STRING_AGG(i.imgName, ', ') AS imgName "
                 + "FROM Cart ca "
                 + "JOIN ProductVariants pv ON ca.proVariantID = pv.proVariantID "
                 + "JOIN Product p ON pv.productID = p.productID "
                 + "JOIN Color c ON pv.colorID = c.colorID "
-                + "WHERE ca.customerID = ?";
+                + "LEFT JOIN Image i ON p.productID = i.productID "
+                + "WHERE ca.customerID = ? "
+                + "GROUP BY p.productID, p.productName, p.price, ca.quantity, c.colorName";
 
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, customerID);
@@ -38,10 +38,11 @@ public class CartDAO {
             while (rs.next()) {
                 String productName = rs.getString("productName");
                 double price = rs.getDouble("price");
-                String colorName = rs.getString("colorName");
                 int quantity = rs.getInt("quantity");
+                String colorName = rs.getString("colorName");
+                String imgNames = rs.getString("imgName"); // Chuỗi các tên ảnh, cách nhau bởi dấu phẩy
 
-                cartItems.add(new CartItem(productName, price, colorName, quantity));
+                cartItems.add(new CartItem(productName, price, quantity, colorName, imgNames));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -49,18 +50,20 @@ public class CartDAO {
         return cartItems;
     }
 
-    public List<Cart> getCartByCustomerID(int customerID) {
+    public List<Cart> getCartByCustomerID(String customerID) {
         List<Cart> cartList = new ArrayList<>();
         String sql = "SELECT * FROM Cart WHERE customerID = ?";
-        try {
-            ResultSet rs = db.execSelectQuery(sql, new Object[]{customerID});
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, customerID);
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Cart cart = new Cart();
-                cart.setCartID(rs.getInt("cartID"));
-                cart.setCustomerID(rs.getInt("customerID"));
-                cart.setProVariantID(rs.getInt("proVariantID"));
-                cart.setProductID(rs.getInt("productID"));
-                cart.setQuantity(rs.getInt("quantity"));
+                Cart cart = new Cart(
+                        rs.getString("cartID"),
+                        rs.getString("customerID"),
+                        rs.getString("proVariantID"),
+                        rs.getString("productID"),
+                        rs.getInt("quantity")
+                );
                 cartList.add(cart);
             }
         } catch (SQLException e) {
@@ -72,45 +75,29 @@ public class CartDAO {
     public boolean addToCart(Cart cartItem) {
         String checkQuery = "SELECT quantity FROM Cart WHERE customerID = ? AND productID = ? AND proVariantID = ?";
         String updateQuery = "UPDATE Cart SET quantity = quantity + ? WHERE customerID = ? AND productID = ? AND proVariantID = ?";
-        String insertQuery = "INSERT INTO Cart (customerID, productID, proVariantID, quantity) VALUES (?, ?, ?, ?)";
-
-        if (cartItem.getProVariantID() == 0) {
-            checkQuery = "SELECT quantity FROM Cart WHERE customerID = ? AND productID = ? AND proVariantID IS NULL";
-            updateQuery = "UPDATE Cart SET quantity = quantity + ? WHERE customerID = ? AND productID = ? AND proVariantID IS NULL";
-            insertQuery = "INSERT INTO Cart (customerID, productID, quantity) VALUES (?, ?, ?)";
-        }
+        String insertQuery = "INSERT INTO Cart (cartID, customerID, productID, proVariantID, quantity) VALUES (?, ?, ?, ?, ?)";
 
         try ( Connection conn = DBContext.getConn();  PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
-
-            checkStmt.setInt(1, cartItem.getCustomerID());
-            checkStmt.setInt(2, cartItem.getProductID());
-            if (cartItem.getProVariantID() != 0) {
-                checkStmt.setInt(3, cartItem.getProVariantID());
-            }
+            checkStmt.setString(1, cartItem.getCustomerID());
+            checkStmt.setString(2, cartItem.getProductID());
+            checkStmt.setString(3, cartItem.getProVariantID());
 
             try ( ResultSet rs = checkStmt.executeQuery()) {
                 if (rs.next()) {
                     try ( PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
                         updateStmt.setInt(1, cartItem.getQuantity());
-                        updateStmt.setInt(2, cartItem.getCustomerID());
-                        updateStmt.setInt(3, cartItem.getProductID());
-                        if (cartItem.getProVariantID() != 0) {
-                            updateStmt.setInt(4, cartItem.getProVariantID());
-                        }
+                        updateStmt.setString(2, cartItem.getCustomerID());
+                        updateStmt.setString(3, cartItem.getProductID());
+                        updateStmt.setString(4, cartItem.getProVariantID());
                         return updateStmt.executeUpdate() > 0;
                     }
                 } else {
                     try ( PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
-                        insertStmt.setInt(1, cartItem.getCustomerID());
-                        insertStmt.setInt(2, cartItem.getProductID());
-
-                        if (cartItem.getProVariantID() != 0) {
-                            insertStmt.setInt(3, cartItem.getProVariantID());
-                            insertStmt.setInt(4, cartItem.getQuantity());
-                        } else {
-                            insertStmt.setInt(3, cartItem.getQuantity());
-                        }
-
+                        insertStmt.setString(1, cartItem.getCartID());
+                        insertStmt.setString(2, cartItem.getCustomerID());
+                        insertStmt.setString(3, cartItem.getProductID());
+                        insertStmt.setString(4, cartItem.getProVariantID());
+                        insertStmt.setInt(5, cartItem.getQuantity());
                         return insertStmt.executeUpdate() > 0;
                     }
                 }
@@ -121,28 +108,14 @@ public class CartDAO {
         return false;
     }
 
-    public double getProductPrice(int productID) {
-        String sql = "SELECT price FROM Product WHERE id = ?";
-        try ( ResultSet rs = db.execSelectQuery(sql, new Object[]{productID})) {
-            if (rs.next()) {
-                return rs.getDouble("price");
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(CartDAO.class.getName()).log(Level.SEVERE, null, e);
-        }
-        return 0;
-    }
-
     public boolean updateCartItem(Cart cart) {
         String query = "UPDATE Cart SET customerID = ?, productID = ?, proVariantID = ?, quantity = ? WHERE cartID = ?";
         try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, cart.getCustomerID());
-            stmt.setInt(2, cart.getProductID());
-            stmt.setInt(3, cart.getProVariantID());
+            stmt.setString(1, cart.getCustomerID());
+            stmt.setString(2, cart.getProductID());
+            stmt.setString(3, cart.getProVariantID());
             stmt.setInt(4, cart.getQuantity());
-            stmt.setInt(5, cart.getCartID());
-
+            stmt.setString(5, cart.getCartID());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -150,27 +123,61 @@ public class CartDAO {
         return false;
     }
 
-    public boolean deleteCartItem(int cartID) {
-        String query = "DELETE FROM Cart WHERE cartID = ?";
-        try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, cartID);
-            return stmt.executeUpdate() > 0;
+    public void removeFromCart(String customerID, String productID) {
+        String sql = "DELETE FROM Cart WHERE customerID = ? AND productID = ?";
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, customerID);
+            ps.setString(2, productID);
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
     }
 
-    public void clearCart(int customerID) {
+    public double getProductPrice(String productID) {
+        double price = 0;
+        String query = "SELECT price FROM Products WHERE productID = ?";
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, productID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                price = rs.getDouble("price");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return price;
+    }
+
+    public String getProductIDByItem(CartItem item) {
+        String productID = null;
+        String sql = "SELECT p.productID FROM Product p "
+                + "JOIN ProductVariants pv ON p.productID = pv.productID "
+                + "JOIN Color c ON pv.colorID = c.colorID "
+                + "WHERE p.productName = ? AND c.colorName = ?";
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, item.getProductName());
+            ps.setString(2, item.getColorName());
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                productID = rs.getString("productID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productID;
+    }
+
+    public void clearCart(String customerID) {
         String query = "DELETE FROM Cart WHERE customerID = ?";
         try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, customerID);
+            stmt.setString(1, customerID);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
 }

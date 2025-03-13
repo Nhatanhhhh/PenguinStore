@@ -4,13 +4,14 @@
  */
 package Models;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
  * @author PC
  */
-
 /**
  * Model class for OrderHistory
  */
@@ -24,8 +25,82 @@ public class Order {
     private Date orderDate;
     private String statusOID;
     private String voucherID;
+    private String voucherName;
+    private String statusName;
+    private String fullName;
+    private String orderStatus;
+    private List<Product> products;
 
+    public Order() {
+        this.products = new ArrayList<>(); // Khởi tạo danh sách sản phẩm
+    }
+
+    public Order(String orderID, String customerID, double totalAmount, double discountAmount, double finalAmount,
+            Date orderDate, String statusName, String statusOID, String voucherID, String voucherName) {
+        this.orderID = orderID;
+        this.customerID = customerID;
+        this.totalAmount = totalAmount;
+        this.discountAmount = discountAmount;
+        this.finalAmount = finalAmount;
+        this.orderDate = orderDate;
+        this.statusName = statusName;
+        this.statusOID = statusOID;
+        this.voucherID = voucherID;
+        this.voucherName = voucherName;
+         this.products = new ArrayList<>(); 
+    }
+
+    public Order(String orderID, String fullName, Date orderDate, double totalAmount, String orderStatus) {
+        this.orderID = orderID;
+        this.fullName = fullName;
+        this.orderDate = orderDate;
+        this.totalAmount = totalAmount;
+        this.orderStatus = orderStatus;
+    }
+
+    public Order(String orderID, String customerID, String statusName, String voucherName, Date orderDate, List<Product> products) {
+        this.orderID = orderID;
+        this.customerID = customerID;
+        this.statusName = statusName;
+        this.voucherName = voucherName;
+        this.orderDate = orderDate;
+        this.products = products;
+    }
     
+    
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(String orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public String getVoucherName() {
+        return voucherName;
+    }
+
+    public void setVoucherName(String voucherName) {
+        this.voucherName = voucherName;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
     // Getters and Setters
     public String getOrderID() {
         return orderID;
@@ -89,5 +164,13 @@ public class Order {
 
     public void setVoucherID(String voucherID) {
         this.voucherID = voucherID;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 }

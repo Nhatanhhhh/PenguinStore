@@ -164,9 +164,3 @@ footer {
     background: #fff;
     color: #000;
 }
-
-.disabled-link {
-    pointer-events: none;
-    opacity: 0.6;
-    cursor: default;
-}

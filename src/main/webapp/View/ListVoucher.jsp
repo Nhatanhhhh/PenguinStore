@@ -13,22 +13,37 @@
         <title>List Voucher</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/base.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/style.css"/>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/Assets/CSS/Admin/DashBoeard.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Assets/CSS/Admin/DashBoard.css"/>
     </head>
     <body>
-        <%@include file="Admin/HeaderAD.jsp"%>
-
+        <%
+            Manager manager = (Manager) session.getAttribute("user");
+            String managerName = (manager != null) ? manager.getManagerName() : "Guest";
+            String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
+        %>
         <div class="row">
             <div class="col-md-2">
-                <%@include file="NavigationMenu.jsp"%>
+                <%@include file="Admin/NavigationMenu.jsp"%>
 
             </div>
             <div class="col-md-10">
+                <%@include file="Admin/HeaderAD.jsp"%>
                 <div class="container mt-4">
-                    <h2>List Voucher</h2>
-                    <table class="table table-bordered">
+                    <h2 class="text-center">List Voucher</h2>
+
+                    <!-- Dropdown lọc voucher -->
+                    <div class="mb-3">
+                        <label for="voucherFilter" class="form-label">Filter Vouchers:</label>
+                        <select id="voucherFilter" class="form-select">
+                            <option value="all">All Voucher</option>
+                            <option value="valid">Still Valid</option>
+                            <option value="expired">Expire</option>
+                        </select>
+                    </div>
+
+                    <table class="table table-bordered" id="voucherTable">
                         <thead class="table-dark">
                             <tr>
                                 <th>Voucher Code</th>
@@ -44,7 +59,7 @@
                         </thead>
                         <tbody>
                             <c:forEach var="voucher" items="${voucherList}">
-                                <tr>
+                                <tr class="${voucher.voucherStatus ? 'valid' : 'expired'}">
                                     <td>${voucher.voucherCode}</td>
                                     <td>${voucher.discountPer}</td>
                                     <td>${voucher.discountAmount}</td>
@@ -73,10 +88,8 @@
                                                    style="pointer-events: none; opacity: 0.6;">
                                                     Edit
                                                 </a>
-
                                             </c:otherwise>
                                         </c:choose>
-
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -84,9 +97,30 @@
                     </table>
                     <a href="<c:url value='/Voucher?action=create'/>" class="btn btn-success">Create</a>
                 </div>
+
+                <script>
+                    document.getElementById("voucherFilter").addEventListener("change", function () {
+                        let filterValue = this.value;
+                        let rows = document.querySelectorAll("#voucherTable tbody tr");
+
+                        rows.forEach(row => {
+                            if (filterValue === "all") {
+                                row.style.display = "";
+                            } else if (filterValue === "valid" && row.classList.contains("valid")) {
+                                row.style.display = "";
+                            } else if (filterValue === "expired" && row.classList.contains("expired")) {
+                                row.style.display = "";
+                            } else {
+                                row.style.display = "none";
+                            }
+                        });
+                    });
+                </script>
+
             </div>
         </div>
 
 
+        <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
 </html>

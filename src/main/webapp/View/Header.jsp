@@ -38,6 +38,41 @@
                 box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25) !important;
                 outline: none !important;
             }
+            .nav-menu {
+                display: flex;
+                gap: 20px;
+                position: relative;
+            }
+
+            .dropdown {
+                position: relative;
+                display: inline-block;
+            }
+
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: white;
+                min-width: 150px;
+                box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+                z-index: 1;
+            }
+
+            .dropdown-content a {
+                color: black;
+                padding: 10px;
+                display: block;
+                text-decoration: none;
+            }
+
+            .dropdown-content a:hover {
+                background-color: #ddd;
+            }
+
+            .dropdown:hover .dropdown-content {
+                display: block;
+            }
+
         </style>
     </head>
     <body>
@@ -71,12 +106,19 @@
             </c:if>
 
         </header>
-
         <nav class="nav-menu">
-            <a href="<c:url value="/Product"></c:url>">Product</a>
-            <a class="menu-down" href="#">Trousers <span class="mdi mdi-menu-down-outline"></span></a>
-            <a class="menu-down" href="#">Accessories <span class="mdi mdi-menu-down-outline"></span></a>
-            <a class="menu-down" href="#">New <span class="mdi mdi-menu-down-outline"></span></a>
+            <a href="<c:url value='/Product'/>">Product</a>
+
+            <c:forEach var="entry" items="${categoryMap}">
+                <div class="dropdown">
+                    <a class="menu-down" href="<c:url value='/Product?category=${entry.key}&action=detailType'/>">${entry.key} <span class="mdi mdi-menu-down-outline"></span></a>
+                    <div class="dropdown-content">
+                        <c:forEach var="type" items="${entry.value}">
+                            <a href="<c:url value='/Product?type=${type.typeName}&action=detailType'/>">${type.typeName}</a>
+                        </c:forEach>
+                    </div>
+                </div>
+            </c:forEach>
         </nav>
     </body>
 </html>

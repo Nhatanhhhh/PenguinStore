@@ -17,21 +17,28 @@
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
     </head>
     <body>
 
-        <%@include file="Admin/HeaderAD.jsp"%>
+        <%
+            Manager manager = (Manager) session.getAttribute("user");
+            String managerName = (manager != null) ? manager.getManagerName() : "Guest";
+            String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
+        %>
+
         <div class="row">
             <div class="col-md-2">
-                <%@include file="/View/NavigationMenu.jsp"%>
+                <%@include file="Admin/NavigationMenu.jsp"%>
             </div>
             <div class="col-md-10">
+                <%@include file="Admin/HeaderAD.jsp"%>
                 <div class="container mt-4">
                     <div class="row justify-content-center">
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header bg-warning text-white text-center">
-                                    <h3>Edit Type Product</h3>
+                                    <h3 class="text-center">Edit Type Product</h3>
                                 </div>
                                 <div class="card-body">
                                     <c:if test="${empty voucher}">
@@ -40,7 +47,7 @@
                                     </c:if>
 
                                     <c:if test="${not empty voucher}">
-                                        <form action="<c:url value='/Voucher?action=edit'/>" method="POST">
+                                        <form id="editForm" action="<c:url value='/Voucher?action=edit'/>" method="POST">
                                             <input type="hidden" name="voucherID" value="${voucher.voucherID}">
 
                                             <div class="mb-3">
@@ -93,6 +100,26 @@
         </div>
 
 
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.getElementById("editForm").addEventListener("submit", function (event) {
+                event.preventDefault(); // Ngăn chặn gửi form ngay lập tức
+
+                Swal.fire({
+                    title: "Confirm Update",
+                    text: "Are you sure you want to update this voucher?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, update it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        event.target.submit(); // Gửi form khi xác nhận
+                    }
+                });
+            });
+        </script>
 
     </body>
 </html>

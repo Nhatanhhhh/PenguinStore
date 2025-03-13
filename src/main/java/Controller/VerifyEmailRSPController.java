@@ -58,7 +58,7 @@ public class VerifyEmailRSPController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.getRequestDispatcher("View/VerifyEmailRSP.jsp").forward(request, response);
     }
 
     /**
@@ -77,13 +77,14 @@ public class VerifyEmailRSPController extends HttpServlet {
         if ("/VerifyEmailRSP".equals(action)) {
             String verificationCode = request.getParameter("verificationCode");
             String sessionCode = (String) request.getSession().getAttribute("verificationCode");
-            System.out.println("Mã xác thực người dùng nhập: " + verificationCode);
-            System.out.println("Mã xác thực trong session: " + sessionCode);
+            System.out.println("Verification code users enter: " + verificationCode);
+            System.out.println("Authentication code in session: " + sessionCode);
             if (verificationCode != null && verificationCode.equals(sessionCode)) {
                 response.sendRedirect("ResetPassword");
             } else {
-                request.setAttribute("errorMessage", "Mã xác thực không đúng hoặc đã hết hạn.");
-                request.getRequestDispatcher("View/VerifyEmailRSP.jsp").forward(request, response);
+                System.out.println("The authentication code is not correct or expired.");
+                request.setAttribute("errorMessage", "The authentication code is not correct or expired.");
+                request.getRequestDispatcher("Login").forward(request, response);
             }
         } else if ("/ResendCodeRSP".equals(action)) {
             // Gửi lại mã xác thực
@@ -92,8 +93,8 @@ public class VerifyEmailRSPController extends HttpServlet {
             request.getSession().setAttribute("verificationCode", newCode);
             EmailService emailService = new EmailService();
             emailService.sendVerificationEmail(email, newCode);
-            request.setAttribute("msg", "Mã xác thực mới đã được gửi.");
-            request.getRequestDispatcher("View/VerifyEmailRSP.jsp").forward(request, response);
+            request.setAttribute("msg", "The new authentication code has been sent.");
+            request.getRequestDispatcher("VerifyEmailRSP").forward(request, response);
         }
     }
 

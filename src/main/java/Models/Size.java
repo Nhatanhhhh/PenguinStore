@@ -11,7 +11,6 @@ package Models;
 import java.io.Serializable;
 
 public class Size implements Serializable {
-
     private String sizeID;
     private String sizeName;
 

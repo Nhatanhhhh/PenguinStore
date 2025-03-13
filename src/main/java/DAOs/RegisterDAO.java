@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DAOs;
 
 import DB.DBContext;
@@ -14,11 +10,15 @@ import java.sql.SQLException;
 import java.util.Base64;
 
 /**
+ * DAO class for handling user registration.
  *
  * @author Nguyen Nhat Anh - CE181843
  */
 public class RegisterDAO {
 
+    /**
+     * Checks if a username already exists in the database.
+     */
     public boolean isUserExists(String username) {
         Connection connection = DBContext.getConn();
         String checkQuery = "SELECT * FROM Customer WHERE customerName = ?";
@@ -38,6 +38,9 @@ public class RegisterDAO {
         }
     }
 
+    /**
+     * Checks if an email is already registered.
+     */
     public boolean isEmailExist(String email) {
         Connection connection = DBContext.getConn();
         String checkQuery = "SELECT * FROM Customer WHERE email = ?";
@@ -57,6 +60,9 @@ public class RegisterDAO {
         return false;
     }
 
+    /**
+     * Registers a new user.
+     */
     public String registerUser(String username, String password, String fullName, String email, String phone) {
         Connection connection = DBContext.getConn();
         String insertQuery = "INSERT INTO Customer (customerName, password, fullName, email, phoneNumber, isVerified) VALUES (?,?,?,?,?, 1)";
@@ -65,7 +71,7 @@ public class RegisterDAO {
         try {
             insertStatement = connection.prepareStatement(insertQuery);
             insertStatement.setString(1, username);
-            insertStatement.setString(2, password);  // Nên mã hóa trước khi lưu
+            insertStatement.setString(2, password);  // Should be encrypted before storing
             insertStatement.setString(3, fullName);
             insertStatement.setString(4, email);
             insertStatement.setString(5, phone);
@@ -83,6 +89,9 @@ public class RegisterDAO {
         return "An error occurred while processing your request.";
     }
 
+    /**
+     * Retrieves user ID based on the provided email.
+     */
     public String getUserIdByEmail(String email) {
         Connection connection = DBContext.getConn();
         String sql = "SELECT customerID FROM Customer WHERE email = ?";
@@ -105,6 +114,9 @@ public class RegisterDAO {
         return customerID;
     }
 
+    /**
+     * Retrieves user details by email.
+     */
     public Customer getUserByEmail(String email) throws SQLException {
         String sql = "SELECT * FROM Customer WHERE email = ?";
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -118,6 +130,9 @@ public class RegisterDAO {
                     customer.setFullName(rs.getString("fullName"));
                     customer.setEmail(rs.getString("email"));
                     customer.setPhoneNumber(rs.getString("phoneNumber"));
+                    customer.setAddress(rs.getString("address"));
+                    customer.setState(rs.getString("state"));
+                    customer.setZip(rs.getString("zip"));
                     customer.setIsVerified(rs.getBoolean("isVerified"));
                     return customer;
                 }
@@ -128,33 +143,8 @@ public class RegisterDAO {
         return null;
     }
 
-    private void closeResources(PreparedStatement stmt, ResultSet rs) {
-        try {
-            if (rs != null) {
-                rs.close();
-            }
-            if (stmt != null) {
-                stmt.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
-     * Hàm đăng ký người dùng qua Google.
-     *
-     * @param customerName tên đăng nhập (có thể dùng email nếu chưa có tên
-     * riêng)
-     * @param fullName Họ và tên của người dùng
-     * @param email email của người dùng
-     * @param googleID mã định danh Google (payload.getSubject())
-     * @param accessToken token truy cập của Google
-     * @param address địa chỉ (nếu có, hoặc truyền chuỗi rỗng)
-     * @param phone số điện thoại (nếu có, hoặc truyền chuỗi rỗng)
-     * @param state tỉnh/thành phố (nếu có, hoặc truyền chuỗi rỗng)
-     * @param zip mã bưu điện (nếu có, hoặc truyền chuỗi rỗng)
-     * @return "SUCCESS" nếu đăng ký thành công, ngược lại trả về thông báo lỗi.
+     * Registers a new user via Google authentication.
      */
     public String registerUserGoogle(String customerName, String fullName, String email, String googleID,
             String accessToken) {
@@ -187,10 +177,29 @@ public class RegisterDAO {
         return "An error occurred while processing your request.";
     }
 
+    /**
+     * Generates a random password.
+     */
     private String generateRandomPassword() {
         SecureRandom random = new SecureRandom();
-        byte[] bytes = new byte[12]; // Độ dài mật khẩu 12 ký tự
+        byte[] bytes = new byte[12]; // Password length: 12 characters
         random.nextBytes(bytes);
-        return Base64.getEncoder().encodeToString(bytes).substring(0, 12); // Chỉ lấy 12 ký tự đầu
+        return Base64.getEncoder().encodeToString(bytes).substring(0, 12); // Take the first 12 characters
+    }
+
+    /**
+     * Closes SQL resources.
+     */
+    private void closeResources(PreparedStatement stmt, ResultSet rs) {
+        try {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

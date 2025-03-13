@@ -6,7 +6,7 @@ package DTO;
 
 /**
  *
- * @author truon
+ * @author Thuan
  */
 public class ShowStaffDTO {
 

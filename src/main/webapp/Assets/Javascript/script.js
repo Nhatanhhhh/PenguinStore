@@ -1,4 +1,3 @@
-
 (function ($) {
     "use strict";
 
@@ -19,7 +18,6 @@
         return check;
     });
 
-
     $('.validate-form .input100').each(function () {
         $(this).focus(function () {
             hideValidate(this);
@@ -36,37 +34,32 @@
                 return false;
             }
         }
+        return true;
     }
 
     function showValidate(input) {
         var thisAlert = $(input).parent();
-
         $(thisAlert).addClass('alert-validate');
     }
 
     function hideValidate(input) {
         var thisAlert = $(input).parent();
-
         $(thisAlert).removeClass('alert-validate');
     }
 
     /*==================================================================
      [ Show pass ]*/
-    var showPass = 0;
     $('.btn-show-pass').on('click', function () {
-        if (showPass == 0) {
-            $(this).next('input').attr('type', 'text');
-            $(this).find('i').removeClass('fa-eye');
-            $(this).find('i').addClass('fa-eye-slash');
-            showPass = 1;
+        var input = $(this).next('input');
+        var icon = $(this).find('i');
+
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash'); 
         } else {
-            $(this).next('input').attr('type', 'password');
-            $(this).find('i').removeClass('fa-eye-slash');
-            $(this).find('i').addClass('fa-eye');
-            showPass = 0;
+            input.attr('type', 'password');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye'); 
         }
-
     });
-
 
 })(jQuery);

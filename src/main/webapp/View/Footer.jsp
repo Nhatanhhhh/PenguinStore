@@ -14,10 +14,10 @@
                     <h3>PENGUIN STORE</h3>
                     <p>We provide an online fashion shopping experience with the best quality products. Enjoy convenient service and fast delivery!</p>
                     <div class="social-icons">
-                        <a href="#" class="icon"><i class="fab fa-discord"></i></a>
-                        <a href="#" class="icon"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="icon"><i class="fab fa-twitter"></i></a>
+                        <div class="icon"><i class="fab fa-discord"></i></div>
+                        <div class="icon"><i class="fab fa-instagram"></i></div>
+                        <div class="icon"><i class="fab fa-facebook-f"></i></div>
+                        <div class="icon"><i class="fab fa-twitter"></i></div>
                     </div>
                 </div>
 
@@ -25,10 +25,10 @@
                 <div class="footer-section">
                     <h3>Category</h3>
                     <ul>
-                        <li><a href="#">Shirt</a></li>
-                        <li><a href="#">Trousers</a></li>
-                        <li><a href="#">Accessories</a></li>
-                        <li><a href="#">New</a></li>
+                        <li><div>Shirt</div></li>
+                        <li><div>Trousers</div></li>
+                        <li><div>Accessories</div></li>
+                        <li><div>New</div></li>
                     </ul>
                 </div>
 
@@ -36,9 +36,9 @@
                 <div class="footer-section">
                     <h3>Client Support</h3>
                     <ul>
-                        <li><a href="#">Return policy</a></li>
-                        <li><a href="#">Pay</a></li>
-                        <li><a href="#">Ordering instructions</a></li>
+                        <li><div>Return policy</div></li>
+                        <li><div>Pay</div></li>
+                        <li><div>Ordering instructions</div></li>
                     </ul>
                 </div>
 
@@ -46,10 +46,10 @@
                 <div class="footer-section">
                     <h3>About</h3>
                     <ul>
-                        <li><a href="#">About Penguin Store</a></li>
-                        <li><a href="#">Privacy policy</a></li>
-                        <li><a href="#">Support</a></li>
-                        <li><a href="#">Terms of service</a></li>
+                        <li><div>About Penguin Store</div></li>
+                        <li><div>Privacy policy</div></li>
+                        <li><div>Support</div></li>
+                        <li><div>Terms of service</div></li>
                     </ul>
                 </div>
             </div>

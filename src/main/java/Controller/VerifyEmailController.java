@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package Controller;
 
 import DAOs.RegisterDAO;
@@ -15,18 +11,26 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
+ * Servlet handling email verification and resending verification codes.
  *
  * @author Nguyen Nhat Anh - CE181843
  */
 @WebServlet(name = "VerifyEmailController", urlPatterns = {"/VerifyEmail", "/ResendCodes"})
 public class VerifyEmailController extends HttpServlet {
 
+    /**
+     * Handles HTTP GET requests by displaying the verification page.
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException{
+            throws ServletException, IOException {
         request.getRequestDispatcher("/View/VerifyEmail.jsp").forward(request, response);
     }
-    
+
+    /**
+     * Handles HTTP POST requests for verifying email and resending verification
+     * codes.
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -35,8 +39,9 @@ public class VerifyEmailController extends HttpServlet {
         if ("/VerifyEmail".equals(action)) {
             String verificationCode = request.getParameter("verificationCode");
             String sessionCode = (String) request.getSession().getAttribute("verificationCode");
-            System.out.println("Mã xác thực người dùng nhập: " + verificationCode);
-            System.out.println("Mã xác thực trong session: " + sessionCode);
+            System.out.println("User-entered verification code: " + verificationCode);
+            System.out.println("Session-stored verification code: " + sessionCode);
+
             if (verificationCode != null && verificationCode.equals(sessionCode)) {
 
                 String username = (String) request.getSession().getAttribute("username");
@@ -48,15 +53,16 @@ public class VerifyEmailController extends HttpServlet {
                 RegisterDAO registerDAO = new RegisterDAO();
                 String hashedPassword = DBContext.hashPasswordMD5(password);
                 String result = registerDAO.registerUser(username, hashedPassword, fullName, email, phone);
+
                 if ("SUCCESS".equals(result)) {
                     request.setAttribute("successMessage", "Successful authentication, you can log in!");
-                    response.sendRedirect("View/LoginCustomer.jsp");
+                    response.sendRedirect("Login");
                 } else {
                     request.setAttribute("errorMessage", "Successful registration, please try again!");
                     request.getRequestDispatcher("View/VerifyEmail.jsp").forward(request, response);
                 }
             } else {
-                request.setAttribute("errorMessage", "The authentication code is not correct or expired!");
+                request.setAttribute("errorMessage", "The authentication code is incorrect or expired!");
                 request.getRequestDispatcher("View/VerifyEmail.jsp").forward(request, response);
             }
         } else if ("/ResendCodes".equals(action)) {
@@ -70,6 +76,9 @@ public class VerifyEmailController extends HttpServlet {
         }
     }
 
+    /**
+     * Generates a random six-digit verification code.
+     */
     private String generateVerificationCode() {
         return String.valueOf((int) ((Math.random() * 900000) + 100000));
     }

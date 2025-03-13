@@ -16,7 +16,6 @@ import Models.ProductVariant;
 import Models.Size;
 import Models.Type;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,11 +25,10 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Arrays;
 import jakarta.servlet.annotation.MultipartConfig;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -56,20 +54,26 @@ public class ManageProductController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
+        String id = request.getParameter("id");
         ProductDAO productDAO = new ProductDAO();
         ProductVariantDAO productVariantDAO = new ProductVariantDAO();
         SizeDAO sizeDAO = new SizeDAO();
         ColorDAO colorDAO = new ColorDAO();
         TypeDAO typeDAO = new TypeDAO();
-        System.out.println("Action: " + action);
-        System.out.println("-------------------------");
+        ArrayList<Type> listTypeA = typeDAO.getAll();
+        Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
+        for (Type type : listTypeA) {
+            String categoryName = type.getCategoryName();
+            if (!categoryMap.containsKey(categoryName)) {
+                categoryMap.put(categoryName, new ArrayList<>());
+            }
+            categoryMap.get(categoryName).add(type);
+        }
+        request.setAttribute("listType", listTypeA);
+        request.setAttribute("categoryMap", categoryMap);
         if (Objects.isNull(action)) {
             action = "view";
         }
-
-        System.out.println(
-                "Action: " + action);
-
         switch (action) {
             case "view":
                 ArrayList<Product> listProduct = productDAO.readAll();
@@ -83,9 +87,16 @@ public class ManageProductController extends HttpServlet {
                 request.getRequestDispatcher("/View/ViewProductsAdmin.jsp").forward(request, response);
                 break;
             case "edit":
-
+                ArrayList<ProductVariant> productDetail = productVariantDAO.viewProductDetail(id);
+                Product chooseProduct = productDAO.getOneProduct(id);
+                System.out.println("Product Detail Size: " + productDetail.size());
+                for (ProductVariant pv : productDetail) {
+                    System.out.println("Variant: " + pv.getColorName() + ", " + pv.getSizeName());
+                }
+                request.setAttribute("product", chooseProduct);
+                request.setAttribute("productDetail", productDetail);
+                request.getRequestDispatcher("/View/EditProduct.jsp").forward(request, response);
                 break;
-
             case "create":
                 ArrayList<Type> listType = typeDAO.getAll();
                 ArrayList<Size> listSize = sizeDAO.getAll();
@@ -96,9 +107,11 @@ public class ManageProductController extends HttpServlet {
                 request.getRequestDispatcher("/View/CreateProduct.jsp").forward(request, response);
                 break;
             case "inventory":
-                String id = request.getParameter("id");
+                ArrayList<Type> type = typeDAO.getAll();
                 ArrayList<ProductVariant> listDetail = productVariantDAO.viewProductDetail(id);
                 Product product = productDAO.getOneProduct(id);
+
+                request.setAttribute("listType", type);
                 request.setAttribute("productDetail", listDetail);
                 request.setAttribute("product", product);
                 request.getRequestDispatcher("/View/Inventory.jsp").forward(request, response);
@@ -127,16 +140,48 @@ public class ManageProductController extends HttpServlet {
         SizeDAO sizeDAO = new SizeDAO();
         ColorDAO colorDAO = new ColorDAO();
         TypeDAO typeDAO = new TypeDAO();
+
         if (Objects.isNull(action)) {
             action = "view";
         }
+
         switch (action) {
             case "view":
+            case "filter":
+                String selectedType = request.getParameter("selectedType");
+                String stockFilter = request.getParameter("stockFilter");
+                ArrayList<Product> listProduct = productDAO.readAll();
+                Map<String, ArrayList<ProductVariant>> productVariantsMap = new HashMap<>();
+                for (Product product : listProduct) {
+                    ArrayList<ProductVariant> variants = productVariantDAO.viewProductDetail(product.getProductID());
+                    productVariantsMap.put(product.getProductID(), variants);
+                }
+                ArrayList<Product> filteredProducts = new ArrayList<>();
 
-            case "edit":
+                for (Product product : listProduct) {
+                    boolean matchesType = (selectedType == null || selectedType.isEmpty()) || product.getTypeName().equals(selectedType);
+                    boolean matchesStock = true;
 
+                    if (stockFilter != null && !stockFilter.isEmpty()) {
+                        ArrayList<ProductVariant> variants = productVariantsMap.get(product.getProductID());
+                        if (variants != null) {
+                            matchesStock = variants.stream().anyMatch(variant
+                                    -> ("below5".equals(stockFilter) && variant.getStockQuantity() < 5)
+                                    || ("below10".equals(stockFilter) && variant.getStockQuantity() < 10)
+                            );
+                        }
+                    }
+
+                    if (matchesType && matchesStock) {
+                        filteredProducts.add(product);
+                    }
+                }
+                ArrayList<Type> listType = typeDAO.getAll();
+                request.setAttribute("listType", listType);
+                request.setAttribute("listProduct", filteredProducts);
+                request.setAttribute("productVariantsMap", productVariantsMap);
+                request.getRequestDispatcher("/View/ViewProductsAdmin.jsp").forward(request, response);
                 break;
-
             case "create":
                 String productName = request.getParameter("productName");
                 String description = request.getParameter("description");
@@ -145,6 +190,7 @@ public class ManageProductController extends HttpServlet {
                 String typeId = request.getParameter("typeId");
                 String[] colorIds = request.getParameterValues("colorIds");
                 String[] sizeIds = request.getParameterValues("sizeIds");
+
                 String[] context = request.getServletContext().getRealPath("").split("target");
                 String realPath = context[0] + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "Image" + File.separator + "Product";
                 ArrayList<String> imageNames = new ArrayList<>();
@@ -164,10 +210,40 @@ public class ManageProductController extends HttpServlet {
                 } catch (SQLException ex) {
                     Logger.getLogger(ManageProductController.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                response.sendRedirect(request.getContextPath() + "/ManageProduct?action=view");
                 break;
+
+            case "updateProduct":
+            try {
+                String productID = request.getParameter("productID");
+                String updatedProductName = request.getParameter("productName");
+                String updatedDescription = request.getParameter("description");
+                int updatedPrice = Integer.parseInt(request.getParameter("price"));
+
+                boolean success = productDAO.updateProduct(productID, updatedProductName, updatedDescription, updatedPrice);
+                response.getWriter().write(success ? "Success" : "Error updating product");
+            } catch (Exception ex) {
+                Logger.getLogger(ManageProductController.class.getName()).log(Level.SEVERE, null, ex);
+                response.getWriter().write("Error: " + ex.getMessage());
+            }
+            break;
+
+            case "updateVariantStatus":
+                try {
+                String variantID = request.getParameter("variantID");
+                boolean status = Boolean.parseBoolean(request.getParameter("status"));
+                boolean updated = productVariantDAO.updateProductVariantStatus(variantID, status);
+                response.getWriter().write(updated ? "Success" : "Failed to update");
+            } catch (Exception ex) {
+                Logger.getLogger(ManageProductController.class.getName()).log(Level.SEVERE, null, ex);
+                response.getWriter().write("Error: " + ex.getMessage());
+            }
+            break;
+
             default:
                 response.sendRedirect(request.getContextPath() + "/ManageProduct?action=view");
                 break;
         }
     }
+
 }

@@ -65,7 +65,7 @@
                     <div class="edit-profile"><a href="<%= request.getContextPath()%>/EditProfile">Edit Profile</a></div>
                     <div class="voucher"><a style="font-weight: bold;">Voucher</a></div>
                     <div class="order"><a href="<%= request.getContextPath()%>/OrderHistory">Order</a></div>
-                    <div class="password"><a href="#">Password</a></div>
+                    <div class="password"><a href="<%= request.getContextPath()%>/ChangePassword">Password</a></div>
                 </div>
 
                 <div class="col-md-10">
@@ -87,7 +87,7 @@
                                 %>
                                 <tr>
                                     <td><%= voucher.getVoucherCode()%></td>
-                                    <td><%= voucher.getDiscountAmount()%> <i class="fa-solid fa-dollar-sign"></i></td>
+                                    <td><%= voucher.getDiscountAmount()%>  <i class="fa-solid fa-coins"></i></td>
                                     <td><%= voucher.getValidUntil()%></td>
                                     <td><a href="#" class="d-flex button button-two justify-content-center" onclick="confirmUseVoucher('<%= voucher.getVoucherCode()%>')">Use</a></td>
                                 </tr>

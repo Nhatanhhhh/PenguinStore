@@ -16,37 +16,96 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Order List</title>
+        <title>Order History</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/customer.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/editprofile.css"/>
+        <style>
+            .order {
+                border-bottom: 1px solid #E5E5E5;
+                padding: 20px 0;
+            }
+
+            .order-info p {
+                margin: 5px 0;
+                font-size: 16px;
+            }
+
+            .status {
+                font-size: 14px;
+                font-weight: bold;
+                padding: 5px 10px;
+                border-radius: 5px;
+            }
+
+            .delivered {
+                background-color: #E1FCEF;
+                color: #198754;
+            }
+
+            .in-process {
+                background-color: #FFF4E5;
+                color: #D97706;
+            }
+
+            .btn-container {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .btn-view {
+                background-color: #000;
+                color: white;
+                border: none;
+                padding: 8px 14px;
+                border-radius: 5px;
+                width: 100%;
+                text-align: center;
+            }
+
+            .btn-view:hover {
+                background-color: #333;
+            }
+
+            .btn-review {
+                background-color: #000;
+                color: white;
+                border: none;
+                padding: 8px 14px;
+                border-radius: 5px;
+                width: 100%;
+                text-align: center;
+            }
+
+            .btn-review:hover {
+                background-color: #333;
+            }
+
+            .btn-cancel {
+                background-color: #FF4D4D;
+                color: white;
+                border: none;
+                padding: 8px 14px;
+                border-radius: 5px;
+                width: 100%;
+                text-align: center;
+            }
+
+            .btn-cancel:hover {
+                background-color: #E60000;
+            }
+        </style>
     </head>
     <body>
         <%@include file="Header.jsp"%>
-        <%                Customer customer = (Customer) session.getAttribute("user");
-        %>
-        <h1 class="text-center mb-4" style="font-size: 35px;">Order History</h1>
-
-        <!-- Error or Success Messages -->
-        <%
-            String message = (String) request.getAttribute("errorMessage");
-            if (message != null) {
-        %>
-        <div class="alert alert-danger text-center"><%= message%></div>
-        <%
-            }
-            String successMessage = (String) request.getAttribute("successMessage");
-            if (successMessage != null) {
-        %>
-        <div class="alert alert-success text-center"><%= successMessage%></div>
-        <%
-            }
+        <%            Customer customer = (Customer) session.getAttribute("user");
         %>
 
-
+        <h1 class="text-center mb-4" style="font-size: 35px;">My Order</h1>
 
         <div class="container mt-3">
             <div class="account-information">
@@ -55,7 +114,6 @@
                     <div class="col-md-10">
                         <div class="peter-griffin-general">
                             <span>
-                                <!-- fullName + hiển thị 'General' -->
                                 <span class="peter-griffin-general-span" style="font-weight: bold;">
                                     <%= (customer != null) ? customer.getFullName() : "Anonymous"%>
                                 </span>
@@ -69,48 +127,52 @@
                     </div>
                 </div>
             </div>
+
             <div class="row">
                 <div class="list col-md-2">
                     <div class="divider"></div>
                     <div class="general"><a href="<%= request.getContextPath()%>/ViewProfile">General</a></div>
-                    <div class="edit-profile"><a  href="<%= request.getContextPath()%>/EditProfile">Edit Profile</a></div>
+                    <div class="edit-profile"><a href="<%= request.getContextPath()%>/EditProfile">Edit Profile</a></div>
                     <div class="voucher"><a href="<%= request.getContextPath()%>/VVCustomer">Voucher</a></div>
-                    <div class="order"><a style="font-weight: bold;">Order</a></div>
-                    <div class="password"><a href="#">Password</a></div>
+                    <div class="orderhistory"><a style="font-weight: bold;">Order</a></div>
+                    <div class="password"><a href="<%= request.getContextPath()%>/ChangePassword">Password</a></div>
+                    <div class="divider"></div>
                 </div>
 
                 <div class="col-md-10">
-                    <% if (orders.isEmpty()) { %>
-                    <p>You have no orders yet. <a href="/ProductController">Start shopping now!</a></p>
-                    <% } else {%>
-                    <table border="1">
-                        <thead class="table table-bordered">
-                            <tr class="thead-dark">
-                                <th>Order Date</th>
-                                <th>Total Price</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% for (Order order : orders) {%>
-                            <tr>
-                                <td><%= order.getOrderDate()%></td>
-                                <td><%= order.getFinalAmount()%><i class="fa-solid fa-dollar-sign"></i></td>
-                                <td><%= order.getStatusOID()%></td>
-                                <td><a href="OrderDetail?orderID=<%= order.getOrderID()%>">View Details</a></td>
-                            </tr>
-                            <% } %>
-                        </tbody>
-                    </table>
+                    <% for (Order order : orders) {%>
+                    <div class="order row" data-status="<%= order.getStatusName()%>">
+                        <div class="col-md-10">
+                            <div class="order-info">
+                                <!-- Ẩn OrderID -->
+                                <p><strong>Voucher code:</strong> <%= order.getVoucherName()%></p>
+                                <p><strong>Order date:</strong> <%= order.getOrderDate()%></p>
+                                <span class="status <%= order.getStatusName().toLowerCase().replace(" ", "-")%>">
+                                    <%= order.getStatusName()%>
+                                </span> Your product has been <%= order.getStatusName().toLowerCase()%>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="btn-container">
+                                <form action="<%= request.getContextPath()%>/OrderDetail" method="GET">
+                                    <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
+                                    <button type="submit" class="button button-outline-dark">View Order</button>
+                                </form>
+                                <% if ("Delivery successful".equals(order.getStatusName())) {%>
+                                <form action="<%= request.getContextPath()%>/Feedback" method="GET">
+                                    <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
+                                    <button class="button button-dark">Write A Review</button>
+                                </form>
+                                <% } else { %>
+                                <button class="btn btn-cancel">Cancel Order</button>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
                     <% }%>
                 </div>
             </div>
-
-
         </div>
-
-
 
         <%@include file="Footer.jsp"%>
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>

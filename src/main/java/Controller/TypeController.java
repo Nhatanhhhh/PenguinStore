@@ -118,10 +118,16 @@ public class TypeController extends HttpServlet {
                 break;
 
             case "edit":
-
                 String typeID = request.getParameter("typeID");
                 String updatedTypeName = request.getParameter("typeName");
                 String updatedCategoryID = request.getParameter("categoryID");
+                
+                if (typeID == null || updatedTypeName == null || updatedCategoryID == null
+                        || typeID.trim().isEmpty() || updatedTypeName.trim().isEmpty() || updatedCategoryID.trim().isEmpty()) {
+                    request.setAttribute("error", "Please fill in all fields.");
+                    request.getRequestDispatcher("/View/EditType.jsp").forward(request, response);
+                    return;
+                }
 
                 Type updatedType = new Type(typeID, updatedCategoryID, updatedTypeName);
                 typeDAO.update(updatedType);

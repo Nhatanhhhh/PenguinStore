@@ -75,6 +75,8 @@ public class GoogleLoginController extends HttpServlet {
                 if (customer != null) {
                     HttpSession session = request.getSession(true);
                     session.setAttribute("user", customer);
+                    session.setAttribute("role", "CUSTOMER");
+                    response.sendRedirect("/PenguinStore");
                 } else {
                     request.setAttribute("errorMessage", "Can not authenticate users. Please try again.");
                     request.getRequestDispatcher("View/LoginCustomer.jsp").forward(request, response);

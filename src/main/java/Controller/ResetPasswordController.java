@@ -36,7 +36,7 @@ public class ResetPasswordController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
+            /* TODO output your page here. You may use the following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -49,7 +49,6 @@ public class ResetPasswordController extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -80,47 +79,47 @@ public class ResetPasswordController extends HttpServlet {
         String confirmPassword = request.getParameter("confirm-password");
         ResetPasswordDAO rPD = new ResetPasswordDAO();
         HttpSession session = request.getSession();
-        String email = (String) session.getAttribute("email");  // Lấy email từ session
+        String email = (String) session.getAttribute("email");  // Retrieve email from session
 
-        // Kiểm tra độ dài mật khẩu mới phải >= 6 ký tự
+        // Check if the new password length is at least 6 characters
         if (newPassword.length() < 6) {
-            request.setAttribute("errorMessage", "Mật khẩu mới phải có ít nhất 6 ký tự.");
-            request.getRequestDispatcher("View/ResetPassword.jsp").forward(request, response);
+            request.setAttribute("errorMessage", "The new password must have at least 6 characters.");
+            request.getRequestDispatcher("ResetPassword").forward(request, response);
             return;
         }
 
-        // Kiểm tra mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt
+        // Check if the password contains at least one uppercase, one lowercase letter, one number, and one special character
         if (!newPassword.matches(".*[A-Z].*")) {
-            request.setAttribute("errorMessage", "Mật khẩu phải chứa ít nhất một chữ hoa, thường, số và 1 kí tự đặc biệt.");
-            request.getRequestDispatcher("View/ResetPassword.jsp").forward(request, response);
+            request.setAttribute("errorMessage", "The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            request.getRequestDispatcher("ResetPassword").forward(request, response);
             return;
         }
         if (!newPassword.matches(".*[a-z].*")) {
-            request.setAttribute("errorMessage", "Mật khẩu phải chứa ít nhất một chữ hoa, thường, số và 1 kí tự đặc biệt.");
-            request.getRequestDispatcher("View/ResetPassword.jsp").forward(request, response);
+            request.setAttribute("errorMessage", "The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            request.getRequestDispatcher("ResetPassword").forward(request, response);
             return;
         }
         if (!newPassword.matches(".*\\d.*")) {
-            request.setAttribute("errorMessage", "Mật khẩu phải chứa ít nhất một chữ hoa, thường, số và 1 kí tự đặc biệt.");
-            request.getRequestDispatcher("View/ResetPassword.jsp").forward(request, response);
+            request.setAttribute("errorMessage", "The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            request.getRequestDispatcher("ResetPassword").forward(request, response);
             return;
         }
         if (!newPassword.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
-            request.setAttribute("errorMessage", "Mật khẩu phải chứa ít nhất một chữ hoa, thường, số và 1 kí tự đặc biệt.");
-            request.getRequestDispatcher("View/ResetPassword.jsp").forward(request, response);
+            request.setAttribute("errorMessage", "The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            request.getRequestDispatcher("ResetPassword").forward(request, response);
             return;
         }
 
-        // Kiểm tra xem mật khẩu mới có khớp với xác nhận mật khẩu không
+        // Check if the new password matches the confirmation password
         if (!newPassword.equals(confirmPassword)) {
-            request.setAttribute("errorMessage", "Xác nhận mật khẩu không khớp.");
-            request.getRequestDispatcher("View/ResetPassword.jsp").forward(request, response);
+            request.setAttribute("errorMessage", "The confirmation password does not match.");
+            request.getRequestDispatcher("ResetPassword").forward(request, response);
             return;
         }
 
         boolean isSuccess = false;
         try {
-            // Mã hóa mật khẩu mới trước khi cập nhật
+            // Encrypt the new password before updating
             String newPasswordHash = DBContext.hashPasswordMD5(newPassword);
             isSuccess = rPD.updatePasswordByEmail(email, newPasswordHash);
         } catch (Exception ex) {
@@ -128,13 +127,12 @@ public class ResetPasswordController extends HttpServlet {
         }
 
         if (isSuccess) {
-            session.setAttribute("successMessage", "Đổi mật khẩu thành công.");  // Lưu vào session thay vì request
-            response.sendRedirect("View/LoginCustomer.jsp");  // Chuyển hướng thay vì forward
+            session.setAttribute("successMessage", "Password changed successfully.");  // Store in session instead of request
+            response.sendRedirect("Login");  // Redirect instead of forward
         } else {
-            request.setAttribute("errorMessage", "Có lỗi xảy ra. Vui lòng thử lại.");
-            request.getRequestDispatcher("View/ResetPassword.jsp").forward(request, response);
+            request.setAttribute("errorMessage", "An error occurred. Please try again.");
+            request.getRequestDispatcher("ResetPassword").forward(request, response);
         }
-
     }
 
     /**
@@ -145,6 +143,5 @@ public class ResetPasswordController extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
-
+    }
 }
