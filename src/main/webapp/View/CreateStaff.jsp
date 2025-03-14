@@ -8,7 +8,32 @@
         <title>Create Staff</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let today = new Date();
+                let minAgeDate = new Date();
+                minAgeDate.setFullYear(today.getFullYear() - 18);
 
+                let todayString = today.toISOString().split("T")[0];
+                let minAgeString = minAgeDate.toISOString().split("T")[0];
+
+                document.getElementById("dateOfBirth").setAttribute("max", todayString);
+
+                document.querySelector("form").addEventListener("submit", function (event) {
+                    let dob = new Date(document.getElementById("dateOfBirth").value);
+
+                    if (dob > today) {
+                        alert("Date of birth cannot be in the future!");
+                        event.preventDefault();
+                    }
+
+                    if (dob > minAgeDate) {
+                        alert("Staff must be at least 18 years old!");
+                        event.preventDefault();
+                    }
+                });
+            });
+        </script>
     </head>
     <body>
         <div class="container mt-4">
@@ -61,31 +86,5 @@
                 </div>
             </div>
         </div>
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                let today = new Date();
-                let minAgeDate = new Date();
-                minAgeDate.setFullYear(today.getFullYear() - 18);
-
-                let todayString = today.toISOString().split("T")[0];
-                let minAgeString = minAgeDate.toISOString().split("T")[0];
-
-                document.getElementById("dateOfBirth").setAttribute("max", todayString);
-
-                document.querySelector("form").addEventListener("submit", function (event) {
-                    let dob = new Date(document.getElementById("dateOfBirth").value);
-
-                    if (dob > today) {
-                        alert("Date of birth cannot be in the future!");
-                        event.preventDefault();
-                    }
-
-                    if (dob > minAgeDate) {
-                        alert("Staff must be at least 18 years old!");
-                        event.preventDefault();
-                    }
-                });
-            });
-        </script>
     </body>
 </html>

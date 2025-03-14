@@ -10,11 +10,14 @@ import Models.Order;
 import Models.Product;
 import Models.ProductVariant;
 import Models.Size;
+import Models.ViewFeedbackCus;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -294,4 +297,47 @@ public class FeedbackDAO {
         return productList;
     }
 
+    public static List<ViewFeedbackCus> getFeedbackByCustomerID(String customerID) {
+        List<ViewFeedbackCus> feedbackList = new ArrayList<>();
+
+        String sql = "SELECT "
+                + "    m.managerName AS managerName, "
+                + "    fr.replyComment, "
+                + "    p.productName, "
+                + "    fr.replyCreatedAt AS createAt "
+                + "FROM dbo.Feedback f "
+                + "LEFT JOIN dbo.Product p ON f.productID = p.productID "
+                + "LEFT JOIN dbo.FeedbackReplies fr ON f.feedbackID = fr.feedbackID "
+                + "LEFT JOIN dbo.Manager m ON fr.managerID = m.managerID "
+                + "WHERE f.customerID = ?";
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setObject(1, UUID.fromString(customerID));
+
+            try ( ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ViewFeedbackCus view = new ViewFeedbackCus();
+                    view.setManagerNam(rs.getString("managerName"));
+                    view.setComment(rs.getString("replyComment"));
+                    view.setProductName(rs.getString("productName"));
+
+                    Timestamp ts = rs.getTimestamp("createAt");
+                    if (ts != null) {
+                        LocalDate localDate = ts.toLocalDateTime().toLocalDate();
+                        view.setCreateAt(localDate);
+                    } else {
+                        view.setCreateAt(null);
+                    }
+                    feedbackList.add(view);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+
+        return feedbackList;
+    }
 }

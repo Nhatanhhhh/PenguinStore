@@ -1,16 +1,15 @@
-<%-- 
-    Document   : ListFeedback
-    Created on : Mar 9, 2025, 4:59:25 PM
-    Author     : Nhat_Anh
---%>
-
 <%@page import="Models.Feedback"%>
+<%@page import="java.util.List"%>
 <%@page import="java.util.List"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
         <title>List Feedback</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
@@ -58,6 +57,9 @@
             String managerName = (manager != null) ? manager.getManagerName() : "Guest";
             String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
         %>
+
+
+
         <!-- Error or Success Messages -->
         <%
             String message = (String) request.getAttribute("errorMessage");
@@ -73,21 +75,25 @@
         <%
             }
         %>
+
+
+
+
         <div class="container-fluid">
             <div class="row">
                 <!-- Sidebar (Navigation) -->
                 <div class="col-md-2 p-0">
-                    <%@include file="Admin/NavigationMenu.jsp" %>
+
+                    <%@include file="Admin/NavigationMenu.jsp"%>
                 </div>
 
                 <!-- Content -->
                 <div class="col-md-10 p-0">
-                    <%@include file="Admin/HeaderAD.jsp" %>
+                    <%@include file="Admin/HeaderAD.jsp"%>
 
                     <div class="px-4">
-                        <h1 class="mt-4">Dashboard</h1>
+                        <h1 class="mt-4">List Feedback</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Dashboard</li>
                         </ol>
 
                         <!-- Hiển thị danh sách Feedback -->
@@ -135,17 +141,51 @@
 
 
                                             <td>
-                                                <div class="d-flex justify-content-between">
-                                                    <form class="ml-1 mr-1" action="update-feedback-status" method="POST">
+                                                <form action="<%= request.getContextPath()%>/feedbackreply" method="POST">
+
+                                                    <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID()%>">
+                                                    <input type="hidden" name="redirectPage" value="View/ListFeedbackAdmin.jsp">
+                                                    <button type="submit" name="action" value="delete" class="btn btn-warning btn-sm">Delete</button>
+                                                </form>
+
+                                                <button type="button" class="btn btn-primary btn-sm reply-btn" data-id="<%= fb.getFeedbackID()%>">
+                                                    Reply
+                                                </button>
+
+
+                                                <div id="reply-box-<%= fb.getFeedbackID()%>" class="reply-box mt-2" style="display: none;">
+                                                    <form action="<%= request.getContextPath()%>/feedbackreply" method="POST">
+                                                        <input type="hidden" name="redirectPage" value="View/ListFeedbackAdmin.jsp">
                                                         <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID()%>">
-                                                        <button type="submit" class="btn btn-warning btn-sm">View</button>
-                                                    </form>
-                                                    <form class="ml-1 mr-1" action="reply-feedback" method="GET">
-                                                        <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID()%>">
-                                                        <button type="submit" class="btn btn-primary btn-sm">Reply</button>
+                                                        <textarea name="replyMessage" class="form-control" placeholder="Enter your reply"></textarea>
+                                                        <button type="submit" name="action" value="reply" class="btn btn-success btn-sm mt-2">Send</button>
                                                     </form>
                                                 </div>
+
+                                                <script>
+                                                    document.addEventListener("DOMContentLoaded", function () {
+                                                        document.querySelectorAll(".reply-btn").forEach(button => {
+                                                            button.addEventListener("click", function () {
+                                                                let feedbackID = this.getAttribute("data-id");
+                                                                let replyBox = document.getElementById("reply-box-" + feedbackID);
+
+                                                                // Ẩn tất cả các ô reply khác trước khi hiển thị ô mới
+                                                                document.querySelectorAll(".reply-box").forEach(box => {
+                                                                    if (box !== replyBox)
+                                                                        box.style.display = "none";
+                                                                });
+
+
+                                                                replyBox.style.display = (replyBox.style.display === "none") ? "block" : "none";
+                                                            });
+                                                        });
+                                                    });
+
+
+                                                </script>
+
                                             </td>
+
                                         </tr>
                                         <% }
                                             }%>
@@ -158,7 +198,6 @@
                 </div> <!-- End col-md-10 -->
             </div> <!-- End row -->
         </div>
-
 
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
         <script src="<%= request.getContextPath()%>/Assets/Javascript/Staff/scripts.js"></script>

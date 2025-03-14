@@ -60,7 +60,7 @@
                     <div class="voucher"><a href="<%= request.getContextPath()%>/VVCustomer">Voucher</a></div>
                     <div class="order"><a href="<%= request.getContextPath()%>/OrderHistory">Order</a></div>
                     <div class="password"><a href="<%= request.getContextPath()%>/ChangePassword">Password</a></div>
-                    <div class="reply"><a href="">View Reply</a></div>
+                    <div class="reply"><a href="<%= request.getContextPath()%>/ViewFeedbackCustomer">View Reply</a></div>
                 </div>
 
                 <div class="col-md-10">

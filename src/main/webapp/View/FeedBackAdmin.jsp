@@ -10,10 +10,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Dashboard Staff</title>
+        <title>Dashboard - Staff</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Staff/styles.css"/>
         <style>
             #layoutSidenav {
                 display: flex;  /* Đảm bảo layout không bị lệch */
@@ -57,9 +57,9 @@
             String managerName = (manager != null) ? manager.getManagerName() : "Guest";
             String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
         %>
-
-
-
+        
+        
+        
         <!-- Error or Success Messages -->
         <%
             String message = (String) request.getAttribute("errorMessage");
@@ -75,10 +75,10 @@
         <%
             }
         %>
-
-
-
-
+        
+        
+        
+        
         <div class="container-fluid">
             <div class="row">
                 <!-- Sidebar (Navigation) -->
@@ -125,7 +125,7 @@
                                         %>
                                         <tr>
                                             <td><%= fb.getCustomerName()%></td>
-                                            <td><%= fb.getProductName()%></td>
+                                            <td><%= fb.getGetProductName()%></td>
                                             <td><%= fb.getComment()%></td>
                                             <td><%= fb.getRating()%></td>
                                             <%
@@ -142,46 +142,43 @@
 
                                             <td>
                                                 <form action="feedbackreply" method="POST" style="display:inline;">
-                                                    <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID()%>">
+                                                    <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID() %>">
                                                     <button type="submit" name="action" value="delete" class="btn btn-warning btn-sm">Delete</button>
-                                                    <input type="hidden" name="redirectPage" value="View/DashBoardForStaff.jsp">
                                                 </form>
 
-                                                <button type="button" class="btn btn-primary btn-sm reply-btn" data-id="<%= fb.getFeedbackID()%>">
+                                                <button type="button" class="btn btn-primary btn-sm reply-btn" data-id="<%= fb.getFeedbackID() %>">
                                                     Reply
                                                 </button>
 
-
-                                                <div id="reply-box-<%= fb.getFeedbackID()%>" class="reply-box mt-2" style="display: none;">
+                                              
+                                                <div id="reply-box-<%= fb.getFeedbackID() %>" class="reply-box mt-2" style="display: none;">
                                                     <form action="feedbackreply" method="POST">
-                                                        <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID()%>">
-                                                        <input type="hidden" name="redirectPage" value="View/DashBoardForStaff.jsp">
+                                                        <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID() %>">
                                                         <textarea name="replyMessage" class="form-control" placeholder="Enter your reply"></textarea>
                                                         <button type="submit" name="action" value="reply" class="btn btn-success btn-sm mt-2">Send</button>
                                                     </form>
                                                 </div>
+                                                        
+                                                        <script>
+                                                            document.addEventListener("DOMContentLoaded", function () {
+                                                                document.querySelectorAll(".reply-btn").forEach(button => {
+                                                                    button.addEventListener("click", function () {
+                                                                        let feedbackID = this.getAttribute("data-id");
+                                                                        let replyBox = document.getElementById("reply-box-" + feedbackID);
 
-                                                <script>
-                                                    document.addEventListener("DOMContentLoaded", function () {
-                                                        document.querySelectorAll(".reply-btn").forEach(button => {
-                                                            button.addEventListener("click", function () {
-                                                                let feedbackID = this.getAttribute("data-id");
-                                                                let replyBox = document.getElementById("reply-box-" + feedbackID);
+                                                                        // Ẩn tất cả các ô reply khác trước khi hiển thị ô mới
+                                                                        document.querySelectorAll(".reply-box").forEach(box => {
+                                                                            if (box !== replyBox) box.style.display = "none";
+                                                                        });
 
-                                                                // Ẩn tất cả các ô reply khác trước khi hiển thị ô mới
-                                                                document.querySelectorAll(".reply-box").forEach(box => {
-                                                                    if (box !== replyBox)
-                                                                        box.style.display = "none";
+                                                                       
+                                                                        replyBox.style.display = (replyBox.style.display === "none") ? "block" : "none";
+                                                                    });
                                                                 });
-
-
-                                                                replyBox.style.display = (replyBox.style.display === "none") ? "block" : "none";
                                                             });
-                                                        });
-                                                    });
-
-
-                                                </script>
+                                                            
+                                                            
+                                                        </script>
 
                                             </td>
 
@@ -197,7 +194,7 @@
                 </div> <!-- End col-md-10 -->
             </div> <!-- End row -->
         </div>
-
+        
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
         <script src="<%= request.getContextPath()%>/Assets/Javascript/Staff/scripts.js"></script>
     </body>

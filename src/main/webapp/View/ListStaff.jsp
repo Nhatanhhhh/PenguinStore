@@ -32,7 +32,6 @@
                             <tr>
 
                                 <th>Staff Name</th>
-
                                 <th>Email</th>
                                 <th>Actions</th>
                             </tr>
@@ -53,7 +52,7 @@
                         </tbody>
                     </table>
                     <c:if test="${empty managerList}">
-                        <p class="text-center">Not have Type!!!!</p>
+                        <p class="text-center">Not have Staff!!!!</p>
                     </c:if>
                     <a href="<c:url value='/Staff?action=create'/>" class="btn btn-success">Create</a>
                 </div>

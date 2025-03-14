@@ -136,7 +136,8 @@
                     <div class="voucher"><a href="<%= request.getContextPath()%>/VVCustomer">Voucher</a></div>
                     <div class="orderhistory"><a style="font-weight: bold;">Order</a></div>
                     <div class="password"><a href="<%= request.getContextPath()%>/ChangePassword">Password</a></div>
-                    <div class="reply"><a href="">View Reply</a></div>
+                    <div class="ViewFeedbackCustomer"><a href="<%= request.getContextPath()%>/ViewFeedbackCustomer">Feedback</a></div>
+                    <div class="divider"></div>
                 </div>
 
                 <div class="col-md-10">
@@ -158,11 +159,8 @@
                                     <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
                                     <button type="submit" class="button button-outline-dark">View Order</button>
                                 </form>
-                                <% if ("Delivery successful".equals(order.getStatusName())) {%>
-                                <form action="<%= request.getContextPath()%>/Feedback" method="GET">
-                                    <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
-                                    <button class="button button-dark">Write A Review</button>
-                                </form>
+                                <% if ("Delivery successful".equals(order.getStatusName())) { %>
+                                <button class="button button-dark">Write A Review</button>
                                 <% } else { %>
                                 <button class="btn btn-cancel">Cancel Order</button>
                                 <% } %>

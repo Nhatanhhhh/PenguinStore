@@ -48,7 +48,8 @@
 
                                             <div class="mb-3">
                                                 <label for="password" class="form-label">Password:</label>
-                                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter Your Staff Password" required>
+                                                <input type="password" class="form-control" id="password" name="password" placeholder="Change Password" 
+                                                       onfocus="this.type = 'password'; this.value = '';">
                                             </div>
 
                                             <div class="mb-3">
@@ -77,8 +78,8 @@
                                             <div class="mb-3">
                                                 <label for="dateOfBirth" class="form-label">Date of Birth: </label>
                                                 <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" 
-                                                       value="${manager.dateOfBirth}" min="1900-01-01" 
-                                                       max="<%= java.time.LocalDate.now().minusYears(18)%>" required>
+                                                       value="${manager.dateOfBirth}" 
+                                                       required min="1900-01-01" max="<%= java.time.LocalDate.now().minusYears(18)%>">
                                             </div>
 
                                             <button type="submit" class="btn btn-primary">Update</button>
