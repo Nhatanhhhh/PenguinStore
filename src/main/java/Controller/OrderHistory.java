@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package Controller;
 
 import DAOs.OrderDAO;
@@ -18,7 +14,6 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class OrderHistory extends HttpServlet {
 
@@ -50,6 +45,34 @@ public class OrderHistory extends HttpServlet {
             return;
         }
 
+        String action = request.getParameter("action");
+        if ("updateStatus".equals(action)) {
+            updateOrderStatus(request, response);
+        } else {
+            placeOrder(request, response);
+        }
+    }
+
+    private void updateOrderStatus(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String orderID = request.getParameter("orderID");
+        String newStatus = request.getParameter("newStatus");
+
+        OrderDAO orderDAO = new OrderDAO();
+        boolean success = orderDAO.updateOrderStatusForCus(orderID, newStatus);
+
+        if (success) {
+            request.setAttribute("successMessage", "Order status updated successfully.");
+        } else {
+            request.setAttribute("errorMessage", "Failed to update order status.");
+        }
+
+        doGet(request, response);  // Load lại danh sách đơn hàng
+    }
+
+    private void placeOrder(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
         Customer customer = (Customer) session.getAttribute("user");
         String customerID = customer.getCustomerID();
 

@@ -11,7 +11,6 @@ package Models;
 import java.io.Serializable;
 
 public class Color implements Serializable {
-
     private String colorID;
     private String colorName;
 

@@ -23,9 +23,9 @@
         <%
             String orderID = request.getParameter("orderID");
         %>
-        <h2>Payment Successful</h2>
-        <p>Your order ID is: <%= orderID %></p>
-        <a href="index.jsp">Back to Home</a>
+        <h2>Order Successful</h2>
+        <p>Your order ID is: <%= orderID.length() >= 4 ? orderID.substring(0, 4) : orderID%></p>
+        <a href="/Product">Back to Home</a>
         
         
         <%@include file="Footer.jsp"%>

@@ -120,11 +120,11 @@ public class TypeController extends HttpServlet {
                     if (pageParam != null) {
                         page = Integer.parseInt(pageParam);
                         if (page < 1) {
-                            page = 1; // Không cho phép trang nhỏ hơn 1
+                            page = 1; // Không cho phép trang nh�? hơn 1
                         }
                     }
                 } catch (NumberFormatException e) {
-                    page = 1; // Nếu lỗi, quay về trang đầu tiên
+                    page = 1; // Nếu lỗi, quay v�? trang đầu tiên
                 }
 
                 int offset = (page - 1) * recordsPerPage;
@@ -133,7 +133,7 @@ public class TypeController extends HttpServlet {
                 int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
 
                 if (totalPages == 0) {
-                    totalPages = 1; // Đảm bảo ít nhất có 1 trang để không lỗi giao diện
+                    totalPages = 1; // �?ảm bảo ít nhất có 1 trang để không lỗi giao diện
                 }
 
                 request.setAttribute("typeList", list);

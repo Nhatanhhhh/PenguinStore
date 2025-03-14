@@ -1,7 +1,6 @@
 package Models;
 
 public class CartItem {
-
     private String productName;
     private double price;
     private int quantity;
@@ -35,7 +34,7 @@ public class CartItem {
     public String getImgNames() {
         return imgNames;
     }
-
+    
     // Phương thức lấy ảnh đầu tiên từ danh sách ảnh
     public String getFirstImage() {
         if (imgNames != null && !imgNames.isEmpty()) {

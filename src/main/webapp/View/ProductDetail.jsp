@@ -33,6 +33,15 @@
             .card:hover {
                 transform: scale(1.05);
             }
+            .size-btn.selected {
+                border: 2px solid #ffd700 !important;
+                box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            }
+
+            .color-circle.selected {
+                box-shadow: 0 0 0 2px #ffd700;
+                border-radius: 50%;
+            }
         </style>
     </head>
     <body>
@@ -87,13 +96,37 @@
                         <c:set var="uniqueSizes" value="" />
                         <c:set var="uniqueColors" value="" />
 
+                        <c:if test="${not empty productDetail}">
+                            <c:set var="hasSize" value="false"/>
+                            <c:set var="sizeSet" value="<%= new java.util.TreeSet<String>()%>" scope="request"/>
+
+                            <c:forEach var="variant" items="${productDetail}">
+                                <c:if test="${not empty variant.sizeName}">
+                                    <c:set var="hasSize" value="true"/>
+                                    <% ((java.util.TreeSet<String>) request.getAttribute("sizeSet")).add(pageContext.getAttribute("variant").getClass().getMethod("getSizeName").invoke(pageContext.getAttribute("variant")).toString());%>
+                                </c:if>
+                            </c:forEach>
+
+                            <c:if test="${hasSize}">
+                                <div class="options">
+                                    <label><strong>Size:</strong></label>
+                                    <div class="size-options">
+                                        <c:forEach var="size" items="${sizeSet}">
+                                            <button class="size-btn">${size}</button>
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                            </c:if>
+                        </c:if>
+
+
                         <div class="options">
                             <label><strong>Color:</strong></label>
                             <div class="color-options">
                                 <c:forEach var="variant" items="${productDetail}">
                                     <c:if test="${not fn:contains(uniqueColors, variant.colorName)}">
                                         <c:set var="uniqueColors" value="${uniqueColors},${variant.colorName}" />
-                                        <span class="color-circle" style="background-color: ${variant.colorName};"></span>
+                                        <span class="color-circle" style="background-color: ${variant.colorName};" data-color="${variant.colorName}"></span>
                                     </c:if>
                                 </c:forEach>
                             </div>
@@ -106,11 +139,29 @@
                                 <button type="button" onclick="increaseQuantity()">+</button>
                             </div>
 
-                            <form action="Cart" method="post">
-                                <input type="hidden" name="variantId" id="selectedVariantId" value="${productDetail[0].proVariantID}">
+
+                            <form action="AddToCartServlet" method="post">
+                                <input type="hidden" id="productID" name="productID" value="${product.productID}">
+                                <input type="hidden" id="selectedSize" name="size">
+                                <input type="hidden" id="selectedColor" name="color">
+                                <input type="hidden" id="selectedVariantId" name="variantId">
+                                <input type="hidden" id="quantity" name="quantity" value="1">
                                 <button type="submit" class="add-to-cart">Add to cart</button>
                             </form>
+
                         </div>
+                        <c:if test="${not empty message}">
+                            <div class="after-cart">
+                                <div class="cart-success">
+                                    <p>✅ Product has been added to your cart!</p>
+                                </div>
+                                <div>
+                                    <a href="Cart" class="btn btn-primary">🛒 View Cart</a>
+                                    <a href="Checkout" class="btn btn-success">💳 Checkout</a>
+                                    <a href="Product" class="btn btn-warning">💳 Continue Shopping</a>
+                                </div>
+                            </div>
+                        </c:if>
                     </div>
                 </div>
             </c:when>
@@ -162,7 +213,19 @@
             document.addEventListener("DOMContentLoaded", function () {
                 const thumbnails = document.querySelectorAll(".thumbnail-container img");
                 const mainImage = document.querySelector(".product-main-img");
+                const sizeButtons = document.querySelectorAll(".size-btn");
+                const colorCircles = document.querySelectorAll(".color-circle");
+                const quantityInput = document.getElementById("quantity");
+                const selectedSizeInput = document.getElementById("selectedSize");
+                const selectedColorInput = document.getElementById("selectedColor");
+                const variantIdInput = document.getElementById("selectedVariantId");
+                const productID = document.getElementById("productID").value;
 
+                let selectedSize = null;
+                let selectedColor = null;
+                const hasSize = sizeButtons.length > 0; // Kiểm tra có size không
+
+                // 🔹 Xử lý thay đổi ảnh sản phẩm
                 thumbnails.forEach(thumbnail => {
                     thumbnail.addEventListener("click", function () {
                         mainImage.src = this.src;
@@ -170,47 +233,75 @@
                         this.classList.add("active");
                     });
                 });
-            });
 
-            document.addEventListener("DOMContentLoaded", function () {
-                const sizeButtons = document.querySelectorAll(".size-btn");
-                const colorCircles = document.querySelectorAll(".color-circle");
-                const quantityInput = document.getElementById("quantity");
-                const variantIdInput = document.getElementById("selectedVariantId");
+                // 🔹 Xử lý chọn size (nếu có)
+                if (hasSize) {
+                    sizeButtons.forEach(button => {
+                        button.addEventListener("click", function () {
+                            selectedSize = this.textContent.trim();
+                            selectedSizeInput.value = selectedSize;
+                            sizeButtons.forEach(btn => btn.classList.remove("selected"));
+                            this.classList.add("selected");
 
-                let selectedSize = "";
-                let selectedColor = "";
-
-                // Khi chọn size
-                sizeButtons.forEach(button => {
-                    button.addEventListener("click", function () {
-                        selectedSize = this.textContent.trim();
-                        sizeButtons.forEach(btn => btn.classList.remove("selected"));
-                        this.classList.add("selected");
-                        updateVariantId();
+                            console.log("🟢 Size selected:", selectedSize);
+                            updateVariantId();
+                        });
                     });
-                });
-
-                // Khi chọn màu
-                colorCircles.forEach(circle => {
-                    circle.addEventListener("click", function () {
-                        selectedColor = this.style.backgroundColor;
-                        colorCircles.forEach(c => c.classList.remove("selected"));
-                        this.classList.add("selected");
-                        updateVariantId();
-                    });
-                });
-
-                // Hàm cập nhật variantId
-                function updateVariantId() {
-                    fetch(`GetVariantIDServlet?size=${selectedSize}&color=${selectedColor}`)
-                            .then(response => response.text())
-                            .then(variantId => {
-                                variantIdInput.value = variantId; // Cập nhật hidden input
-                            });
                 }
 
-                // Nút tăng/giảm số lượng
+                // 🔹 Xử lý chọn màu
+                colorCircles.forEach(circle => {
+                    circle.addEventListener("click", function () {
+                        selectedColor = this.getAttribute("data-color");
+                        selectedColorInput.value = selectedColor;
+                        colorCircles.forEach(c => c.classList.remove("selected"));
+                        this.classList.add("selected");
+
+                        console.log("🔵 Color selected:", selectedColor);
+                        updateVariantId();
+                    });
+                });
+
+                // 🔹 Hàm cập nhật variantId
+                function updateVariantId() {
+                    if (selectedColor) {
+                        let url = `GetVariantIDServlet?color=${selectedColor}&productID=${productID}`;
+                        if (hasSize && selectedSize) {
+                            url += `&size=${selectedSize}`;
+                        }
+
+                        console.log("📢 Fetching Variant ID with:", {size: selectedSize, color: selectedColor, productID});
+
+                        fetch(url)
+                                .then(response => response.text())
+                                .then(variantId => {
+                                    variantIdInput.value = variantId;
+                                    console.log("✅ Variant ID fetched:", variantId);
+                                })
+                                .catch(error => console.error("❌ Error fetching Variant ID:", error));
+                    }
+                }
+
+                // 🔹 Chọn mặc định giá trị đầu tiên
+                if (hasSize) {
+                    const firstSizeBtn = document.querySelector(".size-btn");
+                    if (firstSizeBtn) {
+                        firstSizeBtn.classList.add("selected");
+                        selectedSizeInput.value = firstSizeBtn.textContent.trim();
+                        selectedSize = firstSizeBtn.textContent.trim();
+                    }
+                }
+
+                const firstColorCircle = document.querySelector(".color-circle");
+                if (firstColorCircle) {
+                    firstColorCircle.classList.add("selected");
+                    selectedColorInput.value = firstColorCircle.getAttribute("data-color");
+                    selectedColor = firstColorCircle.getAttribute("data-color");
+                }
+
+                updateVariantId();
+
+                // 🔹 Tăng/Giảm số lượng
                 document.querySelector(".quantity button:first-child").addEventListener("click", function () {
                     if (parseInt(quantityInput.value) > 1) {
                         quantityInput.value = parseInt(quantityInput.value) - 1;
@@ -221,7 +312,6 @@
                     quantityInput.value = parseInt(quantityInput.value) + 1;
                 });
             });
-
         </script>
     </body>
 </html>

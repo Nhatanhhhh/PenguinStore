@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Servlet handling the payment process.
  *
  * @author PC
  */
@@ -40,34 +39,23 @@ public class Payment extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
-            /* TODO: Implement the payment processing logic here */
+            /* TODO output your page here. You may use following sample code. */
         }
     }
 
-    /**
-     * Handles the HTTP GET request (not used in this process).
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP POST request for processing payment.
-     *
-     * @param request The HTTP request containing payment details.
-     * @param response The HTTP response to redirect or display errors.
-     * @throws ServletException If a servlet-specific error occurs.
-     * @throws IOException If an I/O error occurs.
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
 
-        // Redirect to login page if the user is not logged in
+        // Nếu chưa đăng nhập, chuyển hướng v�? trang đăng nhập
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect("View/LoginCustomer.jsp");
             return;
@@ -82,7 +70,6 @@ public class Payment extends HttpServlet {
 
         List<Cart> cartList = cartDAO.getCartByCustomerID(customerID);
 
-        // Redirect if the cart is empty
         if (cartList.isEmpty()) {
             response.sendRedirect("Cart.jsp?message=Cart is empty");
             return;
@@ -93,7 +80,7 @@ public class Payment extends HttpServlet {
             totalAmount += cartDAO.getProductPrice(cart.getProductID()) * cart.getQuantity();
         }
 
-        double discount = 0; // If there is a voucher, apply discount logic here
+        double discount = 0; // Nếu có voucher, xử lý tại đây
         double finalAmount = totalAmount - discount;
 
         Order order = new Order();
@@ -105,15 +92,12 @@ public class Payment extends HttpServlet {
         order.setStatusOID("Pending");
         order.setVoucherID(null);
 
-        // Create a new order and retrieve the order ID
         String orderID = orderDAO.createOrder(order);
 
-        // Save order details for each item in the cart
         for (Cart cart : cartList) {
             orderDetailDAO.addOrderDetail(orderID, cart.getProductID(), cart.getQuantity());
         }
 
-        // Clear the cart after successful order placement
         cartDAO.clearCart(customerID);
 
         response.sendRedirect("CheckoutSuccess.jsp?orderID=" + orderID);
@@ -122,10 +106,10 @@ public class Payment extends HttpServlet {
     /**
      * Returns a short description of the servlet.
      *
-     * @return A string containing the servlet description.
+     * @return a String containing servlet description
      */
     @Override
     public String getServletInfo() {
-        return "Handles the payment process for orders.";
-    }
+        return "Short description";
+    }// </editor-fold>
 }

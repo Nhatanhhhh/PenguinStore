@@ -49,6 +49,7 @@ Models\Customer.class
 Controller\LogoutServlet.class
 DAOs\ProductVariantDAO.class
 Models\Order.class
+Models\UsedVoucher.class
 Controller\ErrorServlet500.class
 Models\Manager.class
 Controller\Checkout.class
@@ -88,5 +89,6 @@ DB\DBContext.class
 DTO\OrderDetailDTO.class
 Controller\Payment.class
 Models\CartItem.class
+Controller\UseVoucher.class
 Controller\VVCustomerController.class
 Models\ProductVariants.class
