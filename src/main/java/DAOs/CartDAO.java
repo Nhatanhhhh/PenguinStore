@@ -99,10 +99,13 @@ public class CartDAO {
         return cartItems;
     }
 
-    public String getCartIDByCustomerID(String customerID) {
-        String query = "SELECT cartID FROM Cart WHERE customerID = ?";
+    public String getCartIDByCustomerIDAndProductID(String customerID, String productID) {
+        String query = "SELECT c.cartID FROM Cart c "
+                + "JOIN ProductVariants pv ON c.proVariantID = pv.proVariantID "
+                + "WHERE c.customerID = ? AND pv.productID = ?";
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, customerID);
+            ps.setString(2, productID);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getString("cartID");

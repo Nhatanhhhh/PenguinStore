@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -97,6 +98,37 @@ public class CheckoutDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public String getVoucherIDByCode(String voucherCode) {
+        String voucherID = null;
+        String sql = "SELECT voucherID FROM Vouchers WHERE voucherCode = ?";
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, voucherCode);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                voucherID = rs.getString("voucherID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return voucherID;
+    }
+
+    public void updateUsedVoucherStatus(String customerID, String voucherID) {
+        String sql = "UPDATE UsedVoucher SET status = 1, usedAt = ? WHERE customerID = ? AND voucherID = ?";
+
+        try (Connection conn = DBContext.getConn();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, LocalDate.now().toString()); 
+            stmt.setString(2, customerID);
+            stmt.setString(3, voucherID);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public Customer getCustomerByID(String customerID) {

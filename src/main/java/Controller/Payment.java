@@ -67,7 +67,12 @@ public class Payment extends HttpServlet {
         }
 
         String orderID = UUID.randomUUID().toString();
-        String voucherID = request.getParameter("voucher");
+        String voucherCode = request.getParameter("voucher");
+        String voucherID = null;
+        if (voucherCode != null && !voucherCode.isEmpty()) {
+            voucherID = checkoutDAO.getVoucherIDByCode(voucherCode);
+        }
+
         double subtotal = Double.parseDouble(request.getParameter("subtotal"));
         double discount = Double.parseDouble(request.getParameter("discount"));
         double total = Double.parseDouble(request.getParameter("total"));
@@ -96,16 +101,20 @@ public class Payment extends HttpServlet {
             String insertOrderDetailSQL = "INSERT INTO OrderDetail (orderDetailID, orderID, productVariantID, quantity, unitPrice, totalPrice, dateOrder) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-            try ( PreparedStatement orderDetailStmt = conn.prepareStatement(insertOrderDetailSQL)) {
+// Câu lệnh cập nhật stockQuantity trong ProductVariants
+            String updateStockSQL = "UPDATE ProductVariants SET stockQuantity = stockQuantity - ? WHERE proVariantID = ?";
+
+            try ( PreparedStatement orderDetailStmt = conn.prepareStatement(insertOrderDetailSQL);  PreparedStatement updateStockStmt = conn.prepareStatement(updateStockSQL)) {
+
                 for (CartItem item : cartItems) {
-                    String cartID = cartDAO.getCartIDByCustomerID(customerID);
+                    String cartID = cartDAO.getCartIDByCustomerIDAndProductID(customerID, item.getProductID());
                     String proVariantID = checkoutDAO.getProductVariantID(cartID, customerID, item.getProductID());
-                    System.out.println("Checking productVariantID: " + proVariantID);
 
                     if (proVariantID == null) {
                         throw new SQLException("Không tìm thấy productVariantID cho sản phẩm: " + item.getProductID());
                     }
 
+                    // Thêm vào OrderDetail
                     orderDetailStmt.setString(1, UUID.randomUUID().toString());
                     orderDetailStmt.setString(2, orderID);
                     orderDetailStmt.setString(3, proVariantID);
@@ -114,12 +123,23 @@ public class Payment extends HttpServlet {
                     orderDetailStmt.setDouble(6, item.getPrice() * item.getQuantity());
                     orderDetailStmt.setString(7, orderDate);
                     orderDetailStmt.addBatch();
-                }
-                orderDetailStmt.executeBatch();
-            }
 
+                    // Cập nhật stockQuantity
+                    updateStockStmt.setInt(1, item.getQuantity());
+                    updateStockStmt.setString(2, proVariantID);
+                    updateStockStmt.addBatch();
+                }
+
+                // Thực thi batch
+                orderDetailStmt.executeBatch();
+                updateStockStmt.executeBatch();
+            }
+            
             conn.commit();
             cartDAO.clearCart(customerID);
+            if (voucherID != null) {
+                checkoutDAO.updateUsedVoucherStatus(customerID, voucherID);
+            }
             response.sendRedirect("View/CheckoutSuccess.jsp?orderID=" + orderID);
         } catch (SQLException e) {
             e.printStackTrace();
