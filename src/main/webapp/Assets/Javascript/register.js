@@ -109,4 +109,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     confirmPassword.addEventListener("input", validatePasswordMatch);
 });
-

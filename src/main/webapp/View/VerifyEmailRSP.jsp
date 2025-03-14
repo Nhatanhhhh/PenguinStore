@@ -58,30 +58,30 @@
             document.addEventListener("DOMContentLoaded", function () {
 
             <% if (errorMessage != null) {%>
-                    console.log("❌ Error Message Detected: <%= errorMessage%>");
-                    Swal.fire({
-                        title: "Error",
-                        text: "<%= errorMessage%>",
-                        icon: "error",
-                        confirmButtonText: "OK",
-                        timer: 2500
-                    });
+                console.log("❌ Error Message Detected: <%= errorMessage%>");
+                Swal.fire({
+                    title: "Error",
+                    text: "<%= errorMessage%>",
+                    icon: "error",
+                    confirmButtonText: "OK",
+                    timer: 2500
+                });
             <% } %>
 
             <% if (successMessage != null) {%>
-                    console.log("✅ Success Message Detected: <%= successMessage%>");
-                    Swal.fire({
-                        title: "Success",
-                        text: "<%= successMessage%>",
-                        icon: "success",
-                        confirmButtonText: "OK",
-                        timer: 2500
-                    });
+                console.log("✅ Success Message Detected: <%= successMessage%>");
+                Swal.fire({
+                    title: "Success",
+                    text: "<%= successMessage%>",
+                    icon: "success",
+                    confirmButtonText: "OK",
+                    timer: 2500
+                });
             <% }%>
             });
         </script>
-        
-        
+
+
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
 </html>

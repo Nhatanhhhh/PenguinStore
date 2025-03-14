@@ -35,14 +35,22 @@ public class Checkout extends HttpServlet {
         Customer customer = (Customer) session.getAttribute("user");
         String customerID = customer.getCustomerID();
 
+        // Lấy thông tin giỏ hàng
         CartDAO cartDAO = new CartDAO();
         List<CartItem> cartItems = cartDAO.viewCart(customerID);
 
+        // Lấy danh sách voucher của khách hàng
         VVCustomerDAO dao = new VVCustomerDAO();
         List<Voucher> vouchers = dao.getVouchersByCustomerID(customerID);
 
+        // Lấy thông tin khách hàng từ database
+        Customer customerDetails = checkoutDAO.getCustomerByID(customerID);
+
+        // Gửi dữ liệu tới JSP
         request.setAttribute("cartItems", cartItems);
         request.setAttribute("vouchers", vouchers);
+        request.setAttribute("customer", customerDetails);
+
         request.getRequestDispatcher("View/Checkout.jsp").forward(request, response);
     }
 

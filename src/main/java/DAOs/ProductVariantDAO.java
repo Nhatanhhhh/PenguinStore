@@ -44,7 +44,8 @@ public class ProductVariantDAO extends DBContext {
                 ProductVariant proVariant = new ProductVariant(proVariantID, status, stockQuantity, colorName, sizeName);
                 productVariant.add(proVariant);
             }
-        } catch (Exception e) {
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductVariantDAO.class.getName()).log(Level.SEVERE, "Error get product variant", ex);
         }
         return productVariant;
     }

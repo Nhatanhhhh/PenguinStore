@@ -1,73 +1,31 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package Controller;
 
 import DAOs.CartDAO;
+import DAOs.CheckoutDAO;
 import DAOs.OrderDAO;
 import DAOs.OrderDetailDAO;
-import Models.Cart;
+import Models.CartItem;
 import Models.Customer;
-import Models.Order;
+import DB.DBContext;
+import Models.Cart;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.UUID;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.Date;
-import java.util.List;
 
-/**
- * Servlet handling the payment process.
- *
- * @author PC
- */
 public class Payment extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO: Implement the payment processing logic here */
-        }
-    }
-
-    /**
-     * Handles the HTTP GET request (not used in this process).
-     */
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles the HTTP POST request for processing payment.
-     *
-     * @param request The HTTP request containing payment details.
-     * @param response The HTTP response to redirect or display errors.
-     * @throws ServletException If a servlet-specific error occurs.
-     * @throws IOException If an I/O error occurs.
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        HttpSession session = request.getSession();
-
-        // Redirect to login page if the user is not logged in
+        HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect("View/LoginCustomer.jsp");
             return;
@@ -75,57 +33,118 @@ public class Payment extends HttpServlet {
 
         Customer customer = (Customer) session.getAttribute("user");
         String customerID = customer.getCustomerID();
+    }
 
-        CartDAO cartDAO = new CartDAO();
-        OrderDAO orderDAO = new OrderDAO();
-        OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
-
-        List<Cart> cartList = cartDAO.getCartByCustomerID(customerID);
-
-        // Redirect if the cart is empty
-        if (cartList.isEmpty()) {
-            response.sendRedirect("Cart.jsp?message=Cart is empty");
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("View/LoginCustomer.jsp");
             return;
         }
 
-        double totalAmount = 0;
-        for (Cart cart : cartList) {
-            totalAmount += cartDAO.getProductPrice(cart.getProductID()) * cart.getQuantity();
+        Customer customer = (Customer) session.getAttribute("user");
+        String customerID = customer.getCustomerID();
+        CheckoutDAO checkoutDAO = new CheckoutDAO();
+
+        CartDAO cartDAO = new CartDAO();
+        List<CartItem> cartItems = cartDAO.getCartItemsByCustomerID(customerID);
+        System.out.println("Cart items size: " + cartItems.size());
+
+        if (cartItems == null || cartItems.isEmpty()) {
+            response.sendRedirect("Checkout.jsp?error=empty_cart");
+            return;
         }
 
-        double discount = 0; // If there is a voucher, apply discount logic here
-        double finalAmount = totalAmount - discount;
-
-        Order order = new Order();
-        order.setCustomerID(String.valueOf(customerID));
-        order.setTotalAmount(totalAmount);
-        order.setDiscountAmount(discount);
-        order.setFinalAmount(finalAmount);
-        order.setOrderDate(new Date());
-        order.setStatusOID("Pending");
-        order.setVoucherID(null);
-
-        // Create a new order and retrieve the order ID
-        String orderID = orderDAO.createOrder(order);
-
-        // Save order details for each item in the cart
-        for (Cart cart : cartList) {
-            orderDetailDAO.addOrderDetail(orderID, cart.getProductID(), cart.getQuantity());
+        String statusOID = request.getParameter("statusOID");
+        if (statusOID == null || statusOID.isEmpty()) {
+            statusOID = checkoutDAO.getPendingStatusOID();
+            if (statusOID == null) {
+                response.sendRedirect("Checkout.jsp?error=status_not_found");
+                return;
+            }
         }
 
-        // Clear the cart after successful order placement
-        cartDAO.clearCart(customerID);
+        String orderID = UUID.randomUUID().toString();
+        String voucherCode = request.getParameter("voucher");
+        String voucherID = null;
+        if (voucherCode != null && !voucherCode.isEmpty()) {
+            voucherID = checkoutDAO.getVoucherIDByCode(voucherCode);
+        }
 
-        response.sendRedirect("CheckoutSuccess.jsp?orderID=" + orderID);
-    }
+        double subtotal = Double.parseDouble(request.getParameter("subtotal"));
+        double discount = Double.parseDouble(request.getParameter("discount"));
+        double total = Double.parseDouble(request.getParameter("total"));
+        String orderDate = java.time.LocalDate.now().toString();
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return A string containing the servlet description.
-     */
-    @Override
-    public String getServletInfo() {
-        return "Handles the payment process for orders.";
+        try ( Connection conn = DBContext.getConn()) {
+            conn.setAutoCommit(false);
+
+            // Lưu vào bảng Order
+            String insertOrderSQL = "INSERT INTO [Order] (orderID, statusOID, voucherID, customerID, totalAmount, discountAmount, finalAmount, orderDate) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+            try ( PreparedStatement orderStmt = conn.prepareStatement(insertOrderSQL)) {
+                orderStmt.setString(1, orderID);
+                orderStmt.setString(2, statusOID);
+                orderStmt.setString(3, (voucherID != null && !voucherID.isEmpty()) ? voucherID : null);
+                orderStmt.setString(4, customerID);
+                orderStmt.setDouble(5, subtotal);
+                orderStmt.setDouble(6, discount);
+                orderStmt.setDouble(7, total);
+                orderStmt.setString(8, orderDate);
+                orderStmt.executeUpdate();
+            }
+
+            // Lưu vào bảng OrderDetail
+            String insertOrderDetailSQL = "INSERT INTO OrderDetail (orderDetailID, orderID, productVariantID, quantity, unitPrice, totalPrice, dateOrder) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+// Câu lệnh cập nhật stockQuantity trong ProductVariants
+            String updateStockSQL = "UPDATE ProductVariants SET stockQuantity = stockQuantity - ? WHERE proVariantID = ?";
+
+            try ( PreparedStatement orderDetailStmt = conn.prepareStatement(insertOrderDetailSQL);  PreparedStatement updateStockStmt = conn.prepareStatement(updateStockSQL)) {
+
+                for (CartItem item : cartItems) {
+                    String cartID = cartDAO.getCartIDByCustomerIDAndProductID(customerID, item.getProductID());
+                    String proVariantID = checkoutDAO.getProductVariantID(cartID, customerID, item.getProductID());
+
+                    if (proVariantID == null) {
+                        throw new SQLException("Không tìm thấy productVariantID cho sản phẩm: " + item.getProductID());
+                    }
+
+                    // Thêm vào OrderDetail
+                    orderDetailStmt.setString(1, UUID.randomUUID().toString());
+                    orderDetailStmt.setString(2, orderID);
+                    orderDetailStmt.setString(3, proVariantID);
+                    orderDetailStmt.setInt(4, item.getQuantity());
+                    orderDetailStmt.setDouble(5, item.getPrice());
+                    orderDetailStmt.setDouble(6, item.getPrice() * item.getQuantity());
+                    orderDetailStmt.setString(7, orderDate);
+                    orderDetailStmt.addBatch();
+
+                    // Cập nhật stockQuantity
+                    updateStockStmt.setInt(1, item.getQuantity());
+                    updateStockStmt.setString(2, proVariantID);
+                    updateStockStmt.addBatch();
+                }
+
+                // Thực thi batch
+                orderDetailStmt.executeBatch();
+                updateStockStmt.executeBatch();
+            }
+
+            conn.commit();
+            cartDAO.clearCart(customerID);
+            if (voucherID != null) {
+                checkoutDAO.updateUsedVoucherStatus(customerID, voucherID);
+            }
+            response.sendRedirect("View/CheckoutSuccess.jsp?orderID=" + orderID);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendRedirect("Checkout.jsp?error=order_failed");
+        }
+
     }
 }

@@ -63,7 +63,7 @@ public class OrderDAO {
         return orderID;
     }
 
-    // Use for Staff
+    //Use for Staff
     public List<Order> getAllOrders() {
         List<Order> orderList = new ArrayList<>();
         String query = "SELECT o.orderID, c.fullName, o.orderDate, o.finalAmount, s.statusName "
@@ -73,6 +73,7 @@ public class OrderDAO {
                 + "ORDER BY o.orderDate DESC";
 
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(query);  ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
                 Order order = new Order();
                 order.setOrderID(rs.getString("orderID"));
@@ -87,8 +88,8 @@ public class OrderDAO {
         }
         return orderList;
     }
-
     // Lấy statusOID từ statusName
+
     public String getStatusOIDByName(String statusName) {
         String query = "SELECT statusOID FROM StatusOrder WHERE statusName = ?";
         try ( Connection conn = db.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
@@ -103,7 +104,7 @@ public class OrderDAO {
         return null;
     }
 
-    // Cập nhật trạng thái đơn hàng
+// Cập nhật trạng thái đơn hàng
     public boolean updateOrderStatus(String orderID, String statusOID) {
         String query = "UPDATE [Order] SET statusOID = ? WHERE orderID = ?";
         try ( Connection conn = db.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
@@ -114,5 +115,22 @@ public class OrderDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public boolean updateOrderStatusForCus(String orderID, String newStatus) {
+        String statusOID = getStatusOIDByName(newStatus);  // Lấy ID của trạng thái mới
+        if (statusOID == null) {
+            return false;
+        }
+
+        String sql = "UPDATE [Order] SET statusOID = ? WHERE orderID = ?";
+        try ( Connection conn = db.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, statusOID);
+            stmt.setString(2, orderID);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

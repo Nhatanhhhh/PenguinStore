@@ -2,6 +2,8 @@ package Models;
 
 public class CartItem {
 
+    private String productID;
+    private String cartID;
     private String productName;
     private double price;
     private int quantity;
@@ -14,6 +16,29 @@ public class CartItem {
         this.quantity = quantity;
         this.colorName = colorName;
         this.imgNames = imgNames;
+    }
+
+    public CartItem(String productID, String productName, double price, int quantity) {
+        this.productID = productID;
+        this.productName = productName;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    public CartItem() {
+
+    }
+
+    public String getCartID() {
+        return cartID;
+    }
+
+    public void setCartID(String cartID) {
+        this.cartID = cartID;
+    }
+
+    public String getProductID() {
+        return productID;
     }
 
     public String getProductName() {
@@ -43,4 +68,29 @@ public class CartItem {
         }
         return "default.jpg"; // Ảnh mặc định nếu không có ảnh nào
     }
+
+    public void setProductID(String productID) {
+        this.productID = productID;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setColorName(String colorName) {
+        this.colorName = colorName;
+    }
+
+    public void setImgNames(String imgNames) {
+        this.imgNames = imgNames;
+    }
+
 }
