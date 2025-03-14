@@ -19,6 +19,20 @@ public class Restock {
     private double price;
     private double totalCost;
     private LocalDate restockDate;
+    private String sizeName;
+    private String colorName;
+
+    public Restock(String productName, String restockID, String proVariantID, int quantity, double price, double totalCost, LocalDate restockDate, String sizeName, String colorName) {
+        this.productName = productName;
+        this.restockID = restockID;
+        this.proVariantID = proVariantID;
+        this.quantity = quantity;
+        this.price = price;
+        this.totalCost = totalCost;
+        this.restockDate = restockDate;
+        this.sizeName = sizeName;
+        this.colorName = colorName;
+    }
 
     public Restock(String productName, String restockID, String proVariantID, int quantity, double price, double totalCost, LocalDate restockDate) {
         this.productName = productName;
@@ -101,6 +115,22 @@ public class Restock {
 
     public void setRestockDay(LocalDate restockDay) {
         this.restockDate = restockDate;
+    }
+
+    public String getSizeName() {
+        return sizeName;
+    }
+
+    public void setSizeName(String sizeName) {
+        this.sizeName = sizeName;
+    }
+
+    public String getColorName() {
+        return colorName;
+    }
+
+    public void setColorName(String colorName) {
+        this.colorName = colorName;
     }
 
 }

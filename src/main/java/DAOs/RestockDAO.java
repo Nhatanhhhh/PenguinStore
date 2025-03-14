@@ -1,6 +1,7 @@
 package DAOs;
 
 import DB.DBContext;
+import Models.ProductVariant;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -13,7 +14,7 @@ import Models.Restock;
 import java.sql.ResultSet;
 
 /**
- * RestockDAO d�ng ?? c?p nh?t l?i s? l??ng h�ng trong kho.
+ * RestockDAO d?ng ?? c?p nh?t l?i s? l??ng h?ng trong kho.
  *
  * @author Do Van Luan
  */
@@ -87,22 +88,28 @@ public class RestockDAO extends DBContext {
     public ArrayList<Restock> getRestockHistory() {
         ArrayList<Restock> list = new ArrayList<>();
         String query = "SELECT \n"
-                + "	Product.productName, \n"
+                + "    Product.productName, \n"
+                + "    Size.sizeName, \n"
+                + "    Color.colorName, \n"
                 + "    Restock.restockID, \n"
                 + "    Restock.proVariantID, \n"
                 + "    Restock.quantity, \n"
                 + "    Restock.price, \n"
-                + "	Restock.totalCost,\n"
+                + "    Restock.totalCost,\n"
                 + "    Restock.restockDate\n"
-                + "FROM \n"
-                + "    Product \n"
-                + "INNER JOIN ProductVariants ON Product.productID = ProductVariants.productID \n"
-                + "INNER JOIN Restock ON ProductVariants.proVariantID = Restock.proVariantID\n"
+                + "FROM Restock\n"
+                + "LEFT JOIN ProductVariants ON ProductVariants.proVariantID = Restock.proVariantID\n"
+                + "LEFT JOIN Product ON Product.productID = ProductVariants.productID\n"
+                + "LEFT JOIN Size ON Size.sizeID = ProductVariants.sizeID\n"
+                + "LEFT JOIN Color ON Color.colorID = ProductVariants.colorID\n"
                 + "ORDER BY Restock.restockDate DESC;";
 
         try ( ResultSet rs = execSelectQuery(query)) {
 
             while (rs.next()) {
+                Date sqlDate = rs.getDate("restockDate");  // Lấy giá trị ngày
+                LocalDate restockDate = (sqlDate != null) ? sqlDate.toLocalDate() : null; // Kiểm tra null trước khi convert
+
                 list.add(new Restock(
                         rs.getString("productName"),
                         rs.getString("restockID"),
@@ -110,13 +117,16 @@ public class RestockDAO extends DBContext {
                         rs.getInt("quantity"),
                         rs.getDouble("price"),
                         rs.getDouble("totalCost"),
-                        rs.getDate("restockDate").toLocalDate()
-                )
-                );
+                        restockDate, // Gán giá trị đã kiểm tra null
+                        rs.getString("sizeName"),
+                        rs.getString("colorName")
+                ));
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return list;
     }
 }

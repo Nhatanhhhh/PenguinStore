@@ -6,8 +6,10 @@ package Controller;
 
 import DAOs.OrderStatisticDAO;
 import DAOs.RevenueDAO;
+import DAOs.StatisticProductDAO;
 import Models.OrderStatistic;
 import Models.RevenueStatistic;
+import Models.StatisticProduct;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,19 +30,21 @@ public class StatisticController extends HttpServlet {
             throws ServletException, IOException {
         OrderStatisticDAO dao = new OrderStatisticDAO();
         RevenueDAO revenueDAO = new RevenueDAO();
+        StatisticProductDAO productDAO = new StatisticProductDAO();
+
         String action = request.getParameter("action");
         String timeUnit = request.getParameter("timeUnit");
 
+        if (action == null || action.isEmpty()) {
+            action = "orderStatistic"; // Default action
+        }
+
+        if (timeUnit == null || (!timeUnit.equals("day") && !timeUnit.equals("month") && !timeUnit.equals("year"))) {
+            timeUnit = "day"; // Default to daily statistics
+        }
+
         switch (action) {
             case "orderStatistic":
-                // Nếu action hoặc timeUnit bị null, đặt giá trị mặc định
-                if (action == null || action.isEmpty()) {
-                    action = "orderStatistic";
-                }
-                if (timeUnit == null || (!timeUnit.equals("day") && !timeUnit.equals("month"))) {
-                    timeUnit = "day"; // Mặc định thống kê theo ngày
-                }
-
                 List<OrderStatistic> statistics;
                 if ("month".equals(timeUnit)) {
                     statistics = dao.getOrderStatisticsByMonth();
@@ -51,6 +55,7 @@ public class StatisticController extends HttpServlet {
                 request.setAttribute("timeUnit", timeUnit);
                 request.getRequestDispatcher("/View/ViewOStatistic.jsp").forward(request, response);
                 break;
+
             case "revenueStatistic":
                 List<RevenueStatistic> revenuelist;
                 switch (timeUnit) {
@@ -64,11 +69,21 @@ public class StatisticController extends HttpServlet {
                         revenuelist = revenueDAO.getRevenueByDay();
                         break;
                 }
-
                 request.setAttribute("revenuelist", revenuelist);
                 request.setAttribute("timeUnit", timeUnit);
                 request.getRequestDispatcher("/View/RevenueStatistic.jsp").forward(request, response);
                 break;
+
+            case "productStatistic":
+                List<StatisticProduct> productStatistics = productDAO.getAll(); // Thống kê nhập - xuất
+                List<StatisticProduct> bestSellingProducts = productDAO.getBestSellingProducts(); // Sản phẩm bán chạy nhất
+
+                request.setAttribute("productStatistics", productStatistics);
+                request.setAttribute("bestSellingProducts", bestSellingProducts);
+
+                request.getRequestDispatcher("/View/ProductStatistic.jsp").forward(request, response);
+                break;
+
             default:
                 response.sendRedirect(request.getContextPath() + "/Statistic?action=orderStatistic&timeUnit=day");
                 break;
