@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Dashboard - Staff</title>
+        <title>Dashboard Staff</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Staff/styles.css"/>
@@ -120,7 +120,7 @@
                                             <td><%= fb.getCustomerName()%></td>
                                             <td><%= fb.getProductName()%></td>
                                             <td><%= fb.getComment()%></td>
-                                            <td><%= fb.getRating()%></td>
+                                            <td><%= String.format("%.1f", fb.getRating()) %></td>
                                             <%
                                                 java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
                                             %>

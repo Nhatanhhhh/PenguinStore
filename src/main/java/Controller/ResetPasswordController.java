@@ -6,6 +6,7 @@ package Controller;
 
 import DAOs.ResetPasswordDAO;
 import DB.DBContext;
+import com.nimbusds.oauth2.sdk.Response;
 import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -75,45 +76,45 @@ public class ResetPasswordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         String newPassword = request.getParameter("new-password");
         String confirmPassword = request.getParameter("confirm-password");
         ResetPasswordDAO rPD = new ResetPasswordDAO();
-        HttpSession session = request.getSession();
         String email = (String) session.getAttribute("email");  // Retrieve email from session
 
         // Check if the new password length is at least 6 characters
-        if (newPassword.length() < 6) {
-            request.setAttribute("errorMessage", "The new password must have at least 6 characters.");
-            request.getRequestDispatcher("ResetPassword").forward(request, response);
+        if (newPassword.length() <= 6) {
+            session.setAttribute("errorMessage", "The new password must have at least 6 characters.");
+            response.sendRedirect("View/ResetPassword.jsp");
             return;
         }
 
         // Check if the password contains at least one uppercase, one lowercase letter, one number, and one special character
         if (!newPassword.matches(".*[A-Z].*")) {
-            request.setAttribute("errorMessage", "The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
-            request.getRequestDispatcher("ResetPassword").forward(request, response);
+            session.setAttribute("errorMessage", "The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            response.sendRedirect("View/ResetPassword.jsp");
             return;
         }
         if (!newPassword.matches(".*[a-z].*")) {
-            request.setAttribute("errorMessage", "The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
-            request.getRequestDispatcher("ResetPassword").forward(request, response);
+            session.setAttribute("errorMessage", "The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            response.sendRedirect("View/ResetPassword.jsp");
             return;
         }
         if (!newPassword.matches(".*\\d.*")) {
-            request.setAttribute("errorMessage", "The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
-            request.getRequestDispatcher("ResetPassword").forward(request, response);
+            session.setAttribute("errorMessage", "The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            response.sendRedirect("View/ResetPassword.jsp");
             return;
         }
         if (!newPassword.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
-            request.setAttribute("errorMessage", "The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
-            request.getRequestDispatcher("ResetPassword").forward(request, response);
+            session.setAttribute("errorMessage", "The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            response.sendRedirect("View/ResetPassword.jsp");
             return;
         }
 
         // Check if the new password matches the confirmation password
         if (!newPassword.equals(confirmPassword)) {
-            request.setAttribute("errorMessage", "The confirmation password does not match.");
-            request.getRequestDispatcher("ResetPassword").forward(request, response);
+            session.setAttribute("errorMessage", "The confirmation password does not match.");
+            response.sendRedirect("View/ResetPassword.jsp");
             return;
         }
 
@@ -130,8 +131,8 @@ public class ResetPasswordController extends HttpServlet {
             session.setAttribute("successMessage", "Password changed successfully.");  // Store in session instead of request
             response.sendRedirect("Login");  // Redirect instead of forward
         } else {
-            request.setAttribute("errorMessage", "An error occurred. Please try again.");
-            request.getRequestDispatcher("ResetPassword").forward(request, response);
+            session.setAttribute("errorMessage", "An error occurred. Please try again.");
+            response.sendRedirect("View/ResetPassword.jsp");
         }
     }
 

@@ -52,23 +52,28 @@ public class LogoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // ✅ Hủy session (nếu có)
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
 
-        // Delete all cookies (including the remember-me cookie if present)
+        // ✅ Xóa cookie liên quan (Remember Me)
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                cookie.setValue("");
-                cookie.setMaxAge(0);
-                cookie.setPath("/");
-                response.addCookie(cookie);
+                if ("username".equals(cookie.getName()) || "password".equals(cookie.getName()) || "remember".equals(cookie.getName())) {
+                    cookie.setValue(null);
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    cookie.setHttpOnly(true);
+                    cookie.setSecure(true);
+                    response.addCookie(cookie);
+                }
             }
         }
 
-        // Redirect to the login page with a logout success message
+        // ✅ Chuyển hướng về trang login kèm thông báo logout thành công
         response.sendRedirect(request.getContextPath() + "/Login?logoutSuccess=true");
     }
 

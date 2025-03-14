@@ -15,25 +15,44 @@
     <body>
         <%@include file="Header.jsp"%>
 
-        <%                Customer customer = (Customer) session.getAttribute("user");
-        %>
+        <%Customer customer = (Customer) session.getAttribute("user");%>
         <h1 class="text-center mb-4" style="font-size: 35px;">Edit Profile</h1>
 
-        <!-- Error or Success Messages -->
         <%
-            String message = (String) request.getAttribute("errorMessage");
-            if (message != null) {
+            String successMessage = (String) session.getAttribute("successMessage");
+            String errorMessage = (String) session.getAttribute("errorMessage");
+
+            session.removeAttribute("successMessage");
+            session.removeAttribute("errorMessage");
         %>
-        <div class="alert alert-danger text-center"><%= message%></div>
-        <%
-            }
-            String successMessage = (String) request.getAttribute("successMessage");
-            if (successMessage != null) {
-        %>
-        <div class="alert alert-success text-center"><%= successMessage%></div>
-        <%
-            }
-        %>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                if (typeof Swal !== "undefined") {
+            <% if (successMessage != null) {%>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: '<%= successMessage%>',
+                        confirmButtonText: 'OK',
+                        timer: 2000
+                    });
+            <% } %>
+
+            <% if (errorMessage != null) {%>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '<%= errorMessage%>',
+                        confirmButtonText: 'OK',
+                        timer: 2000
+                    });
+            <% }%>
+                } else {
+                    console.error("SweetAlert2 is not loaded!");
+                }
+            });
+        </script>
 
         <div class="container mt-3">
             <div class="account-information">
@@ -44,7 +63,7 @@
                             <span>
                                 <!-- fullName + hiển thị 'General' -->
                                 <span class="peter-griffin-general-span" style="font-weight: bold;">
-                                    <%= (customer != null) ? customer.getFullName() : "Anonymous"%>
+                                    <%= (customer.getFullName() != null) ? customer.getFullName() : "Anonymous"%>
                                 </span>
                                 <span class="peter-griffin-general-span2">/</span>
                                 <span class="peter-griffin-general-span3" style="font-weight: bold;">Edit Profile</span>
@@ -64,6 +83,7 @@
                     <div class="voucher"><a href="<%= request.getContextPath()%>/VVCustomer">Voucher</a></div>
                     <div class="order"><a href="<%= request.getContextPath()%>/OrderHistory">Order</a></div>
                     <div class="password"><a href="<%= request.getContextPath()%>/ChangePassword">Password</a></div>
+                    <div class="reply"><a href="">View Reply</a></div>
                 </div>
 
                 <div class="col-md-10">
@@ -72,12 +92,12 @@
                         <div class="form-group">
                             <label for="fullName">Full Name</label>
                             <input type="text" class="form-control" id="fullName" name="fullName" 
-                                   value="<%= (customer != null) ? customer.getFullName() : ""%>" required>
+                                   value="<%= (customer.getFullName() != null) ? customer.getFullName() : "Anonymous"%>" required>
                         </div>
                         <div class="form-group">
                             <label for="phoneNumber">Phone Number</label>
                             <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" 
-                                   value="<%= (customer != null && customer.getPhoneNumber() != null) ? customer.getPhoneNumber() : "" %>" required>
+                                   value="<%= (customer.getPhoneNumber() != null && customer.getPhoneNumber() != null) ? customer.getPhoneNumber() : ""%>" placeholder="Enter your phone number" required>
                         </div>
 
                         <!-- City and Zip Code -->
@@ -85,12 +105,12 @@
                             <div class="form-group col-md-6">
                                 <label for="state">State</label>
                                 <input type="text" class="form-control" id="state" name="state" 
-                                       value="<%= (customer != null) ? customer.getState() : ""%>" required>
+                                       value="<%= (customer.getState() != null) ? customer.getState() : ""%>" placeholder="Enter your State" required>
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="zip">Zip Code</label>
                                 <input type="text" class="form-control" id="zip" name="zip" 
-                                       value="<%= (customer != null) ? customer.getZip() : ""%>" required>
+                                       value="<%= (customer.getZip() != null) ? customer.getZip() : ""%>" placeholder="Enter your zip code" required>
                             </div>
                         </div>
 
@@ -98,7 +118,7 @@
                         <div class="form-group">
                             <label for="address">Your Address</label>
                             <input type="text" class="form-control" id="address" name="address" 
-                                   value="<%= (customer != null) ? customer.getAddress() : ""%>" required>
+                                   value="<%= (customer.getAddress() != null) ? customer.getAddress() : ""%>" placeholder="Enter your address" required>
                         </div>
 
                         <!-- Submit Button -->
@@ -115,13 +135,13 @@
         <div style="background-color: #F9FAFB;  padding: 40px 0px;">
             <div class="row">
                 <div class="col-md-6 d-flex justify-content-center">
-                    <img style="width: 380px; height: 380px;" src="Image/Product/window.png" />
+                    <img style="width: 380px; height: 380px;" src="<%= request.getContextPath()%>/Image/Product/window.png" />
                 </div>
                 <div class="col-md-6">
                     <div style="width: 300px; height: 80px; margin-top: 40px;">
                         <h1 style="font-size: 40px; text-align: left;">DON'T FORGET OUR NEW PRODUCTS</h1>
                         <div style="margin-left: 50px; margin-top: 50px;">
-                            <a href="#" class="button button-dark">New Products</a>
+                            <a href="<%= request.getContextPath()%>/Product" class="button button-dark">New Products</a>
                         </div>
                     </div>
                 </div>

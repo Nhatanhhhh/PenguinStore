@@ -2,6 +2,9 @@
 <%@page import="Models.Voucher" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="Models.Customer" %>
+<%@page import="java.time.LocalDate" %>
+<%@page import="java.time.format.DateTimeFormatter" %>
+<%@page import="java.time.temporal.ChronoUnit" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -66,6 +69,7 @@
                     <div class="voucher"><a style="font-weight: bold;">Voucher</a></div>
                     <div class="order"><a href="<%= request.getContextPath()%>/OrderHistory">Order</a></div>
                     <div class="password"><a href="<%= request.getContextPath()%>/ChangePassword">Password</a></div>
+                    <div class="reply"><a href="">View Reply</a></div>
                 </div>
 
                 <div class="col-md-10">
@@ -82,21 +86,37 @@
                             <tbody>
                                 <%
                                     List<Voucher> vouchers = (List<Voucher>) request.getAttribute("vouchers");
+                                    LocalDate today = LocalDate.now(); // Obtenir la date actuelle
+
                                     if (vouchers != null && !vouchers.isEmpty()) {
                                         for (Voucher voucher : vouchers) {
+                                            LocalDate validUntil = voucher.getValidUntil();
+                                            boolean isExpired = validUntil.isBefore(today);
                                 %>
                                 <tr>
                                     <td><%= voucher.getVoucherCode()%></td>
-                                    <td><%= voucher.getDiscountAmount()%>  <i class="fa-solid fa-coins"></i></td>
-                                    <td><%= voucher.getValidUntil()%></td>
-                                    <td><a href="#" class="d-flex button button-two justify-content-center" onclick="confirmUseVoucher('<%= voucher.getVoucherCode()%>')">Use</a></td>
+                                    <td><%= voucher.getDiscountAmount()%> <i class="fa-solid fa-dollar-sign"></i></td>
+                                    <td>
+                                        <% if (isExpired) { %>
+                                        <span style="color: red; font-weight: bold;">Expired</span>
+                                        <% } else {%>
+                                        <%= voucher.getValidUntil()%>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (isExpired) { %>
+                                        <button class="btn btn-danger" disabled>Expired</button>
+                                        <% } else {%>
+                                        <a href="#" class="d-flex button button-two justify-content-center" onclick="confirmUseVoucher('<%= voucher.getVoucherCode()%>')">Use</a>
+                                        <% } %>
+                                    </td>
                                 </tr>
                                 <%
                                     }
                                 } else {
                                 %>
                                 <tr>
-                                    <td colspan="3" class="text-center">No vouchers available</td>
+                                    <td colspan="4" class="text-center">No vouchers available</td>
                                 </tr>
                                 <%
                                     }
@@ -126,7 +146,6 @@
             </div>
         </div>
 
-
         <!-- Modal xác nhận sử dụng voucher -->
         <div class="modal fade" id="confirmUseVoucherModal" tabindex="-1" role="dialog" aria-labelledby="confirmUseVoucherLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -147,19 +166,24 @@
                 </div>
             </div>
         </div>
-
-
         <%@include file="Footer.jsp"%>
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
         <script>
             let selectedVoucher = "";
 
             function confirmUseVoucher(voucherCode) {
-                selectedVoucher = voucherCode; // Lưu lại mã voucher
+                selectedVoucher = voucherCode; // Lưu mã voucher
+                document.getElementById("confirmUseVoucherBtn").setAttribute("data-voucher", voucherCode); // Gán mã voucher vào thuộc tính
                 $("#confirmUseVoucherModal").modal("show"); // Hiển thị modal
             }
+
+            document.getElementById("confirmUseVoucherBtn").addEventListener("click", function () {
+                let voucherCode = this.getAttribute("data-voucher"); // Lấy mã voucher từ thuộc tính
+                if (voucherCode) {
+                    // Chuyển hướng đến Checkout với mã voucher
+                    window.location.href = "<%= request.getContextPath()%>/Checkout?voucher=" + encodeURIComponent(voucherCode);
+                }
+            });
         </script>
-
     </body>
-
 </html>

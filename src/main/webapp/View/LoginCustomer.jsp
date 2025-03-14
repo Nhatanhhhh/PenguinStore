@@ -6,6 +6,7 @@
         <title>Login</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/customer.css"/>
@@ -21,26 +22,41 @@
 
                     <% String successMessage = (String) session.getAttribute("successMessage");
                         String errorMessage = (String) session.getAttribute("errorMessage");
+                        Boolean showSweetAlert = (Boolean) session.getAttribute("showSweetAlert");
+                    %>
 
-                        if (successMessage != null) {%>
-                    <div class="alert alert-success alert-dismissible fade show text-center" role="alert" data-aos="zoom-in">
-                        <%= successMessage%>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <% session.removeAttribute("successMessage");
-                        }
-                        if (errorMessage != null) {%>
-                    <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" style="<%= (errorMessage != null) ? "display:block;" : "display:none;"%>" data-aos="zoom-in">
-                        <%= errorMessage%>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <% session.removeAttribute("errorMessage");
-                        }%>
-
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            if (typeof Swal !== "undefined") {
+                        <% if (successMessage != null) {%>
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: '<%= successMessage%>'
+                                });
+                        <% session.removeAttribute("successMessage"); %>
+                        <% } %>
+                        <% if (errorMessage != null) { %>
+                        <% if (Boolean.TRUE.equals(showSweetAlert)) { %>
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Too many failed attempts!',
+                                    text: 'You enter the wrong password too much. Use Forget Password to get the password back.',
+                                    confirmButtonText: 'OK'
+                                });
+                        <% session.removeAttribute("showSweetAlert"); %>
+                        <% } else {%>
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Login Failed',
+                                    text: '<%= errorMessage%>'
+                                });
+                        <% } %>
+                        <% session.removeAttribute("errorMessage"); %>
+                        <% }%>
+                            }
+                        });
+                    </script>
                     <!-- Form -->
                     <form class="login100-form" action="<%= request.getContextPath()%>/Login" method="POST" data-aos="fade-up">
                         <input type="hidden" name="userType" value="customer">
@@ -79,7 +95,7 @@
 
                         <div class="container-login100-form-btn" style="margin-top: 20px;" data-aos="fade-up">
                             <div class="col-md-6 d-flex justify-content-start">
-                                <a class="icon-google" href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:9999/PenguinStore/GoogleLogin&response_type=code&client_id=&approval_prompt=force"><i class="fa-brands fa-google"></i></a>
+                                <a class="icon-google" href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:9999/PenguinStore/GoogleLogin&response_type=code&client_id=481523146636-vh5s2vjv8fm9hb8dtgi9e3f66711192u.apps.googleusercontent.com&approval_prompt=force"><i class="fa-brands fa-google"></i></a>
                             </div>
                             <div class="col-md-6 justify-content-end">
                                 <button class="login100-form-btn">Login</button>

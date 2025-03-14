@@ -4,12 +4,15 @@
  */
 package Filters;
 
+import DAOs.CustomerDAO;
+import Models.Customer;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -24,20 +27,43 @@ import java.io.IOException;
 public class LoginFilter implements Filter {
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-
-        // Check the current session
         HttpSession session = req.getSession(false);
 
-        // Verify if the user is logged in (session exists and contains a user attribute)
         if (session != null && session.getAttribute("user") != null) {
-            // If the user is logged in, allow the request to proceed
             chain.doFilter(request, response);
-        } else {
-            // If not logged in, redirect to the login page
-            res.sendRedirect("/PenguinStore");
+            return;
         }
+
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            String username = null;
+            String hashedPassword = null;
+
+            for (Cookie cookie : cookies) {
+                if ("username".equals(cookie.getName())) {
+                    username = cookie.getValue();
+                } else if ("password".equals(cookie.getName())) {
+                    hashedPassword = cookie.getValue();
+                }
+            }
+
+            if (username != null && hashedPassword != null) {
+                CustomerDAO customerDAO = new CustomerDAO();
+                Customer user = customerDAO.getCustomerByUsernameAndPassword(username, hashedPassword);
+
+                if (user != null) {
+                    session = req.getSession(true);
+                    session.setAttribute("user", user);
+                    session.setAttribute("role", "CUSTOMER");
+                    System.out.println("✅ Auto login từ cookie: " + username);
+                }
+            }
+        }
+
+        chain.doFilter(request, response);
     }
 }

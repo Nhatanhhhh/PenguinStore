@@ -170,6 +170,10 @@
         <servlet-name>CreateFeedbackController</servlet-name>
         <servlet-class>Controller.CreateFeedbackController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UseVoucher</servlet-name>
+        <servlet-class>Controller.UseVoucher</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/Logout</url-pattern>
@@ -304,6 +308,10 @@
     <servlet-mapping>
         <servlet-name>CreateFeedbackController</servlet-name>
         <url-pattern>/CreateFeedback</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UseVoucher</servlet-name>
+        <url-pattern>/UseVoucher</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

@@ -4,7 +4,8 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
-        <title>Xác nhận Email</title>
+        <title>Verify Email RSP</title>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
@@ -15,6 +16,14 @@
     <body>
         <div class="container" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
             <div class="verify-box row">
+                <%
+                    HttpSession sessionObj = request.getSession();
+                    String errorMessage = (String) sessionObj.getAttribute("errorMessage");
+                    String successMessage = (String) sessionObj.getAttribute("successMessage");
+
+                    sessionObj.removeAttribute("errorMessage");
+                    sessionObj.removeAttribute("successMessage");
+                %>
                 <!-- Hình ảnh bên trái -->
                 <div class="image-container col-md-6"></div>
 
@@ -44,5 +53,35 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+
+            <% if (errorMessage != null) {%>
+                    console.log("❌ Error Message Detected: <%= errorMessage%>");
+                    Swal.fire({
+                        title: "Error",
+                        text: "<%= errorMessage%>",
+                        icon: "error",
+                        confirmButtonText: "OK",
+                        timer: 2500
+                    });
+            <% } %>
+
+            <% if (successMessage != null) {%>
+                    console.log("✅ Success Message Detected: <%= successMessage%>");
+                    Swal.fire({
+                        title: "Success",
+                        text: "<%= successMessage%>",
+                        icon: "success",
+                        confirmButtonText: "OK",
+                        timer: 2500
+                    });
+            <% }%>
+            });
+        </script>
+        
+        
+        <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
 </html>

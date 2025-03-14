@@ -60,11 +60,17 @@ public class GetVariantIDServlet extends HttpServlet {
         String size = request.getParameter("size");
         String color = request.getParameter("color");
 
-        try (Connection conn = DBContext.getConn()) {
-            String sql = "SELECT proVariantID FROM ProductVariants WHERE sizeName = ? AND colorName = ?";
+        try ( Connection conn = DBContext.getConn()) {
+            String sql = "SELECT pv.proVariantID FROM ProductVariants pv "
+                    + "JOIN Color c ON pv.colorID = c.colorID "
+                    + "JOIN Size s ON pv.sizeID = s.sizeID "
+                    + "WHERE c.colorName = ? AND s.sizeName = ?;";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, size);
             ps.setString(2, color);
+            System.out.println("Received Color: " + color);
+            System.out.println("Received Size: " + size);
+
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {

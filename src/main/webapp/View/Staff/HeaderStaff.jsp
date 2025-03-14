@@ -5,6 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Staff Header</title>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/bootstrap.css">
         <style>
             /* Khi hover vào menu dropdown, đổi màu nền và màu chữ */

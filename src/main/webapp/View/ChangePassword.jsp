@@ -36,7 +36,7 @@
                             <span>
                                 <!-- fullName + hiển thị 'General' -->
                                 <span class="peter-griffin-general-span" style="font-weight: bold;">
-                                    <%= (customer != null) ? customer.getFullName() : "Anonymous"%>
+                                    <%= (customer.getFullName() != null) ? customer.getFullName() : "Anonymous"%>
                                 </span>
                                 <span class="peter-griffin-general-span2">/</span>
                                 <span class="peter-griffin-general-span3" style="font-weight: bold;">Change Password</span>
@@ -55,6 +55,7 @@
                     <div class="voucher"><a href="<%= request.getContextPath()%>/VVCustomer">Voucher</a></div>
                     <div class="order"><a href="<%= request.getContextPath()%>/OrderHistory">Order</a></div>
                     <div class="password"><a style="font-weight: bold;">Password</a></div>
+                    <div class="reply"><a href="">View Reply</a></div>
                 </div>
 
                 <div class="col-md-10">
@@ -115,13 +116,13 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-6 d-flex justify-content-center">
-                        <img style="width: 380px; height: 380px;" src="Image/Product/window.png" />
+                        <img style="width: 380px; height: 380px;" src="<%= request.getContextPath()%>/Image/Product/window.png" />
                     </div>
                     <div class="col-md-6">
                         <div style="width: 300px; height: 80px; margin-top: 40px;">
                             <h1 style="font-size: 40px; text-align: left;">DON'T FORGET OUR NEW PRODUCTS</h1>
                             <div style="margin-left: 50px; margin-top: 50px;">
-                                <a href="#" class="button button-dark">New Products</a>
+                                <a href="<%= request.getContextPath()%>/Product" class="button button-dark">New Products</a>
                             </div>
                         </div>
                     </div>

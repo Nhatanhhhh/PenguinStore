@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/resetpassword.css">
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
     </head>
     <body>
         <div class="container">

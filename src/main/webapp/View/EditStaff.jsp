@@ -2,10 +2,10 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Edit Type</title>
+        <title>Edit Staff</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
@@ -33,7 +33,7 @@
                                 </div>
                                 <div class="card-body">
                                     <c:if test="${empty manager}">
-                                        <p class="text-danger text-center">Not found Staff.</p>
+                                        <p class="text-danger text-center">Staff not found.</p>
                                         <a href="<c:url value='/Staff?action=list'/>" class="btn btn-secondary">Back</a>
                                     </c:if>
 
@@ -48,7 +48,7 @@
 
                                             <div class="mb-3">
                                                 <label for="password" class="form-label">Password:</label>
-                                                <input type="password" class="form-control" id="password" name="password" value="${manager.password}">
+                                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter Your Staff Password" required>
                                             </div>
 
                                             <div class="mb-3">
@@ -66,7 +66,7 @@
                                                 <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" 
                                                        value="${manager.phoneNumber}" 
                                                        pattern="^0[0-9]{9}$"
-                                                       title="Số điện thoại phải bắt đầu bằng số 0 và có 10 chữ số." required>
+                                                       title="Phone number must start with 0 and have 10 digits." required>
                                             </div>
 
                                             <div class="mb-3">
@@ -76,7 +76,9 @@
 
                                             <div class="mb-3">
                                                 <label for="dateOfBirth" class="form-label">Date of Birth: </label>
-                                                <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" value="${manager.dateOfBirth}" required>
+                                                <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" 
+                                                       value="${manager.dateOfBirth}" min="1900-01-01" 
+                                                       max="<%= java.time.LocalDate.now().minusYears(18)%>" required>
                                             </div>
 
                                             <button type="submit" class="btn btn-primary">Update</button>
@@ -90,8 +92,6 @@
                 </div>
             </div>
         </div>
-
-
 
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>

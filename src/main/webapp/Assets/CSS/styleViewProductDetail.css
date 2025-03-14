@@ -17,17 +17,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
     margin-bottom: 20px;
-    align-items: center; /* C?n gi?a các ph?n t? */
+    align-items: center; /* C?n gi?a cï¿½c ph?n t? */
 }
 
 .product-images {
     display: flex;
-}
-
-.product-main-img {
-    width: 500px;
-    height: 500px;
-    border-radius: 10px;
 }
 
 .thumbnail-container {
@@ -51,8 +45,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 }
 
 .product-main-img {
-    width: 400px;
-    height: 300px;
+    width: 500px !important;
+    height: 500px !important;
     border-radius: 10px;
     object-fit: cover;
     transition: opacity 0.3s ease-in-out;

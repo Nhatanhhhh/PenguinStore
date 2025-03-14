@@ -85,14 +85,14 @@ public class FeedbackController extends HttpServlet {
             } else {
                 session.setAttribute("message", "Không tìm thấy sản phẩm cho đơn hàng này!");
                 session.setAttribute("messageType", "error");
-                response.sendRedirect("OrderHistory");
+                request.getRequestDispatcher("View/Feedback.jsp").forward(request, response);
                 return;
             }
         }
 
         session.setAttribute("message", "OrderID không hợp lệ!");
         session.setAttribute("messageType", "error");
-        response.sendRedirect("OrderHistory");
+        request.getRequestDispatcher("View/Feedback.jsp").forward(request, response);
     }
 
     /**

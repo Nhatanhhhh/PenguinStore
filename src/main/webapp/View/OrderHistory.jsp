@@ -136,7 +136,7 @@
                     <div class="voucher"><a href="<%= request.getContextPath()%>/VVCustomer">Voucher</a></div>
                     <div class="orderhistory"><a style="font-weight: bold;">Order</a></div>
                     <div class="password"><a href="<%= request.getContextPath()%>/ChangePassword">Password</a></div>
-                    <div class="divider"></div>
+                    <div class="reply"><a href="">View Reply</a></div>
                 </div>
 
                 <div class="col-md-10">

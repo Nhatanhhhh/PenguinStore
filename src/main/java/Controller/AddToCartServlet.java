@@ -1,8 +1,6 @@
 package Controller;
 
-import DAOs.CartDAO;
 import DB.DBContext;
-import Models.Cart;
 import Models.Customer;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,36 +14,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 /**
- * Servlet handling adding products to the shopping cart.
  *
  * @author Le Minh Loc CE180992
  */
 public class AddToCartServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
-            // TODO: Implement logic if needed
         }
     }
 
-    /**
-     * Handles HTTP GET requests.
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles HTTP POST requests to add a product to the cart.
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -54,20 +40,43 @@ public class AddToCartServlet extends HttpServlet {
             response.sendRedirect("View/LoginCustomer.jsp");
             return;
         }
+
         String customerID = customer.getCustomerID();
         String productID = request.getParameter("productID");
-        String proVariantID = request.getParameter("variantId");
+        String sizeName = request.getParameter("size");
+        String colorName = request.getParameter("color");
         String quantityStr = request.getParameter("quantity");
 
-        if (customerID == null || productID == null || proVariantID == null || quantityStr == null) {
+        if (customerID == null || productID == null || sizeName == null || colorName == null || quantityStr == null) {
             response.sendRedirect("ProductDetail.jsp?error=MissingData");
             return;
         }
 
         int quantity = Integer.parseInt(quantityStr);
+        String proVariantID = null;
 
         try ( Connection conn = DBContext.getConn()) {
-            // Check if the product already exists in the cart
+            // 🔹 Truy vấn proVariantID từ database dựa trên sizeName, colorName, productID
+            String variantQuery = "SELECT pv.proVariantID FROM dbo.ProductVariants pv "
+                    + "JOIN dbo.Size s ON pv.sizeID = s.sizeID "
+                    + "JOIN dbo.Color c ON pv.colorID = c.colorID "
+                    + "WHERE s.sizeName = ? AND c.colorName = ? AND pv.productID = ?";
+            PreparedStatement variantPs = conn.prepareStatement(variantQuery);
+            variantPs.setString(1, sizeName);
+            variantPs.setString(2, colorName);
+            variantPs.setString(3, productID);
+
+            ResultSet variantRs = variantPs.executeQuery();
+            if (variantRs.next()) {
+                proVariantID = variantRs.getString("proVariantID");
+            }
+
+            if (proVariantID == null) {
+                response.sendRedirect("ProductDetail.jsp?error=InvalidVariant");
+                return;
+            }
+
+            // 🔹 Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
             String checkSql = "SELECT quantity FROM Cart WHERE customerID = ? AND productID = ? AND proVariantID = ?";
             PreparedStatement checkPs = conn.prepareStatement(checkSql);
             checkPs.setString(1, customerID);
@@ -76,7 +85,7 @@ public class AddToCartServlet extends HttpServlet {
             ResultSet rs = checkPs.executeQuery();
 
             if (rs.next()) {
-                // If the product exists, update the quantity
+                // Nếu sản phẩm đã có, cập nhật số lượng
                 int existingQuantity = rs.getInt("quantity");
                 int newQuantity = existingQuantity + quantity;
 
@@ -88,7 +97,7 @@ public class AddToCartServlet extends HttpServlet {
                 updatePs.setString(4, proVariantID);
                 updatePs.executeUpdate();
             } else {
-                // If the product does not exist, add a new entry
+                // Nếu sản phẩm chưa có, thêm mới vào giỏ hàng
                 String insertSql = "INSERT INTO Cart (customerID, productID, proVariantID, quantity) VALUES (?, ?, ?, ?)";
                 PreparedStatement insertPs = conn.prepareStatement(insertSql);
                 insertPs.setString(1, customerID);
@@ -98,20 +107,12 @@ public class AddToCartServlet extends HttpServlet {
                 insertPs.executeUpdate();
             }
 
-            // Redirect to the product page with a success message
+            // Chuyển hướng về trang sản phẩm kèm thông báo thành công
             response.sendRedirect("Product?id=" + productID + "&message=success");
 
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("ProductDetail.jsp?error=DatabaseError");
         }
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     */
-    @Override
-    public String getServletInfo() {
-        return "Handles adding products to the cart";
     }
 }

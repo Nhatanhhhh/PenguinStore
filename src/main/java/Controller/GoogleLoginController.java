@@ -2,6 +2,7 @@ package Controller;
 
 import DAOs.RegisterDAO;
 import Models.Customer;
+import Utils.CookieUtils;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
@@ -59,16 +60,14 @@ public class GoogleLoginController extends HttpServlet {
                 GoogleIdToken.Payload payload = idToken.getPayload();
 
                 String email = payload.getEmail();
-                String name = (String) payload.get("name");
+                String name = ((String) payload.get("name")).trim().replaceAll("\\s+", "_");  // Remove spaces
                 String googleID = payload.getSubject();
-                String accessToken = tokenResponse.getAccessToken();
+                String accessToken = tokenResponse.getAccessToken().trim(); // Trim spaces
 
                 RegisterDAO registerDAO = new RegisterDAO();
 
                 if (!registerDAO.isEmailExist(email)) {
-                    registerDAO.registerUserGoogle(
-                            email, name, email, googleID, accessToken
-                    );
+                    registerDAO.registerUserGoogle(email, name, email, googleID, accessToken);
                 }
 
                 Customer customer = registerDAO.getUserByEmail(email);
@@ -76,34 +75,31 @@ public class GoogleLoginController extends HttpServlet {
                     HttpSession session = request.getSession(true);
                     session.setAttribute("user", customer);
                     session.setAttribute("role", "CUSTOMER");
-                    response.sendRedirect("/PenguinStore");
+
+                    // ✅ Store login info in cookies (sanitize values)
+                    CookieUtils.setCookie(response, "username", name, 7 * 24 * 60 * 60); // 7 days
+                    CookieUtils.setCookie(response, "email", email, 7 * 24 * 60 * 60);
+                    CookieUtils.setCookie(response, "accessToken", accessToken, 7 * 24 * 60 * 60);
+
+                    session.setAttribute("successMessage", "Google Login successful! Welcome to Penguin Store.");
+                    session.setAttribute("showSweetAlert", true);
+
+                    response.sendRedirect(request.getContextPath() + "/");
                 } else {
-                    request.setAttribute("errorMessage", "Can not authenticate users. Please try again.");
+                    clearCookies(response);
+                    request.setAttribute("errorMessage", "Cannot authenticate user. Please try again.");
                     request.getRequestDispatcher("View/LoginCustomer.jsp").forward(request, response);
-                    return;
                 }
 
             } catch (SQLException ex) {
                 Logger.getLogger(GoogleLoginController.class.getName()).log(Level.SEVERE, null, ex);
+                clearCookies(response);
                 request.setAttribute("errorMessage", "Database connection error. Please try again later.");
                 request.getRequestDispatcher("View/LoginCustomer.jsp").forward(request, response);
-                return;
             }
 
-            response.sendRedirect("/PenguinStore");
         } else {
-            request.getSession().invalidate();
-
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    cookie.setValue(null);
-                    cookie.setMaxAge(0);
-                    cookie.setPath("/");
-                    response.addHeader("Set-Cookie", cookie.getName() + "=; Path=" + cookie.getPath()
-                            + "; Max-Age=0; SameSite=None; Secure");
-                }
-            }
+            clearCookies(response);
 
             GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                     new NetHttpTransport(),
@@ -118,5 +114,11 @@ public class GoogleLoginController extends HttpServlet {
             String authorizationUrl = flow.newAuthorizationUrl().setRedirectUri(REDIRECT_URI).build();
             response.sendRedirect(authorizationUrl);
         }
+    }
+
+    private void clearCookies(HttpServletResponse response) {
+        CookieUtils.deleteCookie(response, "username");
+        CookieUtils.deleteCookie(response, "email");
+        CookieUtils.deleteCookie(response, "accessToken");
     }
 }

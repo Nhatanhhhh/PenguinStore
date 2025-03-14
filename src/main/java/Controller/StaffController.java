@@ -28,21 +28,21 @@ import java.util.Objects;
  */
 @WebServlet(name = "StaffController", urlPatterns = {"/Staff"})
 public class StaffController extends HttpServlet {
-    
+
     private DBContext db;
-    
-     @Override
+
+    @Override
     public void init() throws ServletException {
         super.init();
-        db = new DBContext();  
+        db = new DBContext();
         System.out.println("DBContext init: " + db);
         try {
-           db.getConn();  
-       } catch (Exception e) {
-           throw new ServletException("Failed", e);
-       }
+            db.getConn();
+        } catch (Exception e) {
+            throw new ServletException("Failed", e);
+        }
     }
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -92,8 +92,7 @@ public class StaffController extends HttpServlet {
                 }
 
                 Manager existingManager = managerDAO.getByManagerName(managerName);
-                
-                
+
                 if (existingManager == null) {
                     request.getRequestDispatcher("/View/EditStaff.jsp").forward(request, response);
                     return;
@@ -115,7 +114,7 @@ public class StaffController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-       
+
         ManagerDAO managerDAO = new ManagerDAO(db);
 
         if (Objects.isNull(action)) {
@@ -130,39 +129,86 @@ public class StaffController extends HttpServlet {
                 break;
 
             case "create":
-
                 String managerNameCreate = request.getParameter("managerName");
                 String password = request.getParameter("password");
                 String fullName = request.getParameter("fullName");
                 String email = request.getParameter("email");
                 String phoneNumber = request.getParameter("phoneNumber");
                 String address = request.getParameter("address");
-                String dateCreate = convertToFullDateTime(request.getParameter("dateOfBirth"));
+                String dobString = request.getParameter("dateOfBirth");
 
-                if (managerNameCreate == null || managerNameCreate.trim().isEmpty() || password == null || password.trim().isEmpty()) {
-                    request.setAttribute("error", "Please Enter your data.");
+                // Kiểm tra ngày sinh
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                sdf.setLenient(false);
+                try {
+                    Date dob = sdf.parse(dobString);
+                    Date today = new Date();
+
+                    // Tính toán số tuổi
+                    long ageInMillis = today.getTime() - dob.getTime();
+                    int age = (int) (ageInMillis / (1000L * 60 * 60 * 24 * 365));
+
+                    if (dob.after(today)) {
+                        request.setAttribute("error", "Birthdays can't be in the future!");
+                        request.getRequestDispatcher("/View/CreateStaff.jsp").forward(request, response);
+                        return;
+                    }
+
+                    if (age < 18) {
+                        request.setAttribute("error", "Employees must be at least 18 years old!");
+                        request.getRequestDispatcher("/View/CreateStaff.jsp").forward(request, response);
+                        return;
+                    }
+
+                } catch (ParseException e) {
+                    request.setAttribute("error", "Invalid date of birth format!");
                     request.getRequestDispatcher("/View/CreateStaff.jsp").forward(request, response);
                     return;
                 }
 
+                String dateCreate = convertToFullDateTime(dobString);
                 Manager managerCreate = new Manager(null, managerNameCreate, password, fullName, email, phoneNumber, address, dateCreate, false);
 
                 int rowsAffected = managerDAO.insert(managerCreate);
-                System.out.println("gia tri create tra ve: " + rowsAffected);
-                // Ki?m tra k?t qu?
                 if (rowsAffected > 0) {
                     response.sendRedirect(request.getContextPath() + "/Staff?action=list");
                 } else {
-                    request.setAttribute("error", "Create invalue! Phease try again.");
+                    request.setAttribute("error", "Account creation failed! Please try again.");
                     request.getRequestDispatcher("/View/CreateStaff.jsp").forward(request, response);
                 }
                 break;
 
             case "edit":
-               
                 String managerName = request.getParameter("managerName");
- 
-                String date = convertToFullDateTime(request.getParameter("dateOfBirth"));
+                String dobStringEdit = request.getParameter("dateOfBirth");
+
+                SimpleDateFormat sdfEdit = new SimpleDateFormat("yyyy-MM-dd");
+                sdfEdit.setLenient(false);
+                try {
+                    Date dobEdit = sdfEdit.parse(dobStringEdit);
+                    Date todayEdit = new Date();
+
+                    long ageInMillisEdit = todayEdit.getTime() - dobEdit.getTime();
+                    int ageEdit = (int) (ageInMillisEdit / (1000L * 60 * 60 * 24 * 365));
+
+                    if (dobEdit.after(todayEdit)) {
+                        request.setAttribute("error", "Birthdays can't be in the future!");
+                        request.getRequestDispatcher("/View/EditStaff.jsp").forward(request, response);
+                        return;
+                    }
+
+                    if (ageEdit < 18) {
+                        request.setAttribute("error", "Employees must be at least 18 years old!");
+                        request.getRequestDispatcher("/View/EditStaff.jsp").forward(request, response);
+                        return;
+                    }
+                } catch (ParseException e) {
+                    request.setAttribute("error", "Invalid date of birth format!");
+                    request.getRequestDispatcher("/View/EditStaff.jsp").forward(request, response);
+                    return;
+                }
+
+                String dateEdit = convertToFullDateTime(dobStringEdit);
                 Manager managerUpdate = new Manager(null,
                         request.getParameter("managerName"),
                         request.getParameter("password"),
@@ -170,12 +216,12 @@ public class StaffController extends HttpServlet {
                         request.getParameter("email"),
                         request.getParameter("phoneNumber"),
                         request.getParameter("address"),
-                        date,
+                        dateEdit,
                         false);
 
                 try {
-                     int check = managerDAO.updateByManagerName(managerName, managerUpdate);
-                     System.out.println("Check: "  +check);
+                    int check = managerDAO.updateByManagerName(managerName, managerUpdate);
+                    System.out.println("Check: " + check);
                 } catch (Exception e) {
                     System.out.println(e);
                 }
@@ -183,9 +229,6 @@ public class StaffController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/Staff?action=list");
                 break;
 
-            default:
-                response.sendRedirect(request.getContextPath() + "/Staff?action=list");
-                break;
         }
 
     }

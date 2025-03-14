@@ -89,9 +89,9 @@ public class CreateFeedbackController extends HttpServlet {
         System.out.println("Message Type: " + session.getAttribute("messageType"));
 
         if (productID == null || orderID == null || ratingParam == null || ratingParam.trim().isEmpty()) {
-            session.setAttribute("message", "Vui lòng chọn số sao và nhập đánh giá trước khi gửi!");
+            session.setAttribute("message", "Please choose the number of stars and enter the assessment before sending!");
             session.setAttribute("messageType", "error");
-            request.getRequestDispatcher("/View/Feedback.jsp").forward(request, response);
+            response.sendRedirect(request.getContextPath() + "/View/Feedback.jsp");
             return;
         }
 
@@ -99,16 +99,16 @@ public class CreateFeedbackController extends HttpServlet {
         try {
             rating = Double.parseDouble(ratingParam.trim());
         } catch (NumberFormatException e) {
-            session.setAttribute("message", "Rating không hợp lệ!");
+            session.setAttribute("message", "Rating is not valid");
             session.setAttribute("messageType", "error");
-            request.getRequestDispatcher("/View/Feedback.jsp").forward(request, response);
+            response.sendRedirect(request.getContextPath() + "/View/Feedback.jsp");
             return;
         }
 
         if (comment == null || comment.trim().length() < 10) {
-            session.setAttribute("message", "Nội dung đánh giá cần ít nhất 10 ký tự!");
+            session.setAttribute("message", "The evaluation content needs at least 10 characters!");
             session.setAttribute("messageType", "error");
-            request.getRequestDispatcher("/View/Feedback.jsp").forward(request, response);
+            response.sendRedirect(request.getContextPath() + "/View/Feedback.jsp");
             return;
         }
 
@@ -127,15 +127,14 @@ public class CreateFeedbackController extends HttpServlet {
         boolean isSaved = FeedbackDAO.saveFeedback(feedback);
 
         if (isSaved) {
-            session.setAttribute("message", "Gửi đánh giá thành công!");
+            session.setAttribute("message", "Send the success evaluation!");
             session.setAttribute("messageType", "success");
         } else {
-            session.setAttribute("message", "Gửi đánh giá thất bại, vui lòng thử lại.");
+            session.setAttribute("message", "Send a failure assessment, please try again.");
             session.setAttribute("messageType", "error");
         }
 
-        response.sendRedirect(request.getContextPath() + "/ViewProfile");
-
+        response.sendRedirect("Feedback?orderID=" + orderID);
     }
 
     /**

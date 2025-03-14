@@ -62,73 +62,30 @@
 document.addEventListener("DOMContentLoaded", function () {
     const password = document.getElementById("password");
     const confirmPassword = document.getElementById("confirm_password");
-    const passwordError = document.getElementById("passwordError");
-
-    function validatePasswordMatch() {
-        if (password.value !== confirmPassword.value) {
-            passwordError.style.display = "block";
-            confirmPassword.setCustomValidity("Passwords do not match");
-        } else {
-            passwordError.style.display = "none";
-            confirmPassword.setCustomValidity("");
-        }
-    }
-
-    password.addEventListener("input", validatePasswordMatch);
-    confirmPassword.addEventListener("input", validatePasswordMatch);
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const password = document.getElementById("password");
-    const confirmPassword = document.getElementById("confirm_password");
-    const email = document.getElementById("email");
-    const phone = document.getElementById("phone");
-
-    const passwordError = document.getElementById("passwordError");
     const passwordStrength = document.getElementById("passwordStrength");
-    const emailError = document.getElementById("emailError");
-    const phoneError = document.getElementById("phoneError");
-
-    function validateEmail() {
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!emailRegex.test(email.value)) {
-            emailError.style.display = "block";
-            email.classList.add("input-error");
-            return false;
-        } else {
-            emailError.style.display = "none";
-            email.classList.remove("input-error");
-            return true;
-        }
-    }
-
-    function validatePhone() {
-        const phoneRegex = /^[0-9]{10,11}$/;
-        if (!phoneRegex.test(phone.value)) {
-            phoneError.style.display = "block";
-            phone.classList.add("input-error");
-            return false;
-        } else {
-            phoneError.style.display = "none";
-            phone.classList.remove("input-error");
-            return true;
-        }
-    }
+    const passwordError = document.getElementById("passwordError");
 
     function validatePasswordStrength() {
         const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        const mediumRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+
+        passwordStrength.classList.remove("alert-validate");
 
         if (password.value.length < 8) {
             passwordStrength.innerText = "⚠️ Password must be at least 8 characters";
-            passwordStrength.style.color = "red";
+            passwordStrength.style.color = "#FF0000";
             passwordStrength.style.display = "block";
-        } else if (!strongRegex.test(password.value)) {
-            passwordStrength.innerText = "⚠️ Must contain uppercase, lowercase, number, and special character";
-            passwordStrength.style.color = "orange";
+        } else if (strongRegex.test(password.value)) {
+            passwordStrength.innerText = "✅ Strong password!";
+            passwordStrength.style.color = "#008000";
+            passwordStrength.style.display = "block";
+        } else if (mediumRegex.test(password.value)) {
+            passwordStrength.innerText = "⚠️ Medium: Add special characters for a stronger password!";
+            passwordStrength.style.color = "#FFA500";
             passwordStrength.style.display = "block";
         } else {
-            passwordStrength.innerText = "✅ Strong password";
-            passwordStrength.style.color = "green";
+            passwordStrength.innerText = "⚠️ Weak: Add uppercase, number & special character!";
+            passwordStrength.style.color = "#FF4500";
             passwordStrength.style.display = "block";
         }
     }
@@ -145,14 +102,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Kiểm tra khi người dùng nhập
+    // Kiểm tra khi nhập
     password.addEventListener("input", function () {
         validatePasswordStrength();
         validatePasswordMatch();
     });
     confirmPassword.addEventListener("input", validatePasswordMatch);
-    email.addEventListener("input", validateEmail);
-    phone.addEventListener("input", validatePhone);
 });
-
 

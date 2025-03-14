@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -27,6 +28,10 @@ import java.util.logging.Logger;
 public class LoginServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(LoginServlet.class.getName());
+    private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{3,20}$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+    private static final int MIN_PASSWORD_LENGTH = 6;
+    private static final int MAX_FAILED_ATTEMPTS = 3;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -66,6 +71,14 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse res = (HttpServletResponse) response;
+        HttpSession session = req.getSession(false);
+
+        if (session != null && session.getAttribute("user") != null) {
+            request.getRequestDispatcher("/View/index.jsp").forward(request, response);
+            return;
+        }
         request.getRequestDispatcher("/View/LoginCustomer.jsp").forward(request, response);
     }
 
@@ -86,51 +99,74 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
         String rememberMe = request.getParameter("remember-me");
 
-        // M� h�a m?t kh?u
-        String hashedPassword = DBContext.hashPasswordMD5(password);
         HttpSession session = request.getSession(true);
+        Integer failedAttempts = (Integer) session.getAttribute("failedAttempts");
+        if (failedAttempts == null) {
+            failedAttempts = 0;
+        }
+
+        if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
+            session.setAttribute("errorMessage", "Too many failed attempts. Please reset your password.");
+            session.setAttribute("showSweetAlert", true);
+            response.sendRedirect("View/LoginCustomer.jsp");
+            return;
+        }
+
+        if (userType == null || (!userType.equalsIgnoreCase("customer") && !userType.equalsIgnoreCase("manager"))) {
+            session.setAttribute("errorMessage", "Invalid user type.");
+            response.sendRedirect("View/LoginCustomer.jsp");
+            return;
+        }
+
+        if (username == null || !USERNAME_PATTERN.matcher(username).matches() && !EMAIL_PATTERN.matcher(username).matches()) {
+            session.setAttribute("errorMessage", "Invalid username format. Must be 3-20 characters and only contain letters, numbers, and underscores.");
+            response.sendRedirect("View/LoginCustomer.jsp");
+            return;
+        }
+
+        if (password == null || password.length() < MIN_PASSWORD_LENGTH) {
+            session.setAttribute("errorMessage", "Password must be at least " + MIN_PASSWORD_LENGTH + " characters long.");
+            response.sendRedirect("View/LoginCustomer.jsp");
+            return;
+        }
+
+        String hashedPassword = DBContext.hashPasswordMD5(password);
 
         try {
             Object user = null;
-
             if ("customer".equalsIgnoreCase(userType)) {
                 CustomerDAO customerDAO = new CustomerDAO();
                 user = customerDAO.getCustomerByUsernameAndPassword(username, hashedPassword);
             } else if ("manager".equalsIgnoreCase(userType)) {
                 ManagerDAO managerDAO = new ManagerDAO();
                 user = managerDAO.getManagerByUsernameAndPassword(username, hashedPassword);
-
-                if (user != null) {
-                    Manager manager = (Manager) user;
-                } else {
-                    LOGGER.warning("Manager not found or incorrect password.");
-                }
             }
 
             if (user != null) {
                 session.setAttribute("user", user);
+                session.setAttribute("failedAttempts", 0);
+                session.setAttribute("successMessage", "Login successful! Welcome to Penguin Store.");
+                session.setAttribute("showSweetAlert", true);
 
-                if (user instanceof Manager) {
-                    Manager manager = (Manager) user;
-                    session.setAttribute("user", manager);
+                if (user instanceof Manager manager) {
                     session.setAttribute("role", manager.isRole() ? "ADMIN" : "STAFF");
-                    System.out.println("✅ Đăng nhập thành công! Role: " + session.getAttribute("role"));
-                    if (manager.isRole()) {
-                        response.sendRedirect("DashBoardForAdmin");
-                    } else {
-                        response.sendRedirect("DashBoardForStaff");
-                    }
+                    response.sendRedirect(manager.isRole() ? "DashBoardForAdmin" : "DashBoardForStaff");
                 } else {
                     session.setAttribute("role", "CUSTOMER");
-                    System.out.println("✅ Đăng nhập với vai trò CUSTOMER!");
                     response.sendRedirect(request.getContextPath());
                 }
 
-                setRememberMeCookies(response, username, hashedPassword, rememberMe);
+                // ✅ Thiết lập Cookie nếu người dùng chọn "Remember Me"
+                if ("on".equals(rememberMe)) {
+                    setRememberMeCookies(response, username, hashedPassword, rememberMe);
+                }
             } else {
+                failedAttempts++;
+                session.setAttribute("failedAttempts", failedAttempts);
                 session.setAttribute("errorMessage", "Incorrect username or password.");
                 response.sendRedirect("customer".equalsIgnoreCase(userType) ? "View/LoginCustomer.jsp" : "View/LoginManager.jsp");
             }
+
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Login error", e);
             session.setAttribute("errorMessage", "An error occurred. Please try again.");
