@@ -94,7 +94,7 @@
                                             <td>${stat.timePeriod}</td>
                                             <td>${stat.productName}</td>
                                             <td>${stat.sizeName}</td>
-                                            <td>${stat.colorName}</td>
+                                            <td><div style="width: 25px; height: 25px; border-radius: 50%; border: 2px solid gray; background-color: ${stat.colorName}; margin: auto;"></div></td>
                                             <td>${stat.soldQuantity}</td>
                                             <td>${stat.importedQuantity}</td>
                                         </tr>
@@ -122,7 +122,8 @@
                                     <tr>
                                         <td>${product.productName}</td>
                                         <td>${product.sizeName}</td>
-                                        <td>${product.colorName}</td>
+                                        <td><div style="width: 25px; height: 25px; border-radius: 50%; border: 2px solid gray; background-color: ${product.colorName}; margin: auto;"></div></td>
+
                                         <td>${product.soldQuantity}</td>
                                     </tr>
                                 </c:forEach>

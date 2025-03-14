@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import Models.StatisticProduct;
+import java.sql.PreparedStatement;
 
 /**
  *
@@ -90,5 +91,6 @@ public class StatisticProductDAO extends DBContext {
         }
         return bestSelling;
     }
+
 
 }

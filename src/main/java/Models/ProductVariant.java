@@ -15,6 +15,7 @@ public class ProductVariant {
     private int stockQuantity;
     private String sizeName;
     private String colorName;
+    private String productName;
 
     public ProductVariant() {
     }
@@ -27,6 +28,23 @@ public class ProductVariant {
         this.colorName = colorName;
     }
 
+    public ProductVariant(String proVariantID, String sizeName, String colorName, String productName) {
+        this.proVariantID = proVariantID;
+        this.sizeName = sizeName;
+        this.colorName = colorName;
+        this.productName = productName;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    
+    
     public String getProVariantID() {
         return proVariantID;
     }
