@@ -40,6 +40,17 @@ public class Customer {
         this.isVerified = isVerified;
     }
 
+    public Customer(String customerID, String userName, String fullName, String email, String address, String phoneNumber, String zip, String state) {
+        this.customerID = customerID;
+        this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.zip = zip;
+        this.state = state;
+    }
+
     public String getCustomerID() {
         return customerID;
     }

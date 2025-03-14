@@ -48,9 +48,7 @@ public class OrderHistory extends HttpServlet {
         String action = request.getParameter("action");
         if ("updateStatus".equals(action)) {
             updateOrderStatus(request, response);
-        } else {
-            placeOrder(request, response);
-        }
+        } 
     }
 
     private void updateOrderStatus(HttpServletRequest request, HttpServletResponse response)
@@ -66,43 +64,7 @@ public class OrderHistory extends HttpServlet {
         } else {
             request.setAttribute("errorMessage", "Failed to update order status.");
         }
-
         doGet(request, response);  // Load lại danh sách đơn hàng
     }
 
-    private void placeOrder(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        Customer customer = (Customer) session.getAttribute("user");
-        String customerID = customer.getCustomerID();
-
-        try {
-            double totalAmount = Double.parseDouble(request.getParameter("subtotal"));
-            double discountAmount = Double.parseDouble(request.getParameter("discount"));
-            double finalAmount = Double.parseDouble(request.getParameter("total"));
-
-            String voucher = request.getParameter("voucher");
-            voucher = (voucher != null && !voucher.isEmpty()) ? voucher : null;
-
-            OrderDAO orderDAO = new OrderDAO();
-            OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
-            CartDAO cartDAO = new CartDAO();
-
-            List<Cart> cartItems = cartDAO.getCartByCustomerID(customerID);
-            if (cartItems.isEmpty()) {
-                response.sendRedirect("View/Cart.jsp?message=Cart is empty");
-                return;
-            }
-
-            Order order = new Order(null, customerID, totalAmount, discountAmount, finalAmount, new Date(), "Pending processing", null, null, null);
-            String orderID = orderDAO.createOrder(order);
-
-            orderDetailDAO.saveOrderDetails(orderID, cartItems);
-            cartDAO.clearCart(customerID);
-
-            response.sendRedirect("View/OrderHistory.jsp?message=Order placed successfully");
-        } catch (NumberFormatException e) {
-            response.sendRedirect("View/Checkout.jsp?message=Invalid input format");
-        }
-    }
 }

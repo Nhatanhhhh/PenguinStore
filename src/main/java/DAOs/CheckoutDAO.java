@@ -65,59 +65,33 @@ public class CheckoutDAO {
         return cartItems;
     }
 
-    public List<UsedVoucher> getVoucherCheckout(String customerID) {
-        List<UsedVoucher> vouchers = new ArrayList<>();
-        String sql = "SELECT uv.usedVoucherID, uv.voucherID, uv.customerID, uv.usedAt, uv.status "
-                + "FROM UsedVoucher uv "
-                + "JOIN Vouchers v ON uv.voucherID = v.voucherID "
-                + "WHERE uv.customerID = ? AND uv.status = 0 AND v.validUntil >= GETDATE()";
-
-        try ( Connection conn = dbContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, customerID);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                String usedVoucherID = rs.getString("usedVoucherID");
-                String voucherID = rs.getString("voucherID");
-                String custID = rs.getString("customerID");
-                Date usedAt = rs.getTimestamp("usedAt");
-                int status = rs.getInt("status");
-
-                vouchers.add(new UsedVoucher(usedVoucherID, voucherID, custID, usedAt, status));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return vouchers;
-    }
-
-    public UsedVoucher getVoucherByCode(String voucherCode, String customerID) {
-        String query = "SELECT uv.[status], v.[voucherCode], v.[discountPer], v.[discountAmount], "
-                + "v.[minOrderValue], v.[validFrom], v.[validUntil], v.[maxDiscountAmount] "
+    public UsedVoucher getUsedVoucherByCode(String customerID, String voucherCode) {
+        String query = "SELECT uv.[usedVoucherID], uv.[voucherID], uv.[customerID], uv.[usedAt], uv.[status], "
+                + "v.[voucherCode], v.[discountPer], v.[discountAmount], v.[minOrderValue], "
+                + "v.[validFrom], v.[validUntil], v.[maxDiscountAmount] "
                 + "FROM dbo.[UsedVoucher] uv "
                 + "JOIN dbo.[Vouchers] v ON uv.[voucherID] = v.[voucherID] "
                 + "WHERE uv.[customerID] = ? AND v.[voucherCode] = ?";
 
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
-
             ps.setString(1, customerID);
             ps.setString(2, voucherCode);
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
-                int status = rs.getInt("status");
-                double discountPer = rs.getDouble("discountPer");
-                double discountAmount = rs.getDouble("discountAmount");
-                double minOrderValue = rs.getDouble("minOrderValue");
-                double maxDiscountAmount = rs.getDouble("maxDiscountAmount");
-                Date validFrom = rs.getDate("validFrom");
-                Date validUntil = rs.getDate("validUntil");
-                Date currentDate = new Date();
-
-                // Kiểm tra trạng thái và thời gian hợp lệ
-                if (status == 1 && currentDate.after(validFrom) && currentDate.before(validUntil)) {
-                    return new UsedVoucher(voucherCode, discountPer, discountAmount, minOrderValue, maxDiscountAmount);
-                }
+                return new UsedVoucher(
+                        rs.getString("usedVoucherID"),
+                        rs.getString("voucherID"),
+                        rs.getString("customerID"),
+                        rs.getString("voucherCode"),
+                        rs.getDate("usedAt"),
+                        rs.getInt("status"),
+                        rs.getDouble("discountPer"),
+                        rs.getDouble("maxDiscountAmount"),
+                        rs.getDouble("discountAmount"),
+                        rs.getDouble("minOrderValue"),
+                        rs.getDate("validFrom"),
+                        rs.getDate("validUntil")
+                );
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -125,39 +99,63 @@ public class CheckoutDAO {
         return null;
     }
 
-   public UsedVoucher getUsedVoucherByCode(String customerID, String voucherCode) {
-    String query = "SELECT uv.[usedVoucherID], uv.[voucherID], uv.[customerID], uv.[usedAt], uv.[status], " +
-                   "v.[voucherCode], v.[discountPer], v.[discountAmount], v.[minOrderValue], " +
-                   "v.[validFrom], v.[validUntil], v.[maxDiscountAmount] " +
-                   "FROM dbo.[UsedVoucher] uv " +
-                   "JOIN dbo.[Vouchers] v ON uv.[voucherID] = v.[voucherID] " +
-                   "WHERE uv.[customerID] = ? AND v.[voucherCode] = ?";
+    public Customer getCustomerByID(String customerID) {
+        Customer customer = null;
+        String query = "SELECT customerID, customerName, fullName, address, email, phoneNumber, state, zip "
+                + "FROM Customer WHERE customerID = ?";
 
-    try (Connection conn = DBContext.getConn();
-         PreparedStatement ps = conn.prepareStatement(query)) {
-        ps.setString(1, customerID);
-        ps.setString(2, voucherCode);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return new UsedVoucher(
-                rs.getString("usedVoucherID"),
-                rs.getString("voucherID"),
-                rs.getString("customerID"),
-                rs.getString("voucherCode"),
-                rs.getDate("usedAt"),
-                rs.getInt("status"),
-                rs.getDouble("discountPer"),
-                rs.getDouble("maxDiscountAmount"),
-                rs.getDouble("discountAmount"),
-                rs.getDouble("minOrderValue"),
-                rs.getDate("validFrom"),
-                rs.getDate("validUntil")
-            );
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setString(1, customerID);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                customer = new Customer(
+                        rs.getString("customerID"),
+                        rs.getString("customerName"),
+                        rs.getString("fullName"),
+                        rs.getString("address"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("state"),
+                        rs.getString("zip")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return customer;
     }
-    return null;
-}
+
+    public String getProductVariantID(String cartID, String customerID, String productID) {
+        String sql = "SELECT c.proVariantID FROM dbo.[Cart] c "
+                + "JOIN dbo.[ProductVariants] pv ON c.proVariantID = pv.proVariantID "
+                + "WHERE c.cartID = ? AND c.customerID = ? AND pv.productID = ?";
+        try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, cartID);
+            stmt.setString(2, customerID);
+            stmt.setString(3, productID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("proVariantID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getPendingStatusOID() {
+        String sql = "SELECT statusOID FROM StatusOrder WHERE statusName = 'Pending processing'";
+        try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("statusOID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Trả về null nếu không tìm thấy
+    }
 
 }
