@@ -65,7 +65,9 @@
                 </div>
                 <div class="col-md-10">
                     <%@include file="Admin/HeaderAD.jsp"%>
-                    <h2>Product Import/Export Statistics</h2>
+                    <h2 class="text-center">Product Import/Export Statistics</h2>
+
+
 
                     <!-- Line Chart for Import/Export Statistics -->
                     <div class="chart-container">
@@ -92,7 +94,7 @@
                                             <td>${stat.timePeriod}</td>
                                             <td>${stat.productName}</td>
                                             <td>${stat.sizeName}</td>
-                                            <td>${stat.colorName}</td>
+                                            <td><div style="width: 25px; height: 25px; border-radius: 50%; border: 2px solid gray; background-color: ${stat.colorName}; margin: auto;"></div></td>
                                             <td>${stat.soldQuantity}</td>
                                             <td>${stat.importedQuantity}</td>
                                         </tr>
@@ -103,7 +105,7 @@
                     </div>
 
 
-                    <h2 style="margin-top: 30px;">Best Selling Products </h2>
+                    <h2 class="text-center" style="margin-top: 30px;">Best Selling Products </h2>
 
                     <div class="table-container">
                         <table>
@@ -120,7 +122,8 @@
                                     <tr>
                                         <td>${product.productName}</td>
                                         <td>${product.sizeName}</td>
-                                        <td>${product.colorName}</td>
+                                        <td><div style="width: 25px; height: 25px; border-radius: 50%; border: 2px solid gray; background-color: ${product.colorName}; margin: auto;"></div></td>
+
                                         <td>${product.soldQuantity}</td>
                                     </tr>
                                 </c:forEach>

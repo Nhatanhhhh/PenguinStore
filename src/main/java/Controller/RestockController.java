@@ -7,11 +7,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 /**
- * Servlet x? l� nh?p h�ng (Restock)
+ * Servlet xử lý nhập hàng (Restock)
  *
  * @author Do Van Luan - CE180457
  */
@@ -22,7 +21,15 @@ public class RestockController extends HttpServlet {
             throws ServletException, IOException {
         String proVariantID = request.getParameter("id");
         String action = request.getParameter("action");
+
+        // Kiểm tra action có null không trước khi xử lý
+        if (action == null) {
+            response.sendRedirect(request.getContextPath() + "/ManageProduct?action=view");
+            return;
+        }
+
         RestockDAO restockDAO = new RestockDAO();
+
         switch (action) {
             case "restock":
                 if (proVariantID == null || proVariantID.isEmpty()) {
@@ -37,13 +44,17 @@ public class RestockController extends HttpServlet {
                 ArrayList<Restock> restockHistory = restockDAO.getRestockHistory();
                 request.setAttribute("restockHistory", restockHistory);
                 request.getRequestDispatcher("/View/RestockHistory.jsp").forward(request, response);
+                for (Restock restock : restockHistory) {
+                    System.out.println(restock.getProductName()); // Kiểm tra dữ liệu có đủ 10 sản phẩm không
+                }
+                request.setAttribute("restockHistory", restockHistory);
+
                 break;
 
             default:
                 response.sendRedirect(request.getContextPath() + "/ManageProduct?action=view");
                 break;
         }
-
     }
 
     @Override
@@ -53,9 +64,10 @@ public class RestockController extends HttpServlet {
         String quantityStr = request.getParameter("quantity");
         String priceStr = request.getParameter("price");
 
-        if (proVariantID == null || quantityStr == null || priceStr == null) {
-            request.setAttribute("errorMessage", "Invalid input!");
-            response.sendRedirect(request.getContextPath() + "/Restock?action=restockHistory");
+        if (proVariantID == null || quantityStr == null || priceStr == null
+                || proVariantID.isEmpty() || quantityStr.isEmpty() || priceStr.isEmpty()) {
+            request.setAttribute("errorMessage", "All fields are required!");
+            request.getRequestDispatcher("/View/Restock.jsp").forward(request, response);
             return;
         }
 
@@ -69,13 +81,12 @@ public class RestockController extends HttpServlet {
             if (success) {
                 response.sendRedirect(request.getContextPath() + "/Restock?action=restockHistory");
             } else {
-                request.setAttribute("errorMessage", "Import failed!");
-                request.getRequestDispatcher(request.getHeader("referer")).forward(request, response);
+                request.setAttribute("errorMessage", "Restock failed! Please try again.");
+                request.getRequestDispatcher("/View/Restock.jsp").forward(request, response);
             }
         } catch (NumberFormatException e) {
-            request.setAttribute("errorMessage", "Invalid quantity or price!");
-            request.getRequestDispatcher(request.getHeader("referer")).forward(request, response);
+            request.setAttribute("errorMessage", "Invalid quantity or price format!");
+            request.getRequestDispatcher("/View/Restock.jsp").forward(request, response);
         }
     }
-
 }

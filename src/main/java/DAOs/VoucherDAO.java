@@ -9,8 +9,11 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import DB.DBContext;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  *
@@ -116,4 +119,63 @@ public class VoucherDAO extends DBContext {
             return 0;
         }
     }
+
+    public void sendVoucherToAllCustomers(UUID voucherID) {
+        String sql = "INSERT INTO UsedVoucher (usedVoucherID, voucherID, customerID, usedAt, status) "
+                + "SELECT NEWID(), ?, customerID, NULL, 0 FROM Customer";
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, voucherID);
+            int rowsInserted = stmt.executeUpdate();
+            System.out.println("Gửi voucher thành công cho " + rowsInserted + " khách hàng.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendVoucherTo1OrderCustomers(UUID voucherID) {
+        String sql = "INSERT INTO UsedVoucher (usedVoucherID, voucherID, customerID, usedAt, status) "
+                + "SELECT NEWID(), ?, o.customerID, NULL, 0 "
+                + "FROM [Order] o "
+                + "WHERE o.customerID IS NOT NULL "
+                + "GROUP BY o.customerID";
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, voucherID);
+            int rowsInserted = stmt.executeUpdate();
+            System.out.println("Gửi voucher thành công cho " + rowsInserted + " khách hàng.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isVoucherSent(UUID voucherID) {
+        String sql = "SELECT COUNT(*) FROM UsedVoucher WHERE voucherID = ?";
+        try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, voucherID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0; // Nếu có ít nhất 1 bản ghi, tức là đã gửi
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public int isStatusUsedVoucher(String voucherID) {
+        String sql = "SELECT voucherStatus FROM Vouchers WHERE voucherID = ?";
+        try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, voucherID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int check = rs.getInt(1);
+                return check;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 }

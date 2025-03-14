@@ -9,6 +9,7 @@
         <title>Create Type</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Assets/CSS/Admin/DashBoard.css"/>
     </head>
     <body>
         <%
@@ -17,40 +18,43 @@
             String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
         %>
 
-        <div class="container mt-4">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header bg-success text-white text-center">
-                            <h3>Create Type</h3>
+        <div class="row">
+            <div class="col-md-2">
+                <%@include file="Admin/NavigationMenu.jsp"%>
+            </div>
+            <div class="col-md-10">
+                <%@include file="Admin/HeaderAD.jsp"%>
+                <div class="container mt-4"> 
+                    <h3 class="text-center">Create Type</h3>
+                </div>
+                <div class="container mt-6">
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-danger text-center">${error}</div>
+                    </c:if>
+                    <form action="<c:url value='/Type?action=create'/>" method="post">
+                        <div class="mb-3">
+                            <label for="typeName" class="form-label">Type Name:</label>
+                            <input type="text" class="form-control" id="typeName" name="typeName" required>
                         </div>
-                        <div class="card-body">
-                            <c:if test="${not empty error}">
-                                <p class="text-danger text-center">${error}</p>
-                            </c:if>
-                            <form action="<c:url value='/Type?action=create'/>" method="post">
-                                <div class="mb-3">
-                                    <label for="typeName" class="form-label">Type Name:</label>
-                                    <input type="text" class="form-control" id="typeName" name="typeName" required>
-                                </div>
 
-                                <div class="mb-3">
-                                    <label for="categoryID" class="form-label">Category:</label>
-                                    <select id="categoryID" name="categoryID" class="form-control" required>
-                                        <option value="">-- Select Category --</option>
-                                        <c:forEach var="category" items="${categoryList}">
-                                            <option value="${category.categoryID}">${category.categoryName}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-
-                                <button type="submit" class="btn btn-success">Create</button>
-                                <a href="<c:url value='/Type?action=list'/>" class="btn btn-secondary">Cancel</a>
-                            </form>
+                        <div class="mb-3">
+                            <label for="categoryID" class="form-label">Category:</label>
+                            <select id="categoryID" name="categoryID" class="form-select" required>
+                                <option value="">-- Select Category --</option>
+                                <c:forEach var="category" items="${categoryList}">
+                                    <option value="${category.categoryID}">${category.categoryName}</option>
+                                </c:forEach>
+                            </select>
                         </div>
-                    </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success">Create</button>
+                            <a href="<c:url value='/Type?action=list'/>" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+        <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
 </html>

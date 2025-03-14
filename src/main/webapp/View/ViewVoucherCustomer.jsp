@@ -5,6 +5,7 @@
 <%@page import="java.time.LocalDate" %>
 <%@page import="java.time.format.DateTimeFormatter" %>
 <%@page import="java.time.temporal.ChronoUnit" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -95,7 +96,7 @@
                                 %>
                                 <tr>
                                     <td><%= voucher.getVoucherCode()%></td>
-                                    <td><%= voucher.getDiscountAmount()%> <i class="fa-solid fa-dollar-sign"></i></td>
+                                    <td><fmt:formatNumber value="<%= voucher.getDiscountAmount()%>" pattern="#,###" /> ₫</td>
                                     <td>
                                         <% if (isExpired) { %>
                                         <span style="color: red; font-weight: bold;">Expired</span>

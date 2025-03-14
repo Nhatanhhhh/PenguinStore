@@ -144,7 +144,7 @@
                                             <p class="card-title">${product.productName}</p>
                                             <p class="card-text text-muted">
                                                 <fmt:setLocale value="vi_VN"/>
-                                                <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true"/> VND
+                                                <fmt:formatNumber value="${product.price}" type="number" pattern="#,###" groupingUsed="true"/> VND
                                             </p>
                                         </div>
                                     </div>

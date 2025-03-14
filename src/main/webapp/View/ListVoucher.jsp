@@ -31,8 +31,19 @@
             <div class="col-md-10">
                 <%@include file="Admin/HeaderAD.jsp"%>
                 <div class="container mt-4">
-                    <h2>List Voucher</h2>
-                    <table class="table table-bordered">
+                    <h2 class="text-center">List Voucher</h2>
+
+                    <!-- Dropdown lọc voucher -->
+                    <div class="mb-3">
+                        <label for="voucherFilter" class="form-label">Filter Vouchers:</label>
+                        <select id="voucherFilter" class="form-select">
+                            <option value="all">All Voucher</option>
+                            <option value="valid">Still Valid</option>
+                            <option value="expired">Expire</option>
+                        </select>
+                    </div>
+
+                    <table class="table table-bordered" id="voucherTable">
                         <thead class="table-dark">
                             <tr>
                                 <th>Voucher Code</th>
@@ -48,7 +59,7 @@
                         </thead>
                         <tbody>
                             <c:forEach var="voucher" items="${voucherList}">
-                                <tr>
+                                <tr class="${voucher.voucherStatus ? 'valid' : 'expired'}">
                                     <td>${voucher.voucherCode}</td>
                                     <td>${voucher.discountPer}</td>
                                     <td>${voucher.discountAmount}</td>
@@ -82,7 +93,6 @@
                                                 <button class="btn btn-primary btn-sm" onclick="openSendVoucherModal('${voucher.voucherID}')">Send</button>
                                             </c:otherwise>
                                         </c:choose>
-
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -90,9 +100,28 @@
                     </table>
                     <a href="<c:url value='/Voucher?action=create'/>" class="btn btn-success">Create</a>
                 </div>
+
+                <script>
+                    document.getElementById("voucherFilter").addEventListener("change", function () {
+                        let filterValue = this.value;
+                        let rows = document.querySelectorAll("#voucherTable tbody tr");
+
+                        rows.forEach(row => {
+                            if (filterValue === "all") {
+                                row.style.display = "";
+                            } else if (filterValue === "valid" && row.classList.contains("valid")) {
+                                row.style.display = "";
+                            } else if (filterValue === "expired" && row.classList.contains("expired")) {
+                                row.style.display = "";
+                            } else {
+                                row.style.display = "none";
+                            }
+                        });
+                    });
+                </script>
+
             </div>
         </div>
-
 
         <div class="modal fade" id="sendVoucherModal" tabindex="-1" aria-labelledby="sendVoucherModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -146,7 +175,6 @@
 
 
         </script>
-
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
 </html>

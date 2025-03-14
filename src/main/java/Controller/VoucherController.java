@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  *
@@ -129,9 +130,34 @@ public class VoucherController extends HttpServlet {
                 voucherDAO.update(updatedVoucher);
                 response.sendRedirect(request.getContextPath() + "/Voucher?action=list");
                 break;
+
             } catch (Exception e) {
                 response.getWriter().println("Error when edit voucher: " + e.getMessage());
             }
+            case "send":
+                String voucherID = request.getParameter("voucherID");
+                String voucherSelection = request.getParameter("voucherSelection");
+
+                Voucher voucher = voucherDAO.getOnlyById(voucherID);
+                int checkStatus = voucherDAO.isStatusUsedVoucher(voucherID);
+                LocalDate today = LocalDate.now();
+
+                System.out.println("check: " + checkStatus);
+
+                if (!voucherDAO.isVoucherSent(UUID.fromString(voucherID))
+                        && checkStatus == 0) {
+                    request.getRequestDispatcher("/Voucher?action=list").forward(request, response);
+                } else {
+                    if ("all".equals(voucherSelection)) {
+                        voucherDAO.sendVoucherToAllCustomers(UUID.fromString(voucherID));
+                        response.sendRedirect(request.getContextPath() + "/Voucher?action=list");
+                    } else if ("withOrders".equals(voucherSelection)) {
+                        voucherDAO.sendVoucherTo1OrderCustomers(UUID.fromString(voucherID));
+                        response.sendRedirect(request.getContextPath() + "/Voucher?action=list");
+                    }
+                }
+
+                break;
             default:
                 response.sendRedirect(request.getContextPath() + "/Voucher?action=list");
                 break;

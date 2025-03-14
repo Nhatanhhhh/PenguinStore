@@ -1,3 +1,8 @@
+<%-- 
+    Document   : Restock
+    Created on : Mar 1, 2025, 2:56:07 PM
+    Author     : Do Van Luan - CE180457
+--%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -7,7 +12,7 @@
         <title>Restock Product</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
-        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Staff/styles.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -48,14 +53,16 @@
             String managerName = (manager != null) ? manager.getManagerName() : "Guest";
             String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
         %>
-        <div class="container-fuild">
-            <div class="row">
-                <div class="col-md-2">
-                    <%@include file="Admin/NavigationMenu.jsp"%>
-                </div>
-                <div class="col-md-10">
-                    <%@include file="Admin/HeaderAD.jsp"%>
-                    <h2>Restock Product</h2>
+
+        <div class="row">
+            <div class="col-md-2">
+                <%@include file="Admin/NavigationMenu.jsp"%>
+            </div>
+            <div class="col-md-10">
+                <%@include file="Admin/HeaderAD.jsp"%>
+
+                <h2 class="text-center">Restock Product</h2>
+                <div class="container">
                     <form action="Restock" method="post">
 
                         <input type="text" id="proVariantID" name="proVariantID" value="${proVariantID}" style="display: none;" readonly required>
@@ -72,9 +79,10 @@
                     </form>
                 </div>
             </div>
-
-            <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
         </div>
+
+        <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
+
     </body>
 
 </html>
