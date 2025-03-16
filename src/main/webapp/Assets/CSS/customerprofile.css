@@ -1,0 +1,289 @@
+.container,
+.container * {
+    box-sizing: border-box;
+}
+.container {
+    height: 422px;
+    position: relative;
+    overflow: hidden;
+}
+.form {
+    width: 654px;
+    height: 621px;
+    position: absolute;
+    left: 224px;
+    top: 119px;
+}
+.inputs {
+    padding: 0px 0px 12px 0px;
+    width: 654px;
+    height: 389px;
+    position: absolute;
+    left: 1px;
+    top: 0px;
+}
+.username {
+    padding: 12px 0px 20px 0px;
+    width: 656px;
+    height: 108px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+.input {
+    background: #ffffff;
+    border-radius: 8px;
+    border-style: solid;
+    border-color: #e7e7e9;
+    border-width: 2px;
+    padding: 15.5px 597.5px 15.5px 18px;
+    height: 48px;
+    position: absolute;
+    right: 0.66px;
+    left: 0.8427734375px;
+    top: 32px;
+}
+.thegriffster-11 {
+    color: #0d0c22;
+    text-align: left;
+    font-family: "Figtree-Regular", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    position: absolute;
+    left: 18px;
+    top: 15.5px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.username2 {
+    color: #0d0c22;
+    text-align: left;
+    font-family: "Figtree-Medium", sans-serif;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 500;
+    position: absolute;
+    left: 0.84px;
+    top: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.email {
+    width: 656px;
+    height: 80px;
+    position: absolute;
+    left: 0px;
+    top: 108px;
+}
+.input2 {
+    background: #ffffff;
+    border-radius: 8px;
+    border-style: solid;
+    border-color: #e7e7e9;
+    border-width: 2px;
+    padding: 15.5px 458.5px 15.5px 18px;
+    height: 48px;
+    position: absolute;
+    right: 0.66px;
+    left: 0.84271240234375px;
+    top: 32px;
+}
+.nanh-designdrops-io {
+    color: #0d0c22;
+    text-align: left;
+    font-family: "Figtree-Regular", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    position: absolute;
+    left: 18px;
+    top: 15.5px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.email2 {
+    color: #0d0c22;
+    text-align: left;
+    font-family: "Figtree-Medium", sans-serif;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 500;
+    position: absolute;
+    left: 0.84px;
+    top: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.email3 {
+    width: 656px;
+    height: 80px;
+    position: absolute;
+    left: -2px;
+    top: 365px;
+}
+.list {
+    border-radius: 6px;
+    width: 199.53px;
+    height: 321px;
+    position: absolute;
+    left: 0px;
+    top: 119px;
+}
+.divider {
+    border-style: solid;
+    border-color: #dbdbde;
+    border-width: 1px 0px 0px 0px;
+    width: 200px;
+    height: 1px;
+    position: absolute;
+    left: 0px;
+    top: 178px;
+    transform-origin: 0 0;
+    transform: rotate(0deg) scale(1, -1);
+}
+.password {
+    color: #6e6d7a;
+    text-align: left;
+    font-family: "Figtree-Regular", sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    position: absolute;
+    left: 0px;
+    top: 71px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.order {
+    color: #6e6d7a;
+    text-align: left;
+    font-family: "Figtree-Regular", sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    position: absolute;
+    left: 0px;
+    top: 103px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.voucher {
+    color: #6e6d7a;
+    text-align: left;
+    font-family: "Figtree-Regular", sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    position: absolute;
+    left: 0px;
+    top: 135px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.edit-profile {
+    color: #6e6d7a;
+    text-align: left;
+    font-family: "Figtree-Regular", sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    position: absolute;
+    left: 0px;
+    top: 39px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.general {
+    color: #0d0c22;
+    text-align: left;
+    font-family: "Figtree-Bold", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    position: absolute;
+    left: 0px;
+    top: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.account-information {
+    width: 879px;
+    height: 62.59px;
+    position: absolute;
+    left: 0px;
+    top: 31px;
+}
+.view-your-username-and-manage-your-account {
+    color: #6e6d7a;
+    text-align: left;
+    font-family: "Figtree-Regular", sans-serif;
+    font-size: 14px;
+    line-height: 18.2px;
+    font-weight: 400;
+    position: absolute;
+    left: 72.34px;
+    top: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.peter-griffin-general {
+    text-align: left;
+    font-family: "-", sans-serif;
+    font-size: 20px;
+    line-height: 29px;
+    font-weight: 400;
+    position: absolute;
+    left: 72.34px;
+    top: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.peter-griffin-general-span {
+    color: #0d0c22;
+    font-family: "Figtree-Medium", sans-serif;
+    font-size: 20px;
+    line-height: 29px;
+    font-weight: 500;
+}
+.peter-griffin-general-span2 {
+    color: #dbdbde;
+    font-family: "Figtree-Regular", sans-serif;
+    font-size: 20px;
+    line-height: 29px;
+    font-weight: 400;
+}
+.peter-griffin-general-span3 {
+    color: #0d0c22;
+    font-family: "Figtree-Medium", sans-serif;
+    font-size: 20px;
+    line-height: 29px;
+    font-weight: 500;
+}
+.icon-font-awesome-free-solid-u-user-cog {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    left: 9px;
+    top: 3px;
+    overflow: visible;
+}
+.frame-1000001079 {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    left: 55px;
+    top: -9px;
+    overflow: hidden;
+}
+
+.section-1{
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+    padding: 20px 0px !important;
+    background-color: #F9FAFB !important;
+}

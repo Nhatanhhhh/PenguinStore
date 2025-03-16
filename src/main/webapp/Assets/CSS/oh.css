@@ -1,0 +1,58 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Mar 5, 2025, 12:37:04 AM
+    Author     : PC
+*/
+
+
+.order {
+    border-bottom: 1px solid #ddd;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.order-info {
+    flex: 1;
+}
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+.delivered {
+    background-color: #d4edda;
+    color: #155724;
+}
+.in-process {
+    background-color: #fff3cd;
+    color: #856404;
+}
+.btn-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.btn {
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.btn-review {
+    background-color: black;
+    color: white;
+}
+.btn-cancel {
+    background-color: red;
+    color: white;
+}
+.btn-view {
+    background-color: white;
+    border: 1px solid black;
+    color: black;
+}
