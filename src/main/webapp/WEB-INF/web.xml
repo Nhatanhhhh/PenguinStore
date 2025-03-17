@@ -186,6 +186,10 @@
         <servlet-name>OrderHistory</servlet-name>
         <url-pattern>/OrderHistory</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrderDetail</servlet-name>
+        <url-pattern>/OrderDetail</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>View/index.jsp</welcome-file>
     </welcome-file-list>

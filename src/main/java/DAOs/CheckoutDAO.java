@@ -132,7 +132,7 @@ public class CheckoutDAO {
 
     public Customer getCustomerByID(String customerID) {
         Customer customer = null;
-        String query = "SELECT customerID, customerName, fullName, address, email, phoneNumber, state, zip "
+        String query = "SELECT customerID, customerName, fullName, email, address, phoneNumber, state, zip "
                 + "FROM Customer WHERE customerID = ?";
 
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
@@ -145,8 +145,8 @@ public class CheckoutDAO {
                         rs.getString("customerID"),
                         rs.getString("customerName"),
                         rs.getString("fullName"),
-                        rs.getString("address"),
                         rs.getString("email"),
+                        rs.getString("address"),
                         rs.getString("phoneNumber"),
                         rs.getString("state"),
                         rs.getString("zip")

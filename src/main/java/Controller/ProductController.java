@@ -47,6 +47,7 @@ public class ProductController extends HttpServlet {
         String action = Objects.requireNonNullElse(request.getParameter("action"), "view");
         String typeDetail = request.getParameter("type");
         String categoryDetail = request.getParameter("category");
+        String message = request.getParameter("message");
         ProductDAO productDAO = new ProductDAO();
         TypeDAO typeDAO = new TypeDAO();
         ProductVariantDAO productVariantDAO = new ProductVariantDAO();
@@ -68,6 +69,10 @@ public class ProductController extends HttpServlet {
                     request.setAttribute("averageRating", FeedbackDAO.getAverageRating(id));
                     request.setAttribute("totalReviews", FeedbackDAO.getTotalReviews(id));
                     request.setAttribute("feedbackList", FeedbackDAO.getLatestFeedbacks(id));
+                    
+                    if ("success".equals(message)) {
+                        request.setAttribute("message", "Add Successful");
+                    }
                     request.getRequestDispatcher("/View/ProductDetail.jsp").forward(request, response);
                 } else {
                     response.sendRedirect(request.getContextPath() + "/Product?action=view");

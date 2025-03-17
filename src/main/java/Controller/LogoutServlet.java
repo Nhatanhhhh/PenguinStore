@@ -1,20 +1,26 @@
 package Controller;
 
+import com.nimbusds.jose.shaded.json.JSONObject;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import com.nimbusds.jose.shaded.json.JSONObject;
 
 /**
- * Servlet handling user logout.
+ * Servlet handling user logout with enhanced security and logging.
  *
  * @author Nguyen Nhat Anh - CE181843
  */
 public class LogoutServlet extends HttpServlet {
+
+    private static final Logger LOGGER = Logger.getLogger(LogoutServlet.class.getName());
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -27,17 +33,12 @@ public class LogoutServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
+        JSONObject jsonResponse = new JSONObject();
         try ( PrintWriter out = response.getWriter()) {
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet LogoutServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet LogoutServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+            jsonResponse.put("message", "Logout endpoint reached");
+            out.print(jsonResponse.toString());
+            out.flush();
         }
     }
 
@@ -52,17 +53,19 @@ public class LogoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // ✅ Hủy session (nếu có)
+        LOGGER.log(Level.INFO, "Processing user logout request.");
+
         HttpSession session = request.getSession(false);
         if (session != null) {
+            LOGGER.log(Level.INFO, "Invalidating user session: {0}", session.getId());
             session.invalidate();
         }
-
-        // ✅ Xóa cookie liên quan (Remember Me)
+        
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if ("username".equals(cookie.getName()) || "password".equals(cookie.getName()) || "remember".equals(cookie.getName())) {
+                if ("username".equals(cookie.getName()) || "password".equals(cookie.getName()) || "remember".equals(cookie.getName()) || "auth_token".equals(cookie.getName())) {
+                    LOGGER.log(Level.INFO, "Removing cookie: {0}", cookie.getName());
                     cookie.setValue(null);
                     cookie.setMaxAge(0);
                     cookie.setPath("/");
@@ -73,17 +76,40 @@ public class LogoutServlet extends HttpServlet {
             }
         }
 
-        // ✅ Chuyển hướng về trang login kèm thông báo logout thành công
         response.sendRedirect(request.getContextPath() + "/Login?logoutSuccess=true");
     }
 
     /**
-     * Handles the HTTP POST request by calling doGet to process logout.
+     * Handles the HTTP POST request for logout, supports JSON response.
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        doGet(request, response);
+        LOGGER.log(Level.INFO, "Processing POST logout request.");
+        response.setContentType("application/json;charset=UTF-8");
+        JSONObject jsonResponse = new JSONObject();
+
+        try ( PrintWriter out = response.getWriter()) {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                LOGGER.log(Level.INFO, "Invalidating session via POST: {0}", session.getId());
+                session.invalidate();
+            }
+            jsonResponse.put("status", "success");
+            jsonResponse.put("message", "User logged out successfully.");
+            out.print(jsonResponse.toString());
+            out.flush();
+        }
+    }
+
+    /**
+     * Handles HTTP DELETE requests for logout (RESTful API compatibility).
+     */
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        LOGGER.log(Level.INFO, "Processing DELETE logout request.");
+        doPost(request, response);
     }
 
     /**
@@ -93,6 +119,6 @@ public class LogoutServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Handles user logout by invalidating session and clearing cookies.";
+        return "Handles user logout by invalidating session and clearing cookies with enhanced security and logging.";
     }
 }

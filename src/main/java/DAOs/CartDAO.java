@@ -18,31 +18,29 @@ public class CartDAO {
 
     public List<CartItem> viewCart(String customerID) {
         List<CartItem> cartItems = new ArrayList<>();
-        String sql = "SELECT p.productName, "
-                + "       p.price, "
-                + "       ca.quantity, "
-                + "       c.colorName, "
-                + "       STRING_AGG(i.imgName, ', ') AS imgName "
+        String sql = "SELECT ca.cartID, p.productName, p.price, ca.quantity, c.colorName, "
+                + "STRING_AGG(i.imgName, ', ') AS imgName "
                 + "FROM Cart ca "
                 + "JOIN ProductVariants pv ON ca.proVariantID = pv.proVariantID "
                 + "JOIN Product p ON pv.productID = p.productID "
                 + "JOIN Color c ON pv.colorID = c.colorID "
                 + "LEFT JOIN Image i ON p.productID = i.productID "
                 + "WHERE ca.customerID = ? "
-                + "GROUP BY p.productID, p.productName, p.price, ca.quantity, c.colorName";
+                + "GROUP BY ca.cartID, p.productID, p.productName, p.price, ca.quantity, c.colorName";
 
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, customerID);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
+                String cartID = rs.getString("cartID");
                 String productName = rs.getString("productName");
                 double price = rs.getDouble("price");
                 int quantity = rs.getInt("quantity");
                 String colorName = rs.getString("colorName");
-                String imgNames = rs.getString("imgName"); // Chuỗi các tên ảnh, cách nhau bởi dấu phẩy
+                String imgNames = rs.getString("imgName");
 
-                cartItems.add(new CartItem(productName, price, quantity, colorName, imgNames));
+                cartItems.add(new CartItem(cartID, productName, price, quantity, colorName, imgNames));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -50,26 +48,15 @@ public class CartDAO {
         return cartItems;
     }
 
-    public List<Cart> getCartByCustomerID(String customerID) {
-        List<Cart> cartList = new ArrayList<>();
-        String sql = "SELECT * FROM Cart WHERE customerID = ?";
-        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, customerID);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Cart cart = new Cart(
-                        rs.getString("cartID"),
-                        rs.getString("customerID"),
-                        rs.getString("proVariantID"),
-                        rs.getString("productID"),
-                        rs.getInt("quantity")
-                );
-                cartList.add(cart);
-            }
+    public boolean updateCartItemQuan(String cartID, int quantity) {
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement("UPDATE Cart SET quantity = ? WHERE cartID = ?")) {
+            ps.setInt(1, quantity);
+            ps.setString(2, cartID);
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return cartList;
+        return false;
     }
 
     public List<CartItem> getCartItemsByCustomerID(String customerID) {
@@ -166,12 +153,22 @@ public class CartDAO {
         }
         return false;
     }
+//
+//    public void removeFromCart(String customerID, String productID) {
+//        String sql = "DELETE FROM Cart WHERE customerID = ? AND productID = ?";
+//        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+//            ps.setString(1, customerID);
+//            ps.setString(2, productID);
+//            ps.executeUpdate();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-    public void removeFromCart(String customerID, String productID) {
-        String sql = "DELETE FROM Cart WHERE customerID = ? AND productID = ?";
+    public void removeFromCart(String cartID) {
+        String sql = "DELETE FROM Cart WHERE cartID = ?";
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, customerID);
-            ps.setString(2, productID);
+            ps.setString(1, cartID);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

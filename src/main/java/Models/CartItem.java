@@ -7,10 +7,29 @@ public class CartItem {
     private String productName;
     private double price;
     private int quantity;
+    private String sizeName;
     private String colorName;
     private String imgNames; // Chuỗi chứa danh sách hình ảnh, phân tách bằng dấu phẩy
 
     public CartItem(String productName, double price, int quantity, String colorName, String imgNames) {
+        this.productName = productName;
+        this.price = price;
+        this.quantity = quantity;
+        this.colorName = colorName;
+        this.imgNames = imgNames;
+    }
+
+    public CartItem(String productName, double price, int quantity, String sizeName, String colorName, String imgNames) {
+        this.productName = productName;
+        this.price = price;
+        this.quantity = quantity;
+        this.sizeName = sizeName;
+        this.colorName = colorName;
+        this.imgNames = imgNames;
+    }
+
+    public CartItem(String cartID, String productName, double price, int quantity, String colorName, String imgNames) {
+        this.cartID = cartID;
         this.productName = productName;
         this.price = price;
         this.quantity = quantity;
@@ -27,6 +46,14 @@ public class CartItem {
 
     public CartItem() {
 
+    }
+
+    public String getSizeName() {
+        return sizeName;
+    }
+
+    public void setSizeName(String sizeName) {
+        this.sizeName = sizeName;
     }
 
     public String getCartID() {

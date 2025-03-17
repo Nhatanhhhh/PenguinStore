@@ -86,17 +86,19 @@
             }
 
             .btn-cancel {
+                padding: 8px 20px;
+                border-radius: 4px;
                 background-color: #FF4D4D;
-                color: white;
-                border: none;
-                padding: 8px 14px;
-                border-radius: 5px;
-                width: 100%;
-                text-align: center;
+                color: #FFF;
+                font-size: 13px;
+                font-weight: 500;
+                transition: all 0.3s ease;
             }
 
             .btn-cancel:hover {
-                background-color: #E60000;
+                color: #FF4D4D;
+                border: 1px solid #FF4D4D;
+                background: transparent;
             }
         </style>
     </head>
@@ -157,12 +159,27 @@
                             <div class="btn-container">
                                 <form action="<%= request.getContextPath()%>/OrderDetail" method="GET">
                                     <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
-                                    <button type="submit" class="button button-outline-dark">View Order</button>
+                                    <button type="submit" class="button button-outline-dark" style="display: inline-block; white-space: nowrap; border-radius: 3px; width: 137px;">View Order</button>
                                 </form>
-                                <% if ("Delivery successful".equals(order.getStatusName())) { %>
-                                <button class="button button-dark">Write A Review</button>
-                                <% } else { %>
-                                <button class="btn btn-cancel">Cancel Order</button>
+                                <% if ("Delivery successful".equals(order.getStatusName())) {%>
+                                <form action="<%= request.getContextPath()%>/Feedback" method="GET">
+                                    <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
+                                    <button class="button button-dark" style="display: inline-block; white-space: nowrap; border-radius: 3px;">Write A Review</button>
+                                </form>
+                                <% } else if ("Order Cancellation Request".equals(order.getStatusName())) {%>
+                                <form action="<%= request.getContextPath()%>/OrderHistory" method="POST">
+                                    <input type="hidden" name="action" value="updateStatus">
+                                    <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
+                                    <input type="hidden" name="newStatus" value="Pending processing">
+                                    <button type="submit" class="btn btn-recancel" style="display: inline-block; white-space: nowrap;">ReCancel</button>
+                                </form>
+                                <% } else {%>
+                                <form action="<%= request.getContextPath()%>/OrderHistory" method="POST">
+                                    <input type="hidden" name="action" value="updateStatus">
+                                    <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
+                                    <input type="hidden" name="newStatus" value="Order Cancellation Request">
+                                    <button type="submit" class="btn btn-cancel" style="display: inline-block; white-space: nowrap; width: 137px;">Cancel Order</button>
+                                </form>
                                 <% } %>
                             </div>
                         </div>

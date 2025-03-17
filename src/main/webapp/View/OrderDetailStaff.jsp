@@ -18,7 +18,7 @@
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/odt.css"/>
     </head>
     <body class="ods-body">
-        <%@include file="Staff/Header.jsp" %>
+        <%@include file="Staff/HeaderStaff.jsp" %>
 
         <div class="ods-order-container">
             <%                List<OrderDetailDTO> orderDetails = (List<OrderDetailDTO>) request.getAttribute("orderDetails");

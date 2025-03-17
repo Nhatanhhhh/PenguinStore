@@ -12,12 +12,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import com.google.gson.JsonObject;
+import java.io.PrintWriter;
 
 /**
- * CartController handles user cart operations, including viewing, deleting, and
- * clearing the shopping cart.
- *
- * @author PC
+ * CartController handles user cart operations, including viewing, updating,
+ * deleting, and clearing the shopping cart.
  */
 public class CartController extends HttpServlet {
 
@@ -53,7 +53,7 @@ public class CartController extends HttpServlet {
     }
 
     /**
-     * Handles HTTP POST requests for cart actions (delete, clear).
+     * Handles HTTP POST requests for cart actions (update, delete, clear).
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -71,23 +71,48 @@ public class CartController extends HttpServlet {
 
         CartDAO cartDAO = new CartDAO();
 
-        if ("delete".equals(action)) {
-            // Remove a product from the cart
-            String productID = request.getParameter("productID");
-            if (productID != null && !productID.isEmpty()) {
-                cartDAO.removeFromCart(customerID, productID);
+        if ("update".equals(action)) {
+            String cartID = request.getParameter("cartID");
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+
+            String successMessage = "failed";
+
+            if (quantity == 0) {
+                if (quantity == 0) {
+                    cartDAO.removeFromCart(cartID);
+                    successMessage = "success"; // Xác nhận rằng việc xóa sản phẩm đã thành công
+                }
+            } else {
+                boolean success = cartDAO.updateCartItemQuan(cartID, quantity);
+                if (success) {
+                    successMessage = "success";
+                }
             }
+
+            // Tạo JSON phản hồi
+            JsonObject json = new JsonObject();
+            json.addProperty("status", successMessage);
+            json.addProperty("cartID", cartID);
+            json.addProperty("quantity", quantity);
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(json.toString());
+        } else if ("delete".equals(action)) {
+            String cartID = request.getParameter("cartID");
+            if (cartID != null && !cartID.isEmpty()) {
+                cartDAO.removeFromCart(cartID);
+            }
+            response.sendRedirect(request.getContextPath() + "/Cart"); // Chỉ redirect, không forward
+            return;
         } else if ("clear".equals(action)) {
-            // Clear the entire cart
             cartDAO.clearCart(customerID);
             response.sendRedirect(request.getContextPath() + "/Cart");
             return;
         }
 
-        // Reload the cart after updates
+        // Nếu không phải hành động "update", "delete" hay "clear", thì mới forward
         List<CartItem> cartItems = cartDAO.viewCart(customerID);
-
-        // Update the Map containing productIDs
         Map<CartItem, String> productIDs = new HashMap<>();
         for (CartItem item : cartItems) {
             String productID = cartDAO.getProductIDByItem(item);

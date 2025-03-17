@@ -5,11 +5,7 @@
 package Controller;
 
 import DAOs.FeedbackDAO;
-import Models.Customer;
 import Models.Feedback;
-import Models.Product;
-import Models.Size;
-import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -17,11 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  *
@@ -77,7 +69,8 @@ public class FeedbackController extends HttpServlet {
         if (orderID != null && !orderID.isEmpty()) {
             // Lấy danh sách sản phẩm theo orderID mà không lấy feedback
             List<Feedback> productList = FeedbackDAO.getProductsByOrderID(orderID);
-
+            System.out.println("OrderID from request: " + orderID);
+            System.out.println("Product List: " + productList);
             if (productList != null && !productList.isEmpty()) {
                 request.setAttribute("productList", productList);
                 request.getRequestDispatcher("View/Feedback.jsp").forward(request, response);

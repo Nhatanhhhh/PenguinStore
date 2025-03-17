@@ -1,25 +1,28 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package Controller;
 
 import DAOs.FeedbackDAO;
 import Models.Feedback;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.List;
 
 /**
+ * Servlet handling viewing feedback list with logging and enhanced security.
  *
  * @author Nguyen Nhat Anh - CE181843
  */
+@WebServlet(name = "ViewListFeedback", urlPatterns = {"/ViewListFeedback"})
 public class ViewListFeedback extends HttpServlet {
+
+    private static final Logger LOGGER = Logger.getLogger(ViewListFeedback.class.getName());
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,7 +37,6 @@ public class ViewListFeedback extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -47,7 +49,6 @@ public class ViewListFeedback extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -59,15 +60,24 @@ public class ViewListFeedback extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
+        LOGGER.log(Level.INFO, "Processing GET request for ViewListFeedback");
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("role") == null) {
+            LOGGER.log(Level.WARNING, "Unauthorized access attempt to feedback list");
+            response.sendRedirect(request.getContextPath() + "/Login.jsp");
+            return;
+        }
+
         String role = (String) session.getAttribute("role");
         FeedbackDAO feedbackDAO = new FeedbackDAO();
         List<Feedback> feedbacks = feedbackDAO.getAllFeedbacks();
 
         request.setAttribute("feedbacks", feedbacks);
         if ("ADMIN".equalsIgnoreCase(role)) {
+            LOGGER.log(Level.INFO, "Admin is viewing feedback list");
             request.getRequestDispatcher("/View/ListFeedbackAdmin.jsp").forward(request, response);
         } else {
+            LOGGER.log(Level.INFO, "Staff is viewing dashboard");
             request.getRequestDispatcher("/View/DashBoardForStaff.jsp").forward(request, response);
         }
     }
@@ -93,7 +103,6 @@ public class ViewListFeedback extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Handles viewing and management of feedback list.";
+    }
 }

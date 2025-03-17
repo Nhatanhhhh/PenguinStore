@@ -63,12 +63,12 @@
                         <h3><%= item.getProductName()%></h3>
                         <p>Color: <%= item.getColorName()%></p>
                         <p>Quantity: <%= item.getQuantity()%></p>
-                        <p>Price: <fmt:formatNumber value="<%= item.getPrice() * item.getQuantity() %>" pattern="#,###" /> ₫</p>
+                        <p>Price: <fmt:formatNumber value="<%= item.getPrice() * item.getQuantity()%>" pattern="#,###" /> ₫</p>
                     </div>
                 </div>
                 <% }%>
                 <hr>
-                <p>Subtotal: <span id="subtotal"><fmt:formatNumber value="<%= subtotal %>" pattern="#,###" /> ₫</span></p>
+                <p>Subtotal: <span id="subtotal"><fmt:formatNumber value="<%= subtotal%>" pattern="#,###" /> ₫</span></p>
                 <a href="<%= request.getContextPath()%>/VVCustomer" class="btn btn-primary">
                     View Vouchers
                 </a>
@@ -81,7 +81,7 @@
 
                 <p>Voucher Discount: <span id="discount">0 ₫</span></p>
                 <p>Shipping: 40.00 ₫</p>
-                <h3>Total: <span id="total"><fmt:formatNumber value="<%= subtotal %>" pattern="#,###" /> </span>₫</h3>
+                <h3>Total: <span id="total"><fmt:formatNumber value="<%= subtotal%>" pattern="#,###" /> </span>₫</h3>
                 <% } else { %>
                 <p>Your cart is empty!</p>
                 <% }%>
@@ -108,7 +108,7 @@
             let total = subtotal + shippingFee - discount;
 
             // C?p nh?t t?ng ti?n hi?n th?
-            document.getElementById("total").textContent = + total.toFixed(2);
+            document.getElementById("total").textContent = +total.toFixed(2);
 
             // C?p nh?t input hidden ?? g?i l�n server
             document.getElementById("hiddenSubtotal").value = subtotal.toFixed(2);

@@ -8,11 +8,9 @@ import DB.DBContext;
 import Models.Feedback;
 import Models.Order;
 import Models.Product;
-import Models.ProductVariant;
 import Models.Size;
 import Models.ViewFeedbackCus;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,7 +28,11 @@ import java.util.UUID;
 public class FeedbackDAO {
 
     public static List<Feedback> getOrderedProductsForFeedback(String customerID) {
+        // Initialize a list to store feedback objects
         List<Feedback> feedbackList = new ArrayList<>();
+
+        // SQL query to retrieve distinct products from orders for a specific customer
+        // where the order status is 'Delivery successful'
         String sql = "SELECT DISTINCT p.productID, p.productName, img.imgName, p.price, s.sizeName, o.orderID\n"
                 + "FROM OrderDetail od\n"
                 + "JOIN [Order] o ON od.orderID = o.orderID\n"
@@ -41,35 +43,47 @@ public class FeedbackDAO {
                 + "WHERE o.customerID = ?\n"
                 + "AND o.statusOID = (SELECT statusOID FROM StatusOrder WHERE statusName = 'Delivery successful')";
 
-        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (
+                // Establish a database connection and create a PreparedStatement
+                 Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            // Set the customer ID parameter in the SQL query
             ps.setString(1, customerID);
+
+            // Execute the query and get the result set
             ResultSet rs = ps.executeQuery();
 
+            // Iterate through the result set
             while (rs.next()) {
+                // Create a new Product object and populate its fields from the result set
                 Product product = new Product();
                 product.setProductID(rs.getString("productID"));
                 product.setProductName(rs.getString("productName"));
                 product.setImgName(rs.getString("imgName"));
                 product.setPrice(rs.getDouble("price"));
 
+                // Create a new Size object and populate its fields from the result set
                 Size size = new Size();
                 size.setSizeName(rs.getString("sizeName"));
 
+                // Create a new Order object and populate its fields from the result set
                 Order order = new Order();
                 order.setOrderID(rs.getString("orderID"));
 
+                // Create a new Feedback object and populate its fields
                 Feedback feedback = new Feedback();
-                feedback.setProductID(product.getProductID());
-                feedback.setOrderID(order.getOrderID());
-                feedback.setComment("");
-                feedback.setRating(0);
-                feedback.setFeedbackCreateAt(new Date());
+                feedback.setProductID(product.getProductID()); // Set the product ID
+                feedback.setOrderID(order.getOrderID()); // Set the order ID
+                feedback.setComment(""); // Initialize comment as empty
+                feedback.setRating(0); // Initialize rating as 0
+                feedback.setFeedbackCreateAt(new Date()); // Set the feedback creation date to the current date
 
                 feedbackList.add(feedback);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        // Return the list of feedback objects
         return feedbackList;
     }
 
@@ -280,7 +294,16 @@ public class FeedbackDAO {
             ps.setString(1, orderID);
             ResultSet rs = ps.executeQuery();
 
+            System.out.println("SQL Query: " + sql);
+            System.out.println("OrderID: " + orderID);
+
             while (rs.next()) {
+                System.out.println("ProductID: " + rs.getString("productID"));
+                System.out.println("ProductName: " + rs.getString("productName"));
+                System.out.println("ImgName: " + rs.getString("imgName"));
+                System.out.println("Price: " + rs.getDouble("price"));
+                System.out.println("SizeName: " + rs.getString("sizeName"));
+
                 Feedback feedback = new Feedback();
                 feedback.setProductID(rs.getString("productID"));
                 feedback.setOrderID(rs.getString("orderID"));
@@ -340,4 +363,5 @@ public class FeedbackDAO {
 
         return feedbackList;
     }
+
 }

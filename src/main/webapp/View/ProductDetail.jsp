@@ -3,7 +3,7 @@
     Created on : Feb 22, 2025, 6:35:04 PM
     Author     : Huynh Cong Nghiem - CE181351
 --%>
-<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -14,6 +14,7 @@
         <title>Product Detail</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/styleViewProductDetail.css"/>
@@ -89,7 +90,7 @@
                             </p>
                         </div>
 
-                        <p class="price"><strong>Price:</strong> <fmt:formatNumber value="${product.price}" pattern="#,###" /> ₫</p>
+                        <p class="price">$${product.price}</p>
                         <p><strong>Type:</strong> ${product.typeName}</p>
                         <p><strong>Category:</strong> ${product.categoryName}</p>
 
@@ -262,25 +263,7 @@
                     });
                 });
 
-                // 🔹 Hàm cập nhật variantId
-                function updateVariantId() {
-                    if (selectedColor) {
-                        let url = `GetVariantIDServlet?color=${selectedColor}&productID=${productID}`;
-                        if (hasSize && selectedSize) {
-                            url += `&size=${selectedSize}`;
-                        }
 
-                        console.log("📢 Fetching Variant ID with:", {size: selectedSize, color: selectedColor, productID});
-
-                        fetch(url)
-                                .then(response => response.text())
-                                .then(variantId => {
-                                    variantIdInput.value = variantId;
-                                    console.log("✅ Variant ID fetched:", variantId);
-                                })
-                                .catch(error => console.error("❌ Error fetching Variant ID:", error));
-                    }
-                }
 
                 // 🔹 Chọn mặc định giá trị đầu tiên
                 if (hasSize) {

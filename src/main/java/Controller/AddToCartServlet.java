@@ -58,9 +58,12 @@ public class AddToCartServlet extends HttpServlet {
         try ( Connection conn = DBContext.getConn()) {
             // 🔹 Truy vấn proVariantID từ database dựa trên sizeName, colorName, productID
             String variantQuery = "SELECT pv.proVariantID FROM dbo.ProductVariants pv "
-                    + "JOIN dbo.Size s ON pv.sizeID = s.sizeID "
-                    + "JOIN dbo.Color c ON pv.colorID = c.colorID "
-                    + "WHERE s.sizeName = ? AND c.colorName = ? AND pv.productID = ?";
+                    + "LEFT JOIN dbo.Size s ON pv.sizeID = s.sizeID "
+                    + "LEFT JOIN dbo.Color c ON pv.colorID = c.colorID "
+                    + "WHERE (COALESCE(s.sizeName, '') = COALESCE(?, s.sizeName, '')) "
+                    + "AND (COALESCE(c.colorName, '') = COALESCE(?, c.colorName, '')) "
+                    + "AND pv.productID = ?";
+
             PreparedStatement variantPs = conn.prepareStatement(variantQuery);
             variantPs.setString(1, sizeName);
             variantPs.setString(2, colorName);
@@ -75,7 +78,6 @@ public class AddToCartServlet extends HttpServlet {
                 response.sendRedirect("ProductDetail.jsp?error=InvalidVariant");
                 return;
             }
-
             // 🔹 Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
             String checkSql = "SELECT quantity FROM Cart WHERE customerID = ? AND productID = ? AND proVariantID = ?";
             PreparedStatement checkPs = conn.prepareStatement(checkSql);
@@ -112,7 +114,7 @@ public class AddToCartServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("ProductDetail.jsp?error=DatabaseError");
+            response.sendRedirect("Product?error=DatabaseError");
         }
     }
 }
