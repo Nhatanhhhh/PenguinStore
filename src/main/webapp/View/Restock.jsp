@@ -62,12 +62,24 @@
                 <%@include file="Admin/HeaderAD.jsp"%>
 
                 <h2 class="text-center">Restock Product</h2>
-                <div class="container">
+                <div class="container d-flex justify-content-center align-items-center">
                     <form action="Restock" method="post">
 
                         <input type="text" id="proVariantID" name="proVariantID" value="${proVariantID}" style="display: none;" readonly required>
                         <br><br>
 
+                        <div class="mb-3">
+                            <label for="productName" class="form-label">Product Name:</label>
+                            <input readonly type="text" class="form-control" id="productName" name="productName" value="${provariant.productName}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sizeName" class="form-label">Size Name:</label>
+                            <input readonly type="text" class="form-control" id="sizeName" name="sizeName" value="${provariant.sizeName}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="colorName" class="form-label">Color Name:</label>
+                            <div style="width: 25px; height: 25px; border-radius: 50%; border: 2px solid gray; background-color: ${provariant.colorName}; margin: auto;"></div>
+                        </div>
                         <label for="quantity">Quantity:</label>
                         <input type="number" name="quantity" required />
 

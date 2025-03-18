@@ -103,3 +103,16 @@ button {
 #applyVoucher:hover {
     background-color: #333;
 }
+
+input[type="email"] {
+    border: 1px solid black;  /* Viền đen mặc định */
+    padding: 8px;
+    border-radius: 5px;
+    transition: all 0.2s ease-in-out;
+}
+
+input[type="email"]:focus {
+    outline: 2px solid black; /* Hiện viền đen khi bấm vào */
+    border: 1px solid black;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Hiệu ứng nhẹ khi focus */
+}

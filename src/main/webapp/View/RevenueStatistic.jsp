@@ -89,7 +89,7 @@
                                             <td><fmt:formatNumber value="${stat.revenue}" pattern="#,###" /> ₫</td>
                                         </tr>
                                         <c:set var="totalRevenue" value="${totalRevenue + stat.revenue}"/>
-                                        
+
                                     </c:forEach>
                                 </table>
                             </div>

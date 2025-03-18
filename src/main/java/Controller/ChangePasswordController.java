@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Nhat_Anh
+ * @author Thuan
  */
 public class ChangePasswordController extends HttpServlet {
 

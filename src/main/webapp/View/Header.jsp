@@ -29,6 +29,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <title>Header Example</title>
 
         <style>
@@ -84,7 +85,7 @@
                 </a>
             </div>
             <div class="search-bar col-md-5">
-                <input type="text" placeholder=""/>
+                <input type="text" id="searchInput" name="keysearch" placeholder="Enter name, type to search product..." autocomplete="off"/>
             </div>
 
 

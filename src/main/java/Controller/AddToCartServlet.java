@@ -22,7 +22,7 @@ public class AddToCartServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
+        try ( PrintWriter out = response.getWriter()) {
         }
     }
 
@@ -48,19 +48,19 @@ public class AddToCartServlet extends HttpServlet {
         String quantityStr = request.getParameter("quantity");
 
         if (customerID == null || productID == null || sizeName == null || colorName == null || quantityStr == null) {
-            response.sendRedirect("View /ProductDetail.jsp?error=MissingData");
+            response.sendRedirect("View/ProductDetail.jsp?error=MissingData");
             return;
         }
 
         int quantity = Integer.parseInt(quantityStr);
         String proVariantID = null;
 
-        try (Connection conn = DBContext.getConn()) {
+        try ( Connection conn = DBContext.getConn()) {
             // 🔹 Truy vấn proVariantID từ database dựa trên sizeName, colorName, productID
-            String variantQuery = "SELECT pv.proVariantID FROM dbo.ProductVariants pv " +
-                                  "JOIN dbo.Size s ON pv.sizeID = s.sizeID " +
-                                  "JOIN dbo.Color c ON pv.colorID = c.colorID " +
-                                  "WHERE s.sizeName = ? AND c.colorName = ? AND pv.productID = ?";
+            String variantQuery = "SELECT pv.proVariantID FROM dbo.ProductVariants pv "
+                    + "JOIN dbo.Size s ON pv.sizeID = s.sizeID "
+                    + "JOIN dbo.Color c ON pv.colorID = c.colorID "
+                    + "WHERE s.sizeName = ? AND c.colorName = ? AND pv.productID = ?";
             PreparedStatement variantPs = conn.prepareStatement(variantQuery);
             variantPs.setString(1, sizeName);
             variantPs.setString(2, colorName);
@@ -76,7 +76,7 @@ public class AddToCartServlet extends HttpServlet {
                 return;
             }
 
-            // 🔹 Kiểm tra xem sản phẩm đã có trong gi�? hàng chưa
+            // 🔹 Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
             String checkSql = "SELECT quantity FROM Cart WHERE customerID = ? AND productID = ? AND proVariantID = ?";
             PreparedStatement checkPs = conn.prepareStatement(checkSql);
             checkPs.setString(1, customerID);
@@ -97,7 +97,7 @@ public class AddToCartServlet extends HttpServlet {
                 updatePs.setString(4, proVariantID);
                 updatePs.executeUpdate();
             } else {
-                // Nếu sản phẩm chưa có, thêm mới vào gi�? hàng
+                // Nếu sản phẩm chưa có, thêm mới vào giỏ hàng
                 String insertSql = "INSERT INTO Cart (customerID, productID, proVariantID, quantity) VALUES (?, ?, ?, ?)";
                 PreparedStatement insertPs = conn.prepareStatement(insertSql);
                 insertPs.setString(1, customerID);
@@ -107,8 +107,8 @@ public class AddToCartServlet extends HttpServlet {
                 insertPs.executeUpdate();
             }
 
-            // Chuyển hướng v�? trang sản phẩm kèm thông báo thành công
-            response.sendRedirect("Product?id=" + productID + "&message=success");
+            // Chuyển hướng về trang sản phẩm kèm thông báo thành công
+            response.sendRedirect("View/Product?id=" + productID + "&message=success");
 
         } catch (Exception e) {
             e.printStackTrace();

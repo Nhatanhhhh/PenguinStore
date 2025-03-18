@@ -64,6 +64,7 @@
                 border-radius: 50%;
                 cursor: pointer;
                 border: 2px solid transparent;
+                border: 3px solid gray;
                 transition: border 0.3s ease-in-out;
             }
 
@@ -72,7 +73,7 @@
             }
 
             .color-checkbox:checked + .color-box {
-                border: 3px solid #000;
+                border: 4px solid #000;
             }
 
 
@@ -208,20 +209,18 @@
                 padding-right: 0 !important; /* Đảm bảo padding right bằng 0 */
             }
 
-            /* Đảm bảo header cố định và nội dung mở rộng */
+
             .content {
                 flex-grow: 1;
                 overflow: auto; /* Giữ nội dung cuộn khi cần */
                 padding: 20px; /* Thêm khoảng cách cho đẹp */
             }
 
-            /* Màu nền đậm như table-dark */
             #feedbackTable thead {
-                background-color: #343a40 !important; /* Màu đen nhạt của Bootstrap */
-                color: white !important; /* Chữ trắng */
+                background-color: #343a40 !important;
+                color: white !important;
             }
 
-            /* Căn giữa nội dung trong các cột */
             #feedbackTable th {
                 text-align: center !important;
                 vertical-align: middle !important;
@@ -255,7 +254,8 @@
                     <%@include file="Admin/HeaderAD.jsp"%>
                     <h2 style="text-align: center;">Create New Product</h2>
                     <div class="d-flex justify-content-center mt-4">
-                        <form style="min-width: 50vw;" id="create-product-form" action="<c:url value="/ManageProduct?action=create"/>" method="POST" enctype="multipart/form-data" class="create-product-form">
+                        <form style="min-width: 50vw;" id="create-product-form" action="<c:url value="/ManageProduct?action=create"/>" method="POST" 
+                              enctype="multipart/form-data" class="create-product-form">
                             <!-- Product Name -->
                             <label for="productName">Product Name:</label>
                             <input type="text" id="productName" name="productName" placeholder="Enter name of product..." required>
@@ -317,7 +317,6 @@
                             <input type="submit" value="Create Product" class="submit-btn" style="width: 150px">
                         </form>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -400,6 +399,7 @@
                     }
                 }
             });
+
             document.addEventListener("DOMContentLoaded", function () {
                 const form = document.getElementById("create-product-form");
                 const submitBtn = document.querySelector(".submit-btn");
@@ -407,28 +407,92 @@
                 submitBtn.addEventListener("click", function (event) {
                     event.preventDefault(); // Ngăn form submit ngay lập tức
 
-                    // Tạo modal động
+                    // Kiểm tra dữ liệu nhập vào
+                    let isValid = true;
+                    let errorMessage = "";
+
+                    let productName = document.getElementById("productName").value.trim();
+                    let description = document.getElementById("description").value.trim();
+                    let price = document.getElementById("price").value.trim();
+                    let category = document.getElementById("category").value;
+                    let type = document.getElementById("type").value;
+                    let images = document.getElementById("hiddenFileInput").files.length;
+                    let colorsChecked = document.querySelectorAll(".color-checkbox:checked").length;
+                    let sizesChecked = document.querySelectorAll("input[name='sizeIds']:checked").length;
+
+                    if (!productName) {
+                        errorMessage += "- Product name can't be blank.\n";
+                        isValid = false;
+                    }
+                    if (!description) {
+                        errorMessage += "- Description of product can't be blank.\n";
+                        isValid = false;
+                    }
+                    if (!price || isNaN(price) || price <= 0) {
+                        errorMessage += "- Price must be greater than 0 and must be an integer.\n";
+                        isValid = false;
+                    }
+                    if (!category) {
+                        errorMessage += "- Please choose category of product.\n";
+                        isValid = false;
+                    }
+                    if (!type) {
+                        errorMessage += "- Please choose type of product.\n";
+                        isValid = false;
+                    }
+                    if (images === 0) {
+                        errorMessage += "- Please enter at least one product image.\n";
+                        isValid = false;
+                    }
+                    if (colorsChecked === 0) {
+                        errorMessage += "- Please select at least one color of product.\n";
+                        isValid = false;
+                    }
+
+                    if (category !== "Accessory" && sizesChecked === 0) {
+                        errorMessage += "- Please select at leat one size of product.\n";
+                        isValid = false;
+                    }
+
+                    // Nếu có lỗi, hiển thị alert và không submit form
+                    if (!isValid) {
+                        alert("Please check value of product:\n" + errorMessage);
+                        return;
+                    }
+
+                    // Nếu dữ liệu hợp lệ, hiển thị modal xác nhận
                     const modal = document.createElement("div");
                     modal.classList.add("modal");
-                    modal.innerHTML = `
-            <div class="modal-content">
-                <p>Please double check all information before creating product (Image, category, size, etc.)?</p>
-                <button id="confirm-btn">Confirm</button>
-                <button id="cancel-btn">Cancel</button>
-            </div>
-        `;
-                    document.body.appendChild(modal);
+                    modal.style.position = "fixed";
+                    modal.style.top = "0";
+                    modal.style.left = "0";
+                    modal.style.width = "100%";
+                    modal.style.height = "100%";
+                    modal.style.backgroundColor = "rgba(0,0,0,0.5)";
                     modal.style.display = "flex";
+                    modal.style.alignItems = "center";
+                    modal.style.justifyContent = "center";
+                    modal.innerHTML = `
+                <div class="modal-content" style="background: white; padding: 20px; border-radius: 8px; text-align: center;">
+                    <p>Please double check all information before creating product.</p>
+                    <button id="confirm-btn">Confirm</button>
+                    <button id="cancel-btn">Cancel</button>
+                </div>
+            `;
+                    document.body.appendChild(modal);
+
+                    // Xác nhận submit form
                     document.getElementById("confirm-btn").addEventListener("click", function () {
                         modal.remove();
                         form.submit();
                     });
+
+                    // Hủy bỏ modal
                     document.getElementById("cancel-btn").addEventListener("click", function () {
                         modal.remove();
                     });
                 });
             });
-
         </script>
 
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>

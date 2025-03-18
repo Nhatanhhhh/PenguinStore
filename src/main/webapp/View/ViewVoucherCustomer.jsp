@@ -5,6 +5,7 @@
 <%@page import="java.time.LocalDate" %>
 <%@page import="java.time.format.DateTimeFormatter" %>
 <%@page import="java.time.temporal.ChronoUnit" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -20,7 +21,7 @@
     <body>
         <%@include file="Header.jsp"%>
 
-        <%                Customer customer = (Customer) session.getAttribute("user");  
+        <%                Customer customer = (Customer) session.getAttribute("user");
         %>
         <h1 class="text-center mb-4" style="font-size: 35px;">Your Voucher</h1>
 
@@ -68,7 +69,8 @@
                     <div class="edit-profile"><a href="<%= request.getContextPath()%>/EditProfile">Edit Profile</a></div>
                     <div class="voucher"><a style="font-weight: bold;">Voucher</a></div>
                     <div class="order"><a href="<%= request.getContextPath()%>/OrderHistory">Order</a></div>
-                    <div class="password"><a href="#">Password</a></div>
+                    <div class="password"><a href="<%= request.getContextPath()%>/ChangePassword">Password</a></div>
+                    <div class="reply"><a href="<%= request.getContextPath()%>/ViewFeedbackCustomer">View Reply</a></div>
                 </div>
 
                 <div class="col-md-10">
@@ -94,7 +96,7 @@
                                 %>
                                 <tr>
                                     <td><%= voucher.getVoucherCode()%></td>
-                                    <td><%= voucher.getDiscountAmount()%> <i class="fa-solid fa-dollar-sign"></i></td>
+                                    <td><fmt:formatNumber value="<%= voucher.getDiscountAmount()%>" pattern="#,###" /> ₫</td>
                                     <td>
                                         <% if (isExpired) { %>
                                         <span style="color: red; font-weight: bold;">Expired</span>

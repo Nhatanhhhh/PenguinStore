@@ -58,8 +58,46 @@
             </div>
         </div>
 
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Lấy thông báo từ session
+                var successMessage = "<%= session.getAttribute("successMessage") != null ? session.getAttribute("successMessage") : ""%>";
+                var errorMessage = "<%= session.getAttribute("errorMessage") != null ? session.getAttribute("errorMessage") : ""%>";
+                var showSweetAlert = "<%= session.getAttribute("showSweetAlert") != null ? session.getAttribute("showSweetAlert") : "false"%>";
 
-        
+                // Xóa session sau khi lấy dữ liệu
+            <% session.removeAttribute("successMessage"); %>
+            <% session.removeAttribute("errorMessage"); %>
+            <% session.removeAttribute("showSweetAlert");%>
+
+                if (typeof Swal !== "undefined") {
+                    if (successMessage !== "") {
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: successMessage,
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                    }
+
+                    if (errorMessage !== "" && showSweetAlert === "true") {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Login Failed',
+                            text: errorMessage,
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.href = "<%= request.getContextPath()%>/View/LoginCustomer.jsp";
+                        });
+                    }
+                } else {
+                    console.error("SweetAlert2 is not loaded!");
+                }
+            });
+        </script>
+
+
         <%@include file="Footer.jsp"%>
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
 

@@ -123,7 +123,7 @@ public class ManagerDAO {
                 + "dateOfBirth = ?, "
                 + "role = ? "
                 + "WHERE managerName = ?";
-        String passMD5 = managerChange.getPassword();
+        String passMD5 = md5(managerChange.getPassword());
         try {
 
             if (!managerName.equals(managerChange.getManagerName())) {

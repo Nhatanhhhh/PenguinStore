@@ -14,7 +14,7 @@ public class StatisticProduct {
     private String productName;
     private String sizeName;
     private String colorName;
-    private int soldQuantity ;
+    private int soldQuantity;
     private int importedQuantity;
 
     public StatisticProduct(String timePeriod, String productName, String sizeName, String colorName, int soldQuantity, int importedQuantity) {

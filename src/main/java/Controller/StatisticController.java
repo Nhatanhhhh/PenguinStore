@@ -69,11 +69,31 @@ public class StatisticController extends HttpServlet {
                         revenuelist = revenueDAO.getRevenueByDay();
                         break;
                 }
+                
                 request.setAttribute("revenuelist", revenuelist);
                 request.setAttribute("timeUnit", timeUnit);
                 request.getRequestDispatcher("/View/RevenueStatistic.jsp").forward(request, response);
                 break;
 
+//            case "DashBoardForAdmin":
+//                
+//                switch (timeUnit) {
+//                    case "month":
+//                        revenuelist = revenueDAO.getRevenueByMonth();
+//                        break;
+//                    case "year":
+//                        revenuelist = revenueDAO.getRevenueByYear();
+//                        break;
+//                    default:
+//                        revenuelist = revenueDAO.getRevenueByDay();
+//                        break;
+//                }
+//                double totalRevenue = revenuelist.stream().mapToDouble(RevenueStatistic::getRevenue).sum();
+//                request.setAttribute("revenuelist", revenuelist);
+//                request.setAttribute("timeUnit", timeUnit);
+//                request.setAttribute("totalRevenue", totalRevenue);
+//                request.getRequestDispatcher("/View/DashBoardForAdmin.jsp").forward(request, response);
+//                break;    
             case "productStatistic":
                 List<StatisticProduct> productStatistics = productDAO.getAll(); // Thống kê nhập - xuất
                 List<StatisticProduct> bestSellingProducts = productDAO.getBestSellingProducts(); // Sản phẩm bán chạy nhất

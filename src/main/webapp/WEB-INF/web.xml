@@ -20,6 +20,9 @@
         <url-pattern>/ChangePassword</url-pattern>
         <url-pattern>/DashBoardForAdmin</url-pattern>
         <url-pattern>/DashBoardForStaff</url-pattern>
+        <url-pattern>/ListFeedbackForStaff</url-pattern>
+        <url-pattern>/ManageProduct</url-pattern>
+        <url-pattern>/Type</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>AuthorizationFilter</filter-name>
@@ -34,8 +37,10 @@
         <url-pattern>/Order</url-pattern>
         <url-pattern>/EditProfile</url-pattern>
         <url-pattern>/Feedback</url-pattern>
-        <url-pattern>/ChangePassword</url-pattern>
-        <url-pattern>/ChangePassword</url-pattern>
+        <url-pattern>/ListFeedbackForStaff</url-pattern>
+        <url-pattern>/ManageProduct</url-pattern>
+        <url-pattern>/Statistic</url-pattern>
+        <url-pattern>/Type</url-pattern>
     </filter-mapping>
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -122,8 +127,12 @@
         <servlet-class>Controller.ErrorServlet500</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ViewListFeedbackController</servlet-name>
+        <servlet-name>ViewListFeedback</servlet-name>
         <servlet-class>Controller.ViewListFeedback</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StatisticController</servlet-name>
+        <servlet-class>Controller.StatisticController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DashBoardForStaffServlet</servlet-name>
@@ -158,12 +167,8 @@
         <servlet-class>Controller.OrderDetailStaff</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>OrderDeatil</servlet-name>
-        <servlet-class>Controller.OrderDetail</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>VoucherServlet</servlet-name>
-        <servlet-class>Controller.VoucherServlet</servlet-class>
+        <servlet-name>CreateFeedbackController</servlet-name>
+        <servlet-class>Controller.CreateFeedbackController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UseVoucher</servlet-name>
@@ -221,6 +226,10 @@
         <url-pattern>/ManageProduct</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>StatisticController</servlet-name>
+        <url-pattern>/Statistic</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>RestockController</servlet-name>
         <url-pattern>/Restock</url-pattern>
     </servlet-mapping>
@@ -261,7 +270,7 @@
         <url-pattern>/500</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ViewListFeedbackController</servlet-name>
+        <servlet-name>ViewListFeedback</servlet-name>
         <url-pattern>/ListFeedbackForStaff</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
@@ -297,12 +306,8 @@
         <url-pattern>/OrderDetailStaff</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>OrderDeatil</servlet-name>
-        <url-pattern>/OrderDetail</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>VoucherServlet</servlet-name>
-        <url-pattern>/VoucherServlet</url-pattern>
+        <servlet-name>CreateFeedbackController</servlet-name>
+        <url-pattern>/CreateFeedback</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UseVoucher</servlet-name>

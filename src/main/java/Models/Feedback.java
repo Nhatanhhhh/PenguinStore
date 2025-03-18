@@ -94,11 +94,11 @@ public class Feedback {
         this.customerName = customerName;
     }
 
-    public String getProductName() {  // ﾄ?盻品 t盻ｫ getGetProductName thﾃnh getProductName
+    public String getProductName() {  // ﾄ雪ｻ品 t盻ｫ getGetProductName thﾃnh getProductName
         return getProductName;
     }
 
-    public void setProductName(String productName) {  // ﾄ?盻品 t盻ｫ setGetProductName thﾃnh setProductName
+    public void setProductName(String productName) {  // ﾄ雪ｻ品 t盻ｫ setGetProductName thﾃnh setProductName
         this.getProductName = productName;
     }
 

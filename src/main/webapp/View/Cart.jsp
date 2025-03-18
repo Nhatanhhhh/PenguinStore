@@ -1,3 +1,4 @@
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.Map"%>
 <!DOCTYPE html>
@@ -35,12 +36,12 @@
                 <div>
                     <p><strong><%= item.getProductName()%></strong></p>
                     <p>Color: <%= item.getColorName()%></p>
-                    <p>Price: $<span class="price"><%= item.getPrice()%></span></p>
+                    <p>Price: <span class="price"><fmt:formatNumber value="<%=item.getPrice()%>" pattern="#,###" /> ₫</span></p>
                     <!-- Form ?? x�a s?n ph?m -->
                     <form action="<%= request.getContextPath()%>/Cart" method="post">
                         <input type="hidden" name="action" value="delete">
                         <% Map<CartItem, String> productIDs = (Map<CartItem, String>) request.getAttribute("productIDs");%>
-                        <input type="hidden" name="productID" value="<%= (productIDs.get(item) != null && !productIDs.get(item).isEmpty()) ? productIDs.get(item) : "empty.jsp" %>">
+                        <input type="hidden" name="productID" value="<%= (productIDs.get(item) != null && !productIDs.get(item).isEmpty()) ? productIDs.get(item) : "empty.jsp"%>">
                         <button type="submit" class="remove-btn" onclick="return confirm('Are you sure?')">Remove</button>
                     </form>
                 </div>
@@ -49,7 +50,10 @@
                     <span id="quantity_<%= item.getProductName()%>"><%= item.getQuantity()%></span>
                     <button onclick="changeQuantity(1, <%= item.getPrice()%>, '<%= item.getProductName()%>')">+</button>
                 </div>
-                <p>Total: $<span id="total_<%= item.getProductName()%>"><%= item.getPrice() * item.getQuantity()%></span></p>
+                <p>Total: <span id="total_<%= item.getProductName()%>">
+                        <fmt:formatNumber value="<%= item.getPrice() * item.getQuantity()%>" pattern="#,###" /> ₫
+                    </span></p>
+
 
             </div>
             <% subtotal += item.getPrice() * item.getQuantity(); %>
@@ -58,7 +62,8 @@
             <p>Your cart is empty.</p>
             <% }%>
 
-            <p>Subtotal: $<span id="subtotal"><%= subtotal%></span></p><form action="<%= request.getContextPath()%>/Cart" method="post">
+            <p>Subtotal: <span id="subtotal"><fmt:formatNumber value="<%= subtotal%>" pattern="#,###" /> ₫</span></p>
+            <form action="<%= request.getContextPath()%>/Cart" method="post">
                 <input type="hidden" name="action" value="clear">
                 <button type="submit" class="clear-cart-btn" onclick="return confirm('Are you sure you want to clear the cart?')">Clear Cart</button>
             </form>

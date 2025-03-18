@@ -129,4 +129,35 @@ public class RestockDAO extends DBContext {
 
         return list;
     }
+
+    public Restock getOnlyById(String proVariantID) {
+        Restock restock = null;
+        String sql = "SELECT \n"
+                + "                    Product.productName, \n"
+                + "                    Size.sizeName, \n"
+                + "                    Color.colorName,   \n"
+                + "                    ProductVariants.proVariantID\n"
+                + "                FROM ProductVariants\n"
+                + "                LEFT JOIN Product ON Product.productID = ProductVariants.productID \n"
+                + "                LEFT JOIN Size ON Size.sizeID = ProductVariants.sizeID \n"
+                + "                LEFT JOIN Color ON Color.colorID = ProductVariants.colorID \n"
+                + "                WHERE ProductVariants.proVariantID = ? ";
+
+        Object param[] = {proVariantID};
+
+        try ( ResultSet rs = execSelectQuery(sql, param)) {
+            if (rs.next()) {
+                restock = new Restock(
+                        rs.getString("productName"),
+                        rs.getString("proVariantID"),
+                        rs.getString("sizeName"),
+                        rs.getString("colorName")
+                );
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(RestockDAO.class.getName()).log(Level.SEVERE, "GetOnlyByID failed", ex);
+        }
+        return restock;
+    }
+
 }

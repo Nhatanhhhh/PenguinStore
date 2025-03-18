@@ -4,7 +4,8 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Forget PassWord Page</title>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
+        <title>Forget PassWord</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
@@ -22,11 +23,44 @@
                                     <h2 class="fs-6 fw-normal text-center text-secondary m-0 px-md-5" style="font-size: 24px;">Provide the email address associated with your account to recover your password.</h2>
                                 </div>
                             </div>
-                            <c:if test="${not empty errorMessage}">
-                                <div class="alert alert-danger" role="alert">
-                                    <%= request.getAttribute("errorMessage") != null ? request.getAttribute("errorMessage") : ""%>
-                                </div>
-                            </c:if>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    if (typeof Swal === "undefined") {
+                                        console.error("SweetAlert2 is not loaded. Check your network connection or CDN.");
+                                    } else {
+                                <%
+                                    HttpSession sessionObj = request.getSession();
+                                    String errorMessage = (String) sessionObj.getAttribute("errorMessage");
+                                    String successMessage = (String) sessionObj.getAttribute("successMessage");
+
+                                    // Remove attributes after displaying alerts
+                                    sessionObj.removeAttribute("errorMessage");
+                                    sessionObj.removeAttribute("successMessage");
+                                %>
+
+                                <% if (errorMessage != null) {%>
+                                        Swal.fire({
+                                            title: "Error",
+                                            text: "<%= errorMessage%>",
+                                            icon: "error",
+                                            confirmButtonText: "OK",
+                                            timer: 2500
+                                        });
+                                <% } %>
+
+                                <% if (successMessage != null) {%>
+                                        Swal.fire({
+                                            title: "Success",
+                                            text: "<%= successMessage%>",
+                                            icon: "success",
+                                            confirmButtonText: "OK",
+                                            timer: 2500
+                                        });
+                                <% }%>
+                                    }
+                                });
+                            </script>
+
                             <form action="<%= request.getContextPath()%>/ForgetPassword" method="POST">
                                 <div class="row gy-3 gy-md-4 overflow-hidden">
                                     <div class="col-12">
@@ -61,5 +95,6 @@
 
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
         <script src="<%= request.getContextPath()%>/Assets/Javascript/forgetpassword.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </body>
 </html>

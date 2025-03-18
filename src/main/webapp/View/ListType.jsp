@@ -65,19 +65,29 @@
                                         <ul class="pagination">
                                             <c:if test="${currentPage > 1}">
                                                 <li class="page-item">
-                                                    <a class="page-link" href="<c:url value='/Type?page=${currentPage - 1}'/>">Previous</a>
+                                                    <a class="page-link btn btn-dark" href="<c:url value='/Type?page=${currentPage - 1}'/>" style="color: white; background-color: black;">Previous</a>
                                                 </li>
                                             </c:if>
 
                                             <c:forEach var="i" begin="1" end="${totalPages}">
                                                 <li class="page-item ${i == currentPage ? 'active' : ''}">
-                                                    <a class="page-link" href="<c:url value='/Type?page=${i}'/>">${i}</a>
+                                                    <a class="page-link" href="<c:url value='/Type?page=${i}'/>" 
+                                                       style="color: ${i == currentPage ? 'white' : 'black'};
+                                                       background-color: ${i == currentPage ? 'black' : 'white'};
+                                                       border: 1px solid black;
+                                                       border-radius: 6px;
+                                                       box-shadow: none;
+                                                       padding: 8px 16px;">
+                                                        ${i}
+                                                    </a>
                                                 </li>
                                             </c:forEach>
 
+
+
                                             <c:if test="${currentPage < totalPages}">
-                                                <li class="page-item">
-                                                    <a class="page-link" href="<c:url value='/Type?page=${currentPage + 1}'/>">Next</a>
+                                                <li class=" page-item">
+                                                    <a class="page-link btn btn-dark" href="<c:url value='/Type?page=${currentPage + 1}'/>" style="color: white; background-color: black;">Next</a>
                                                 </li>
                                             </c:if>
                                         </ul>
@@ -103,7 +113,7 @@
                     const filter = searchInput.value.trim().toLowerCase();
 
                     tableRows.forEach(row => {
-                        if (row.cells.length >= 2) { 
+                        if (row.cells.length >= 2) {
                             const typeName = row.cells[0].textContent.trim().toLowerCase();
                             const categoryName = row.cells[1].textContent.trim().toLowerCase();
 

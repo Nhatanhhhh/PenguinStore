@@ -4,7 +4,9 @@
  */
 package Models;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -27,8 +29,10 @@ public class Order {
     private String statusName;
     private String fullName;
     private String orderStatus;
+    private List<Product> products;
 
     public Order() {
+        this.products = new ArrayList<>(); // Khởi tạo danh sách sản phẩm
     }
 
     public Order(String orderID, String customerID, double totalAmount, double discountAmount, double finalAmount,
@@ -43,14 +47,27 @@ public class Order {
         this.statusOID = statusOID;
         this.voucherID = voucherID;
         this.voucherName = voucherName;
+         this.products = new ArrayList<>(); 
     }
-     public Order(String orderID, String fullName, Date orderDate, double totalAmount, String orderStatus) {
+
+    public Order(String orderID, String fullName, Date orderDate, double totalAmount, String orderStatus) {
         this.orderID = orderID;
         this.fullName = fullName;
         this.orderDate = orderDate;
         this.totalAmount = totalAmount;
         this.orderStatus = orderStatus;
     }
+
+    public Order(String orderID, String customerID, String statusName, String voucherName, Date orderDate, List<Product> products) {
+        this.orderID = orderID;
+        this.customerID = customerID;
+        this.statusName = statusName;
+        this.voucherName = voucherName;
+        this.orderDate = orderDate;
+        this.products = products;
+    }
+    
+    
 
     public String getFullName() {
         return fullName;
@@ -67,7 +84,7 @@ public class Order {
     public void setOrderStatus(String orderStatus) {
         this.orderStatus = orderStatus;
     }
-     
+
     public String getVoucherName() {
         return voucherName;
     }
@@ -149,4 +166,11 @@ public class Order {
         this.voucherID = voucherID;
     }
 
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
 }

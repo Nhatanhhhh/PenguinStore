@@ -120,11 +120,11 @@ public class TypeController extends HttpServlet {
                     if (pageParam != null) {
                         page = Integer.parseInt(pageParam);
                         if (page < 1) {
-                            page = 1; // Không cho phép trang nh�? hơn 1
+                            page = 1; // Không cho phép trang nh�? hơn 1
                         }
                     }
                 } catch (NumberFormatException e) {
-                    page = 1; // Nếu lỗi, quay v�? trang đầu tiên
+                    page = 1; // Nếu lỗi, quay v�? trang đầu tiên
                 }
 
                 int offset = (page - 1) * recordsPerPage;
@@ -133,7 +133,7 @@ public class TypeController extends HttpServlet {
                 int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
 
                 if (totalPages == 0) {
-                    totalPages = 1; // �?ảm bảo ít nhất có 1 trang để không lỗi giao diện
+                    totalPages = 1; // �?ảm bảo ít nhất có 1 trang để không lỗi giao diện
                 }
 
                 request.setAttribute("typeList", list);
@@ -149,14 +149,14 @@ public class TypeController extends HttpServlet {
 
                 if (typeName == null || typeName.trim().isEmpty() || categoryID == null || categoryID.trim().isEmpty()) {
                     request.setAttribute("error", "Please enter your data.");
-                    request.getRequestDispatcher("/View/CreateType.jsp").forward(request, response);
+                    request.getRequestDispatcher("/Type?action=create").forward(request, response);
                     return;
                 }
 
+                // Kiểm tra tên loại đã tồn tại hay chưa
                 if (typeDAO.isTypeNameExists(typeName)) {
-
-                    response.sendRedirect(request.getContextPath() + "/Type?action=create");
                     request.setAttribute("error", "Type name already exists.");
+                    request.getRequestDispatcher("/Type?action=create").forward(request, response);
                     return;
                 }
 
@@ -167,7 +167,7 @@ public class TypeController extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/Type?action=list");
                 } else {
                     request.setAttribute("error", "Create failed! Please try again.");
-                    request.getRequestDispatcher("/View/CreateType.jsp").forward(request, response);
+                    request.getRequestDispatcher("/Type?action=create").forward(request, response);
                 }
                 break;
 
@@ -179,7 +179,14 @@ public class TypeController extends HttpServlet {
                 if (typeID == null || updatedTypeName == null || updatedCategoryID == null
                         || typeID.trim().isEmpty() || updatedTypeName.trim().isEmpty() || updatedCategoryID.trim().isEmpty()) {
                     request.setAttribute("error", "Please fill in all fields.");
-                    request.getRequestDispatcher("/View/EditType.jsp").forward(request, response);
+                    request.getRequestDispatcher("/Type?action=list").forward(request, response);
+                    return;
+                }
+
+                // Kiểm tra nếu tên đã tồn tại nhưng không phải của chính nó
+                if (typeDAO.isTypeNameExists(updatedTypeName) && !typeDAO.getOnlyById(typeID).getTypeName().equals(updatedTypeName)) {
+                    request.setAttribute("error", "Type name already exists.");
+                    request.getRequestDispatcher("/Type?action=list").forward(request, response);
                     return;
                 }
 

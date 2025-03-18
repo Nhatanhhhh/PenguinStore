@@ -265,9 +265,7 @@
 
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
         <script src="<%= request.getContextPath()%>/Assets/Javascript/Staff/scripts.js"></script>
-    </body>
-</html>
-<script>
+        <script>
                                                     let selectedOrderId;
                                                     let selectedStatus;
 
@@ -378,4 +376,6 @@
                                                             normalModal.hide();
                                                     }
 
-</script>
+        </script>
+    </body>
+</html>

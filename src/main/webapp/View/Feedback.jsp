@@ -72,13 +72,21 @@
         <%@include file="Header.jsp"%>
         <h1 class="text-center mb-4" style="font-size: 35px;">Feedback</h1>
 
-        <c:if test="${not empty sessionScope.message}">
-            <div class="alert alert-${sessionScope.messageType}">
-                ${sessionScope.message}
-            </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+            <% if (session.getAttribute("message") != null) {%>
+                Swal.fire({
+                    icon: "<%= session.getAttribute("messageType")%>", // "success" hoặc "error"
+                    title: "<%= session.getAttribute("message")%>",
+                    confirmButtonText: "OK",
+                    timer: 2500
+                });
             <% session.removeAttribute("message");
-                session.removeAttribute("messageType");%>
-        </c:if>
+                session.removeAttribute("messageType"); %>
+            <% }%>
+            });
+        </script>
+
 
         <div class="container mt-4 mb-4 pb-4">
             <c:choose>
@@ -107,20 +115,20 @@
                             <div class="text-center mb-3">
                                 <label>Rate this product:</label>
                                 <div class="rating">
-                                    <input type="radio" name="rating-${product.productID}" id="star1-${product.productID}" value="1">
-                                    <label for="star1-${product.productID}">★</label>
-
-                                    <input type="radio" name="rating-${product.productID}" id="star2-${product.productID}" value="2">
-                                    <label for="star2-${product.productID}">★</label>
-
-                                    <input type="radio" name="rating-${product.productID}" id="star3-${product.productID}" value="3">
-                                    <label for="star3-${product.productID}">★</label>
+                                    <input type="radio" name="rating-${product.productID}" id="star5-${product.productID}" value="5">
+                                    <label for="star5-${product.productID}">★</label>
 
                                     <input type="radio" name="rating-${product.productID}" id="star4-${product.productID}" value="4">
                                     <label for="star4-${product.productID}">★</label>
 
-                                    <input type="radio" name="rating-${product.productID}" id="star5-${product.productID}" value="5">
-                                    <label for="star5-${product.productID}">★</label>
+                                    <input type="radio" name="rating-${product.productID}" id="star3-${product.productID}" value="3">
+                                    <label for="star3-${product.productID}">★</label>
+
+                                    <input type="radio" name="rating-${product.productID}" id="star2-${product.productID}" value="2">
+                                    <label for="star2-${product.productID}">★</label>
+
+                                    <input type="radio" name="rating-${product.productID}" id="star1-${product.productID}" value="1">
+                                    <label for="star1-${product.productID}">★</label>
                                 </div>
                             </div>
 

@@ -40,7 +40,7 @@
             }
         </style>
         <script>
-        
+
             function searchTable() {
                 let input, filter, table, tr, td, i, j, txtValue;
                 input = document.getElementById("searchInput");
@@ -182,8 +182,8 @@
                                     </td>
                                     <td>${restock.quantity}</td>
                                     <td><fmt:formatNumber value="${restock.price}" pattern="#,###" /> ₫</td>
-                                    <td><fmt:formatNumber value="${restock.totalCost}" pattern="#,###" /> ₫</td>
-                                    <td>${restock.restockDay}</td>
+                                <td><fmt:formatNumber value="${restock.totalCost}" pattern="#,###" /> ₫</td>
+                                <td>${restock.restockDay}</td>
                                 </tr>
                             </c:forEach>
                         </table>

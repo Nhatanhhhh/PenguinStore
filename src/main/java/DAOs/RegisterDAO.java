@@ -75,7 +75,7 @@ public class RegisterDAO {
             insertStatement.setString(3, fullName);
             insertStatement.setString(4, email);
             insertStatement.setString(5, phone);
-
+            
             int affectedRows = insertStatement.executeUpdate();
             if (affectedRows > 0) {
                 return "SUCCESS";

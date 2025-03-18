@@ -5,6 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Register</title>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
@@ -13,7 +14,11 @@
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/register.css"/>
     </head>
     <body style="background-color: #fff;">
-
+        <%
+            HttpSession sessionObj = request.getSession();
+            String msg = (String) sessionObj.getAttribute("msg");
+            sessionObj.removeAttribute("msg"); // Remove after displaying
+        %>
         <div class="container" style="padding: 0; margin-top: 20px; border-radius: 15px; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
             <div class="row">
                 <div class="image-container-2 col-md-6" data-aos="fade-up-right" ></div>
@@ -21,11 +26,6 @@
                 <div class="register-container col-md-6" data-aos="fade-up-left" style="margin: 10px;">
                     <h1 style=" font-size: 24px;">PENGUIN</h1>
                     <p style="text-align: center; font-size: 18px; margin-bottom: 20px;">Create Account</p>
-
-                    <c:if test="${not empty sessionScope.msg}">
-                        <div class="error">${sessionScope.msg}</div>
-                        <c:remove var="msg" scope="session"/>
-                    </c:if>
 
                     <div class="d-flex justify-content-center align-items-center">
                         <form class="register100-form validate-form flex-sb flex-w" action="<%= request.getContextPath()%>/Register" method="POST" style="margin: 45px 0;">
@@ -91,7 +91,7 @@
                                         <input id="password" class="input100" type="password" name="password" required>
                                         <span class="focus-input100"></span>
                                     </div>
-                                    <div id="passwordStrength" class="text-danger mt-2" style="display: none; font-size: 14px;"></div>
+                                    <div id="passwordStrength" class="mt-2" style="display: none; font-size: 14px;"></div>
                                 </div>
 
 
@@ -105,7 +105,7 @@
                                         <input id="confirm_password" class="input100" type="password" name="confirm_password" onChange="onChange()" required>
                                         <span class="focus-input100"></span>
                                     </div>
-                                    <div id="passwordError" class="text-danger mt-2" style="display: none; font-size: 14px;">
+                                    <div id="passwordError" class="mt-2" style="display: none; font-size: 14px;">
                                         Passwords do not match!
                                     </div>
                                 </div>
@@ -127,7 +127,7 @@
                             <!-- Social Media & Register Button -->
                             <div class="container-login100-form-btn" style="margin-top: 20px;">
                                 <div class="col-md-6 d-flex justify-content-start">
-                                    <a class="icon-google" href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:9999/PenguinStore/GoogleLogin&response_type=code&client_id=&approval_prompt=force"><i class="fa-brands fa-google"></i></a>
+                                    <a class="icon-google" href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:9999/PenguinStore/GoogleLogin&response_type=code&client_id=481523146636-vh5s2vjv8fm9hb8dtgi9e3f66711192u.apps.googleusercontent.com&approval_prompt=force"><i class="fa-brands fa-google"></i></a>
                                 </div>
                                 <div class="col-md-6 d-flex justify-content-end">
                                     <button class="login100-form-btn">
@@ -159,6 +159,40 @@
 
 
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                if (typeof Swal === "undefined") {
+                    console.error("SweetAlert2 is not loaded. Check your network connection.");
+                } else {
+            <% if (msg != null) {%>
+                    Swal.fire({
+                        title: "Oops!",
+                        text: "<%= msg%>",
+                        icon: "warning",
+                        confirmButtonText: "Try Again",
+                        timer: 3000,
+                        showCancelButton: true,
+                        cancelButtonText: "Close",
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        backdrop: `
+                        rgba(0,0,0,0.4)
+                        url("https://i.gifer.com/4V0b.gif")
+                        center top
+                        no-repeat
+                    `,
+                        showClass: {
+                            popup: "animate__animated animate__fadeInDown"
+                        },
+                        hideClass: {
+                            popup: "animate__animated animate__fadeOutUp"
+                        }
+                    });
+            <% }%>
+                }
+            });
+        </script>
         <script src="<%= request.getContextPath()%>/Assets/Javascript/register.js"></script>
+
     </body>
 </html>

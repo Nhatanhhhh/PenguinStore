@@ -9,6 +9,7 @@ package Models;
  * @author Nguyen Nhat Anh - CE181843
  */
 public class Customer {
+
     private String customerID;
     private String userName;
     private String passWord;
@@ -38,6 +39,17 @@ public class Customer {
         this.zip = zip;
         this.state = state;
         this.isVerified = isVerified;
+    }
+
+    public Customer(String customerID, String userName, String fullName, String email, String address, String phoneNumber, String zip, String state) {
+        this.customerID = customerID;
+        this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.zip = zip;
+        this.state = state;
     }
 
     public String getCustomerID() {

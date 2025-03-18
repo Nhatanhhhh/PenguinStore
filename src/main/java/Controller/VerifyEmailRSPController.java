@@ -19,33 +19,6 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "VerifyEmailRSPController", urlPatterns = {"/VerifyEmailRSP", "/ResendCodeRSP"})
 public class VerifyEmailRSPController extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet VerifyEmailRSPController</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet VerifyEmailRSPController at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -77,24 +50,31 @@ public class VerifyEmailRSPController extends HttpServlet {
         if ("/VerifyEmailRSP".equals(action)) {
             String verificationCode = request.getParameter("verificationCode");
             String sessionCode = (String) request.getSession().getAttribute("verificationCode");
+
             System.out.println("Verification code users enter: " + verificationCode);
             System.out.println("Authentication code in session: " + sessionCode);
+
             if (verificationCode != null && verificationCode.equals(sessionCode)) {
                 response.sendRedirect("ResetPassword");
             } else {
-                System.out.println("The authentication code is not correct or expired.");
-                request.setAttribute("errorMessage", "The authentication code is not correct or expired.");
-                request.getRequestDispatcher("Login").forward(request, response);
+                System.out.println("❌ The authentication code is incorrect or expired. Setting session error message.");
+
+                // ✅ Store error message in session
+                request.getSession().setAttribute("errorMessage", "The authentication code is incorrect or expired.");
+                response.sendRedirect("View/VerifyEmailRSP.jsp"); // Redirect instead of forward
             }
         } else if ("/ResendCodeRSP".equals(action)) {
-            // Gửi lại mã xác thực
+            // Resend verification code logic
             String email = (String) request.getSession().getAttribute("email");
             String newCode = generateVerificationCode();
             request.getSession().setAttribute("verificationCode", newCode);
+
             EmailService emailService = new EmailService();
             emailService.sendVerificationEmail(email, newCode);
-            request.setAttribute("msg", "The new authentication code has been sent.");
-            request.getRequestDispatcher("VerifyEmailRSP").forward(request, response);
+
+            // ✅ Store success message in session
+            request.getSession().setAttribute("successMessage", "A new verification code has been sent.");
+            response.sendRedirect("View/VerifyEmailRSP.jsp"); // Redirect to refresh the page
         }
     }
 

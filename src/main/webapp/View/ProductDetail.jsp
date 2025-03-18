@@ -3,7 +3,7 @@
     Created on : Feb 22, 2025, 6:35:04 PM
     Author     : Huynh Cong Nghiem - CE181351
 --%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -89,7 +89,7 @@
                             </p>
                         </div>
 
-                        <p class="price">$${product.price}</p>
+                        <p class="price"><strong>Price:</strong> <fmt:formatNumber value="${product.price}" pattern="#,###" /> ₫</p>
                         <p><strong>Type:</strong> ${product.typeName}</p>
                         <p><strong>Category:</strong> ${product.categoryName}</p>
 

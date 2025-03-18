@@ -12,12 +12,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Nguyen Nhat Anh - CE181843
  */
 public class ForgetPasswordController extends HttpServlet {
+
+    private static final Logger LOGGER = Logger.getLogger(ForgetPasswordController.class.getName());
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -57,7 +61,7 @@ public class ForgetPasswordController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("View/ForgetPassword.jsp").forward(request, response);
+        request.getRequestDispatcher("/View/ForgetPassword.jsp").forward(request, response);
     }
 
     /**
@@ -71,47 +75,90 @@ public class ForgetPasswordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String email = request.getParameter("email");
-        ResetPasswordDAO rPD = new ResetPasswordDAO();
-        String emailValidationMessage = validateEmail(email);
-        if (!emailValidationMessage.isEmpty()) {
-            request.setAttribute("errorMessage", emailValidationMessage);
-            request.getRequestDispatcher("ForgetPassword").forward(request, response);
-            return;
-        } else {
-            try {
-                boolean emailExists = rPD.checkEmailExists(email);
 
-                if (!emailExists) {
-                    request.setAttribute("errorMessage", "Email does not exist in the system!");
-                    request.getRequestDispatcher("ForgetPassword").forward(request, response);
-                } else {
-                    int verificationCode = (int) (Math.random() * 900000) + 100000;
-                    String verificationCodeStr = String.valueOf(verificationCode);
-                    EmailService emailService = new EmailService();
-                    emailService.sendVerificationEmail(email, verificationCodeStr);
-                    request.getSession().setAttribute("email", email);
-                    request.getSession().setAttribute("verificationCode", verificationCodeStr);
-                }
-            } catch (Exception e) {
-            }
+        LOGGER.log(Level.INFO, "Received password reset request");
+
+        String email = request.getParameter("email");
+        ResetPasswordDAO resetPasswordDAO = new ResetPasswordDAO();
+
+        if (!isValidEmail(email)) {
+            LOGGER.log(Level.WARNING, "Invalid email format: {0}", email);
+            request.getSession().setAttribute("errorMessage", "Invalid email format! Please enter a valid email.");
+            request.getRequestDispatcher("/View/ForgetPassword.jsp").forward(request, response);
+            return;  // STOP execution here
         }
 
-        response.sendRedirect("VerifyEmailRSP");
+        try {
+            boolean emailExists = resetPasswordDAO.checkEmailExists(email);
+
+            if (!emailExists) {
+                LOGGER.log(Level.WARNING, "Email does not exist: {0}", email);
+                request.getSession().setAttribute("errorMessage", "Email does not exist in the system!");
+                request.getRequestDispatcher("/View/ForgetPassword.jsp").forward(request, response);
+                return;  // STOP execution here
+            }
+
+            // Generate and send verification code
+            int verificationCode = generateVerificationCode();
+            String verificationCodeStr = String.valueOf(verificationCode);
+            EmailService emailService = new EmailService();
+
+            boolean emailSent = emailService.sendVerificationEmail(email, verificationCodeStr);
+
+            if (!emailSent) {
+                LOGGER.log(Level.SEVERE, "Failed to send verification email to: {0}", email);
+                request.getSession().setAttribute("errorMessage", "Failed to send verification email. Please try again later.");
+                request.getRequestDispatcher("/View/ForgetPassword.jsp").forward(request, response);
+                return;  // STOP execution here
+            }
+
+            // Store verification details in session
+            request.getSession().setAttribute("email", email);
+            request.getSession().setAttribute("verificationCode", verificationCodeStr);
+
+            LOGGER.log(Level.INFO, "Verification email sent successfully to: {0}", email);
+            request.getSession().setAttribute("successMessage", "A verification code has been sent to your email!");
+            response.sendRedirect("VerifyEmailRSP");  // Only redirect if no forward() has been executed
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error processing password reset request", e);
+            request.getSession().setAttribute("errorMessage", "An unexpected error occurred. Please try again.");
+            request.getRequestDispatcher("/View/ForgetPassword.jsp").forward(request, response);
+        }
     }
 
-    private String validateEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            return "Email cannot be empty.";
-        }
-
+    private boolean isValidEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        return email.matches(emailRegex);
+    }
 
-        if (!email.matches(emailRegex)) {
-            return "Invalid email format. Please enter a valid email (e.g., example@gmail.com).";
+    private int generateVerificationCode() {
+        return (int) (Math.random() * 900000) + 100000;
+    }
+
+    private void sendAlert(HttpServletResponse response, String title, String message, String icon) throws IOException {
+        sendAlert(response, title, message, icon, null);
+    }
+
+    private void sendAlert(HttpServletResponse response, String title, String message, String icon, String redirectURL) throws IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try ( var out = response.getWriter()) {
+            out.println("<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>");
+            out.println("<script>");
+            out.println("Swal.fire({");
+            out.println("    title: '" + title + "',");
+            out.println("    text: '" + message + "',");
+            out.println("    icon: '" + icon + "',");
+            out.println("    confirmButtonText: 'OK'");
+            out.println("}).then((result) => {");
+
+            if (redirectURL != null) {
+                out.println("    if (result.isConfirmed) { window.location.href = '" + redirectURL + "'; }");
+            }
+
+            out.println("});");
+            out.println("</script>");
         }
-
-        return "";
     }
 
     /**

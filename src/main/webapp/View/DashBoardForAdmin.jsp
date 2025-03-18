@@ -85,39 +85,50 @@
                 <!-- Header -->
                 <%@include file="Admin/HeaderAD.jsp"%>
                 <div class="content pl-4 pr-4">
-                    <h1>Admin Page</h1>
+                    <div class="content pl-4 pr-4">
+                        <h1>Admin Dashboard</h1>
 
-                    <!-- Biểu đồ doanh thu -->
-                    <h2>Revenue In February</h2>
-                    <div class="chart-container">
-                        <canvas id="revenueChart"></canvas>
+                        <!-- Thẻ thống kê -->
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card bg-primary text-white text-center p-3">
+                                    <h4>Nhân viên</h4>
+                                    <h2>25</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-success text-white text-center p-3">
+                                    <h4>Đơn hàng</h4>
+                                    <h2>120</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-warning text-white text-center p-3">
+                                    <h4>Doanh thu</h4>
+                                    <h2>$15,000</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-danger text-white text-center p-3">
+                                    <h4>Phản hồi</h4>
+                                    <h2>35</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tổng doanh thu -->
+                        <div class="row mt-4">
+                            <div class="col-md-8">
+                                <div class="card p-3 text-center">
+                                    <h5>Tổng doanh thu</h5>
+                                    <h2 class="text-success">
+                                        <c:out value="${totalRevenue}"/> VNĐ
+                                    </h2>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
-
-                    <!-- Kho hàng -->
-                    <h2>Warehouse</h2>
-                    <table>
-                        <tr>
-                            <th>Product Name</th>
-                            <th>Size</th>
-                            <th>Color</th>
-                            <th>Status</th>
-                            <th>Restock</th>
-                        </tr>
-                        <tr>
-                            <td>Spring Polo</td>
-                            <td>L</td>
-                            <td>Red</td>
-                            <td>Out of stock</td>
-                            <td><button>Restock</button></td>
-                        </tr>
-                        <tr>
-                            <td>Spring Polo</td>
-                            <td>M</td>
-                            <td>Blue</td>
-                            <td>Out of stock</td>
-                            <td><button>Restock</button></td>
-                        </tr>
-                    </table>
                 </div>
             </div>
         </div>
@@ -127,33 +138,6 @@
         <!-- Thư viện Chart.js -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        <!-- Script biểu đồ doanh thu -->
-        <script>
-            const ctx = document.getElementById('revenueChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-                    datasets: [{
-                            label: 'Revenue',
-                            data: [200, 500, 750, 400, 600, 450, 700, 550, 650, 600, 300, 800],
-                            borderColor: '#ff5733', // Màu cam đỏ nổi bật
-                            backgroundColor: 'rgba(255, 87, 51, 0.2)', // Màu nền nhẹ
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.4, // Làm mềm các góc của đường biểu đồ
-                        }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        </script>
+
     </body>
 </html>

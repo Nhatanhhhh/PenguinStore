@@ -21,7 +21,7 @@ public class RestockController extends HttpServlet {
             throws ServletException, IOException {
         String proVariantID = request.getParameter("id");
         String action = request.getParameter("action");
-
+        
         // Kiểm tra action có null không trước khi xử lý
         if (action == null) {
             response.sendRedirect(request.getContextPath() + "/ManageProduct?action=view");
@@ -29,13 +29,14 @@ public class RestockController extends HttpServlet {
         }
 
         RestockDAO restockDAO = new RestockDAO();
-
+        
         switch (action) {
             case "restock":
                 if (proVariantID == null || proVariantID.isEmpty()) {
                     response.sendRedirect("errorPage.jsp?message=Not have Product Detail");
                     return;
                 }
+                request.setAttribute("provariant", restockDAO.getOnlyById(proVariantID));
                 request.setAttribute("proVariantID", proVariantID);
                 request.getRequestDispatcher("/View/Restock.jsp").forward(request, response);
                 break;
@@ -64,8 +65,9 @@ public class RestockController extends HttpServlet {
         String quantityStr = request.getParameter("quantity");
         String priceStr = request.getParameter("price");
 
+
         if (proVariantID == null || quantityStr == null || priceStr == null
-                || proVariantID.isEmpty() || quantityStr.isEmpty() || priceStr.isEmpty()) {
+                || proVariantID.trim().isEmpty() || quantityStr.trim().isEmpty() || priceStr.trim().isEmpty()) {
             request.setAttribute("errorMessage", "All fields are required!");
             request.getRequestDispatcher("/View/Restock.jsp").forward(request, response);
             return;
@@ -75,18 +77,39 @@ public class RestockController extends HttpServlet {
             int quantity = Integer.parseInt(quantityStr);
             double price = Double.parseDouble(priceStr);
 
+            
+            if (quantity <= 0) {
+                request.setAttribute("errorMessage", "Quantity must be greater than 0!");
+                request.getRequestDispatcher("/View/Restock.jsp").forward(request, response);
+                return;
+            }
+
+            
+            if (price <= 0) {
+                request.setAttribute("errorMessage", "Price must be greater than 0!");
+                request.getRequestDispatcher("/View/Restock.jsp").forward(request, response);
+                return;
+            }
+
             RestockDAO restockDAO = new RestockDAO();
+
+
             boolean success = restockDAO.restockProduct(proVariantID, quantity, price);
 
             if (success) {
-                response.sendRedirect(request.getContextPath() + "/Restock?action=restockHistory");
+                response.sendRedirect(request.getContextPath() + "/ManageProduct?action=view");
             } else {
                 request.setAttribute("errorMessage", "Restock failed! Please try again.");
                 request.getRequestDispatcher("/View/Restock.jsp").forward(request, response);
             }
+
         } catch (NumberFormatException e) {
             request.setAttribute("errorMessage", "Invalid quantity or price format!");
             request.getRequestDispatcher("/View/Restock.jsp").forward(request, response);
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", "An unexpected error occurred: " + e.getMessage());
+            request.getRequestDispatcher("/View/Restock.jsp").forward(request, response);
         }
+
     }
 }

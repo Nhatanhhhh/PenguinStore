@@ -76,7 +76,7 @@ public class UsedVoucher {
     public void setVoucherCode(String voucherCode) {
         this.voucherCode = voucherCode;
     }
-    
+
     public double getDiscountPer() {
         return discountPer;
     }

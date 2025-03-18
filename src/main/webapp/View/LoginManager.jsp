@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/loginadmin.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath() %>/Assets/CSS/util.css"/>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
     </head>
     <body>
         <div class="limiter">

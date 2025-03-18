@@ -44,6 +44,14 @@ public class Restock {
         this.restockDate = restockDate;
     }
 
+    public Restock(String productName, String proVariantID, String sizeName, String colorName) {
+        this.productName = productName;
+        this.proVariantID = proVariantID;
+        this.sizeName = sizeName;
+        this.colorName = colorName;
+    }
+    
+
     public String getProductName() {
         return productName;
     }

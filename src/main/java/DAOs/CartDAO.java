@@ -72,6 +72,50 @@ public class CartDAO {
         return cartList;
     }
 
+    public List<CartItem> getCartItemsByCustomerID(String customerID) {
+        List<CartItem> cartItems = new ArrayList<>();
+        String sql = "SELECT c.cartID, c.productID, p.productName, c.quantity, p.price "
+                + "FROM Cart c "
+                + "JOIN ProductVariants v ON c.proVariantID = v.proVariantID "
+                + "JOIN Product p ON c.productID = p.productID "
+                + "WHERE c.customerID = ?";
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, customerID);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                CartItem item = new CartItem();
+                item.setCartID(rs.getString("cartID"));  // Thêm cartID
+                item.setProductID(rs.getString("productID"));
+                item.setProductName(rs.getString("productName"));
+                item.setQuantity(rs.getInt("quantity"));
+                item.setPrice(rs.getDouble("price"));
+                cartItems.add(item);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return cartItems;
+    }
+
+    public String getCartIDByCustomerIDAndProductID(String customerID, String productID) {
+        String query = "SELECT c.cartID FROM Cart c "
+                + "JOIN ProductVariants pv ON c.proVariantID = pv.proVariantID "
+                + "WHERE c.customerID = ? AND pv.productID = ?";
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, customerID);
+            ps.setString(2, productID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("cartID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean addToCart(Cart cartItem) {
         String checkQuery = "SELECT quantity FROM Cart WHERE customerID = ? AND productID = ? AND proVariantID = ?";
         String updateQuery = "UPDATE Cart SET quantity = quantity + ? WHERE customerID = ? AND productID = ? AND proVariantID = ?";

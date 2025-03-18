@@ -75,7 +75,7 @@ public class UseVoucher extends HttpServlet {
             if (discount > voucher.getMaxDiscountAmount()) {
                 discount = voucher.getMaxDiscountAmount();
             }
-            
+
         } else { // Giảm số tiền cố định
             discount = voucher.getDiscountAmount();
         }

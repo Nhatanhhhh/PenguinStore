@@ -58,7 +58,7 @@ public class ProductController extends HttpServlet {
         request.setAttribute("categoryMap", categoryMap);
         switch (action) {
             case "view":
-                request.setAttribute("listProduct", productDAO.readAll());
+                request.setAttribute("listProduct", productDAO.getProductCustomer());
                 request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
                 break;
             case "detail":
@@ -88,6 +88,12 @@ public class ProductController extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/Product?action=view");
                     return;
                 }
+                request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
+                break;
+            case "search":
+                String keysearch = request.getParameter("keysearch");
+                List<Product> searchResults = productDAO.searchProduct(keysearch);
+                request.setAttribute("listProduct", searchResults);
                 request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
                 break;
             default:
@@ -121,16 +127,28 @@ public class ProductController extends HttpServlet {
 
         String[] selectedTypes = request.getParameterValues("typeFilter");
         String[] selectedPrices = request.getParameterValues("priceFilter");
+
+        if ((selectedTypes == null || selectedTypes.length == 0)
+                && (selectedPrices == null || selectedPrices.length == 0)
+                && (sortCondition == null || sortCondition.isEmpty())) {
+            response.sendRedirect(request.getContextPath() + "/Product?action=view");
+            return;
+        }
+
         request.setAttribute("selectedTypes", selectedTypes != null ? Arrays.asList(selectedTypes) : new ArrayList<>());
         request.setAttribute("selectedPrices", selectedPrices != null ? Arrays.asList(selectedPrices) : new ArrayList<>());
 
         List<Product> filteredProducts = productDAO.getFilteredProducts(selectedTypes, selectedPrices, sortCondition);
-        if (filteredProducts == null || filteredProducts.isEmpty()) {
+
+        if ((filteredProducts == null || filteredProducts.isEmpty())
+                && !"sort".equals(action)
+                && (sortCondition == null || sortCondition.isEmpty())) {
             response.sendRedirect(request.getContextPath() + "/Product?action=view");
             return;
         }
 
         request.setAttribute("listProduct", filteredProducts);
         request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
+
     }
 }

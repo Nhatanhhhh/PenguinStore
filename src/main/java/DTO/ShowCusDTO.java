@@ -6,9 +6,10 @@ package DTO;
 
 /**
  *
- * @author truon
+ * @author Thuan
  */
 public class ShowCusDTO {
+
     private String customerName;
     private String fullName;
     private String address;
@@ -82,6 +83,5 @@ public class ShowCusDTO {
     public void setZip(String zip) {
         this.zip = zip;
     }
-    
-     
+
 }
