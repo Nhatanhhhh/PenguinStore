@@ -33,12 +33,12 @@ public class OrderDetailDAO {
         String query = "SELECT img.imgName, p.productName, od.unitPrice, c.colorName, s.sizeName, "
                 + "od.quantity, o.totalAmount, o.discountAmount, o.finalAmount, o.orderDate, so.statusName "
                 + "FROM OrderDetail od "
-                + "JOIN ProductVariants pv ON od.productVariantID = pv.proVariantID "
-                + "JOIN Product p ON pv.productID = p.productID "
-                + "JOIN Color c ON pv.colorID = c.colorID "
-                + "JOIN Size s ON pv.sizeID = s.sizeID "
-                + "JOIN [Order] o ON od.orderID = o.orderID "
-                + "JOIN StatusOrder so ON o.statusOID = so.statusOID "
+                + "LEFT JOIN ProductVariants pv ON od.productVariantID = pv.proVariantID "
+                + "LEFT JOIN Product p ON pv.productID = p.productID "
+                + "LEFT JOIN Color c ON pv.colorID = c.colorID "
+                + "LEFT JOIN Size s ON pv.sizeID = s.sizeID "
+                + "LEFT JOIN [Order] o ON od.orderID = o.orderID "
+                + "LEFT JOIN StatusOrder so ON o.statusOID = so.statusOID "
                 + "LEFT JOIN Image img ON p.productID = img.productID "
                 + "WHERE od.orderID = ?";
 
@@ -112,18 +112,5 @@ public class OrderDetailDAO {
             e.printStackTrace();
         }
         return details;
-    }
-
-    public void addOrderDetail(String orderID, String productID, int quantity) {
-        String sql = "INSERT INTO OrderDetail (orderID, productID, quantity) VALUES (?, ?, ?)";
-        try {
-            db.execQuery(sql, new Object[]{orderID, productID, quantity});
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void saveOrderDetails(String orderID, List<Cart> cartItems) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

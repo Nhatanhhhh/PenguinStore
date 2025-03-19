@@ -7,7 +7,7 @@
 <%@page import="java.util.List"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html> 
     <head>
         <title>Order Management</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>

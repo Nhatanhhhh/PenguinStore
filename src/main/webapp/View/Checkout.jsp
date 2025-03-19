@@ -11,6 +11,10 @@
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/co.css"/>
+        <%
+            List<CartItem> cartItems = (List<CartItem>) request.getAttribute("cartItems");
+            System.out.println("Debug JSP - cartItems: " + cartItems);
+        %>
     </head>
     <body style="padding: 0">
         <%@include file="Header.jsp"%>
@@ -20,7 +24,6 @@
                 <form action="<%= request.getContextPath()%>/Payment" method="post">
                     <h2>Contact</h2>
                     <% Customer customer = (Customer) request.getAttribute("customer");%>
-
                     <input type="email" name="email" placeholder="Email Address" required 
                            value="<%= (customer != null) ? customer.getAddress() : ""%>">
 
@@ -28,30 +31,33 @@
                     <div style="display: flex; gap: 10px;">
                         <input type="text" name="fullName" placeholder="Full Name" required 
                                value="<%= (customer != null) ? customer.getFullName() : ""%>" style="width: 50%;">
-
                         <input type="text" name="phoneNumber" placeholder="Phone Number" required 
                                value="<%= (customer != null) ? customer.getPhoneNumber() : ""%>" style="width: 50%;">
                     </div>
                     <input type="text" name="address" placeholder="Address" required 
                            value="<%= (customer != null) ? customer.getEmail() : ""%>">
-
                     <div style="display: flex; gap: 10px;">
                         <input type="text" name="zip" placeholder="Zip" style="width: 50%;" required 
                                value="<%= (customer != null) ? customer.getZip() : ""%>">
-
                         <input type="text" name="state" placeholder="State" style="width: 50%;" required 
                                value="<%= (customer != null) ? customer.getState() : ""%>">
                     </div>
+
+                    <%-- Input hidden để gửi giá trị --%>
                     <input type="hidden" name="subtotal" id="hiddenSubtotal" value="0">
                     <input type="hidden" name="voucher" id="hiddenVoucher">
                     <input type="hidden" name="discount" id="hiddenDiscount">
                     <input type="hidden" name="total" id="hiddenTotal">
-
+                    <% if (cartItems != null && !cartItems.isEmpty()) { %>
+                    <% for (CartItem item : cartItems) {%>
+                        <input type="hidden" name="sizeName" value="<%= item.getSizeName() != null ? item.getSizeName() : ""%>">
+                        <input type="hidden" name="colorName" value="<%= item.getColorName() != null ? item.getColorName() : ""%>">
+                    <% } %>
+                    <% } %>
                     <button type="submit" id="payNow">Order Now</button>
                 </form>
             </div>
             <div class="summary-section">
-                <% List<CartItem> cartItems = (List<CartItem>) request.getAttribute("cartItems"); %>
                 <% if (cartItems != null && !cartItems.isEmpty()) { %>
                 <% double subtotal = 0; %>
                 <% for (CartItem item : cartItems) {%>
@@ -61,14 +67,21 @@
                          alt="<%= item.getProductName()%>" width="80" height="80">
                     <div>
                         <h3><%= item.getProductName()%></h3>
+
+                        <% if (item.getColorName() != null && !item.getColorName().isEmpty()) {%>
                         <p>Color: <%= item.getColorName()%></p>
+                        <% } %>
+
+                        <% if (item.getSizeName() != null && !item.getSizeName().isEmpty()) {%>
+                        <p>Size: <%= item.getSizeName()%></p>
+                        <% }%>
                         <p>Quantity: <%= item.getQuantity()%></p>
-                        <p>Price: <fmt:formatNumber value="<%= item.getPrice() * item.getQuantity() %>" pattern="#,###" /> ₫</p>
+                        <p>Price: <fmt:formatNumber value="<%= item.getPrice() * item.getQuantity()%>" pattern="#,###" /> ₫</p>
                     </div>
                 </div>
                 <% }%>
                 <hr>
-                <p>Subtotal: <span id="subtotal"><fmt:formatNumber value="<%= subtotal %>" pattern="#,###" /> ₫</span></p>
+                <p>Subtotal: <span id="subtotal"><fmt:formatNumber value="<%= subtotal%>" pattern="#,###" /> ₫</span></p>
                 <a href="<%= request.getContextPath()%>/VVCustomer" class="btn btn-primary">
                     View Vouchers
                 </a>
@@ -81,7 +94,7 @@
 
                 <p>Voucher Discount: <span id="discount">0 ₫</span></p>
                 <p>Shipping: 40.00 ₫</p>
-                <h3>Total: <span id="total"><fmt:formatNumber value="<%= subtotal %>" pattern="#,###" /> </span>₫</h3>
+                <h3>Total: <span id="total"><fmt:formatNumber value="<%= subtotal%>" pattern="#,###" /> </span>₫</h3>
                 <% } else { %>
                 <p>Your cart is empty!</p>
                 <% }%>
@@ -95,7 +108,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     </body>
-
 </html>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -108,7 +120,7 @@
             let total = subtotal + shippingFee - discount;
 
             // C?p nh?t t?ng ti?n hi?n th?
-            document.getElementById("total").textContent = + total.toFixed(2);
+            document.getElementById("total").textContent = +total.toFixed(2);
 
             // C?p nh?t input hidden ?? g?i l�n server
             document.getElementById("hiddenSubtotal").value = subtotal.toFixed(2);
@@ -166,5 +178,4 @@
         console.log("Total:", document.getElementById("hiddenTotal").value);
 
     });
-
 </script>

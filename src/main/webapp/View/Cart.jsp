@@ -35,9 +35,16 @@
                      alt="<%= item.getProductName()%>">
                 <div>
                     <p><strong><%= item.getProductName()%></strong></p>
+                    <% if (item.getColorName() != null && !item.getColorName().isEmpty()) {%>
                     <p>Color: <%= item.getColorName()%></p>
-                    <p>Price: <span class="price"><fmt:formatNumber value="<%=item.getPrice()%>"  /></span></p>
-                    <!-- Form ?? x�a s?n ph?m -->
+                    <% } %>
+
+                    <% if (item.getSizeName() != null && !item.getSizeName().isEmpty()) {%>
+                    <p>Size: <%= item.getSizeName()%></p>
+                    <% }%>
+
+                    <p>Price: <span class="price"><fmt:formatNumber value="<%= item.getPrice()%>" /></span></p>
+
                     <form action="<%= request.getContextPath()%>/Cart" method="post">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="cartID" value="<%= (item.getCartID() != null) ? item.getCartID() : ""%>">
@@ -47,7 +54,7 @@
                 <div class="quantity">
                     <button onclick="changeQuantity(-1, <%= item.getPrice()%>, '<%= item.getCartID()%>')">-</button>
                     <span id="quantity_<%= item.getCartID()%>"><%= item.getQuantity()%></span>
-                    <button onclick="changeQuantity(1, <%= item.getPrice()%>, '<%= item.getCartID()%>')">-</button>
+                    <button onclick="changeQuantity(1, <%= item.getPrice()%>, '<%= item.getCartID()%>')">+</button>
                 </div>
                 <p>Total: <span id="total_<%= item.getCartID()%>">
                         <fmt:formatNumber value="<%= item.getPrice() * item.getQuantity()%>"  /> 
@@ -55,10 +62,16 @@
             </div>
             <% subtotal += item.getPrice() * item.getQuantity(); %>
             <% } %>
-            <% } else { %>
-            <p>Your cart is empty.</p>
+            <% } else {%>
+            <p>Your cart is empty. 
+                <a href="<%= request.getContextPath()%>/Product" style="color: blue; text-decoration: underline;">
+                    Start shopping now
+                </a>
+            </p>
             <% }%>
-            <p>Subtotal: <span id="subtotal"><fmt:formatNumber value="<%= subtotal%>"  /></span></p>
+            <p>Subtotal: <span id="subtotal" data-subtotal="<%= subtotal%>">
+                    <fmt:formatNumber value="<%= subtotal%>" />
+                </span></p>
             <form action="<%= request.getContextPath()%>/Cart" method="post">
                 <input type="hidden" name="action" value="clear">
                 <button type="submit" class="clear-cart-btn" onclick="return confirm('Are you sure you want to clear the cart?')">Clear Cart</button>
@@ -72,64 +85,72 @@
             </div>
         </div>
 
-        <script>
-            function changeQuantity(amount, price, cartID) {
-                console.log("Updating cart - cartID:", cartID);
-                let quantityElement = document.getElementById("quantity_" + cartID);
-                let totalElement = document.getElementById("total_" + cartID);
-                let subtotalElement = document.getElementById("subtotal");
-
-                if (!quantityElement || !totalElement) {
-                    console.error("Error: Element not found for cartID:", cartID);
-                    return;
-                }
-
-                let quantity = Math.max(0, parseInt(quantityElement.innerText) + amount);
-
-                if (quantity === 0) {
-                    if (!confirm("Do you want to remove this item from the cart?")) {
-                        return;
-                    }
-                }
-
-                quantityElement.innerText = quantity;
-                totalElement.innerText = "$" + (price * quantity).toLocaleString();
-                console.log("Updating cart - cartID:", quantity);
-
-                $.ajax({
-                    url: "<%= request.getContextPath()%>/Cart",
-                    type: "POST",
-                    data: {
-                        action: quantity > 0 ? 'update' : 'delete',
-                        cartID: cartID,
-                        quantity: quantity
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            updateSubtotal();
-                        }
-                        location.reload();
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error updating cart:", error);
-                    }
-                });
-            }
-
-            function updateSubtotal() {
-                let totalElements = document.querySelectorAll("[id^=total_]");
-                let subtotal = 0;
-
-                totalElements.forEach(el => {
-                    subtotal += parseFloat(el.innerText.replace("$", "").replace(/,/g, ""));
-                });
-
-                document.getElementById("subtotal").innerText = "$" + subtotal.toLocaleString();
-            }
-
-        </script>
-
         <%@include file="Footer.jsp"%>
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
 </html>
+<script>
+    function changeQuantity(amount, price, cartID, stockQuantity) {
+        console.log("Updating cart - cartID:", cartID);
+        let quantityElement = document.getElementById("quantity_" + cartID);
+        let totalElement = document.getElementById("total_" + cartID);
+        let subtotalElement = document.getElementById("subtotal");
+
+        if (!quantityElement || !totalElement || !subtotalElement) {
+            console.error("Error: Element not found for cartID:", cartID);
+            return;
+        }
+
+        let currentQuantity = parseInt(quantityElement.innerText);
+        let newQuantity = currentQuantity + amount;
+
+        if (newQuantity < 1) {
+            newQuantity = 1;
+        } else if (newQuantity > stockQuantity) {
+            alert("This product variation is not available in stock.");
+            return;
+        }
+
+        quantityElement.innerText = newQuantity;
+        totalElement.innerText = "$" + (price * newQuantity).toLocaleString();
+
+        // Proceed with the AJAX call to update the cart
+        $.ajax({
+            url: "<%= request.getContextPath()%>/Cart",
+            type: "POST",
+            data: {
+                action: 'update',
+                cartID: cartID,
+                quantity: newQuantity
+            },
+            success: function (data) {
+                if (data.status === "success") {
+                    updateSubtotal();
+                } else {
+                    console.error("Error updating cart:", data.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error updating cart:", error);
+            }
+        });
+    }
+
+
+    function updateSubtotal() {
+        let totalElements = document.querySelectorAll("[id^=total_]");
+        let subtotalElement = document.getElementById("subtotal");
+        let subtotal = 0;
+
+        totalElements.forEach(el => {
+            let value = parseFloat(el.innerText.replace("$", "").replace(/,/g, ""));
+            if (!isNaN(value)) {
+                subtotal += value;
+            }
+        });
+
+        subtotalElement.innerText = "$" + subtotal.toLocaleString();
+        subtotalElement.setAttribute("data-subtotal", subtotal);
+    }
+
+</script>

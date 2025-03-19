@@ -3,6 +3,8 @@
     Created on : Mar 8, 2025, 11:25:57 AM
     Author     : Le Minh Loc CE180992
 --%>
+<%@page import="java.util.Date"%>
+<%@page import="java.text.SimpleDateFormat"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="DTO.OrderDetailDTO" %>
@@ -45,13 +47,34 @@
                     <div>Color: <%= detail.getColorName()%></div>
                     <div>Size: <%= detail.getSizeName()%></div>
                     <div>Quantity: <%= detail.getQuantity()%></div>
+                    <div>Unit Price <%= detail.getUnitPrice()%></div>
+
                 </div>
-                <div class="ods-price">$<%= detail.getUnitPrice()%></div>
+                <div class="ods-price">$<%= detail.getUnitPrice() * detail.getQuantity()%></div>
             </div>
             <% }%>
+            <%
+                // Lấy ngày từ OrderDetailDTO (chuỗi String)
+                String orderDateStr = firstDetail.getDateOrder();
+
+                // Chuyển đổi String thành Date
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+                SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date orderDate = null;
+                String formattedDate = "N/A";
+
+                try {
+                    if (orderDateStr != null && !orderDateStr.isEmpty()) {
+                        orderDate = inputFormat.parse(orderDateStr);
+                        formattedDate = outputFormat.format(orderDate);
+                    }
+                } catch (Exception e) {
+                    formattedDate = "Invalid Date";
+                }
+            %>
 
             <div class="ods-order-info">
-                <div><span>Order date:</span> <span><strong><%= firstDetail.getDateOrder()%></strong></span></div>
+                <div><span>Order date:</span> <span><strong><%= formattedDate%></strong></span></div>
                 <div><span>Subtotal:</span> <span><strong>$<%= firstDetail.getTotalAmount()%></strong></span></div>
                 <div><span>Voucher Discount:</span> <span><strong>$<%= firstDetail.getDiscountAmount()%></strong></span></div>
                 <div><span>Total:</span> <span><strong>$<%= firstDetail.getFinalAmount()%></strong></span></div>

@@ -158,7 +158,7 @@
                                                 <% } else if (order.getOrderStatus().equals("Order Cancellation Request")) { %>
                                                 <span class="text-warning fw-bold">Order Cancellation Request</span>
                                                 <% } else if (order.getOrderStatus().equals("Delivery successful")) { %>
-                                                <span class="text-success fw-bold">Order has been delivered successfully</span>
+                                                <span class="text-success fw-bold">Order has been delivered</span>
                                                 <% } else {%>
                                                 <select class="form-select">
                                                     <option <%= order.getOrderStatus().equals("Pending processing") ? "selected" : ""%>>Pending processing</option>
@@ -169,8 +169,6 @@
                                                 </select>
                                                 <% }%>
                                             </td>
-
-
                                             <td>
                                                 <% if (order.getOrderStatus().equals("Cancel order")) {%>
                                                 <form action="<%= request.getContextPath()%>/OrderDetailManage" method="GET">
@@ -197,7 +195,6 @@
                                                 </form>
                                                 <% } %>
                                             </td>
-
 
                                         </tr>
                                         <% }
@@ -265,114 +262,115 @@
 
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
         <script src="<%= request.getContextPath()%>/Assets/Javascript/Staff/scripts.js"></script>
-        <script>
-                                                    let selectedOrderId;
-                                                    let selectedStatus;
 
-                                                    function confirmUpdate(orderId, button) {
-                                                        selectedOrderId = orderId;
-                                                        let row = button.closest('tr');
-                                                        selectedStatus = row.querySelector('select').value;
-
-                                                        if (selectedStatus === "Delivery successful") {
-                                                            let modal = new bootstrap.Modal(document.getElementById('confirmDeliveryModal'));
-                                                            modal.show();
-                                                        } else {
-                                                            let modal = new bootstrap.Modal(document.getElementById('confirmModal'));
-                                                            modal.show();
-                                                        }
-                                                    }
-
-                                                    document.getElementById('confirmDeliveryBtn').addEventListener('click', function () {
-                                                        updateOrderStatus();
-                                                    });
-
-                                                    document.getElementById('confirmUpdateBtn').addEventListener('click', function () {
-                                                        updateOrderStatus();
-                                                    });
-
-                                                    function filterOrders() {
-                                                        let filter = document.getElementById("filterStatus").value.toLowerCase();
-                                                        let filterText = document.getElementById("filterStatus").options[document.getElementById("filterStatus").selectedIndex].text;
-                                                        let rows = document.querySelectorAll("#orderTable tr");
-                                                        let found = false;
-
-                                                        let statusMapping = {
-                                                            "pending-processing": "pending processing",
-                                                            "processed": "processed",
-                                                            "order-cancellation-request": "order cancellation request",
-                                                            "cancel-order": "cancel order",
-                                                            "delivered-to-carrier": "delivered to the carrier",
-                                                            "delivery-failed": "delivery failed",
-                                                            "delivery-successful": "delivery successful"
-                                                        };
-
-                                                        rows.forEach(row => {
-                                                            if (row.id !== "notFoundRow") {  // ??m b?o không x? lý dòng "Not found"
-                                                                let status = row.cells[4].innerText.trim().toLowerCase();
-                                                                if (filter === "all" || status === statusMapping[filter]) {
-                                                                    row.style.display = "";
-                                                                    found = true; // N?u có ít nh?t 1 dòng h?p l?, không hi?n th? "Not found"
-                                                                } else {
-                                                                    row.style.display = "none";
-                                                                }
-                                                            }
-                                                        });
-
-                                                        // Xóa dòng "Not found" n?u có d? li?u h?p l?
-                                                        let notFoundRow = document.getElementById("notFoundRow");
-                                                        if (notFoundRow) {
-                                                            notFoundRow.remove();
-                                                        }
-
-                                                        // N?u không tìm th?y k?t qu?, thêm dòng "Not found" v?i tr?ng thái ?ã filter
-                                                        if (!found) {
-                                                            let tbody = document.getElementById("orderTable");
-                                                            let tr = document.createElement("tr");
-                                                            tr.id = "notFoundRow";
-                                                            tr.innerHTML = `<td colspan="7" class="text-danger fw-bold">The status you are looking for was NOT FOUND. ${filterText}</td>`;
-                                                            tbody.appendChild(tr);
-                                                        }
-                                                    }
-                                                    function acceptCancel(orderId) {
-                                                        fetch('<%= request.getContextPath()%>/OrderManagement', {
-                                                            method: 'POST',
-                                                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                                                            body: 'orderID=' + orderId + '&statusName=Cancel order'
-                                                        }).then(response => response.text()).then(data => {
-                                                            alert('Order has been cancelled.');
-                                                            window.location.reload();
-                                                        }).catch(error => console.error('Error:', error));
-                                                    }
-
-
-                                                    function searchOrders() {
-                                                        let keyword = document.getElementById("searchBox").value.toLowerCase();
-                                                        let rows = document.querySelectorAll("#orderTable tr");
-                                                        rows.forEach(row => {
-                                                            let text = row.innerText.toLowerCase();
-                                                            row.style.display = text.includes(keyword) ? "" : "none";
-                                                        });
-                                                    }
-
-                                                    function updateOrderStatus() {
-                                                        fetch('<%= request.getContextPath()%>/OrderManagement', {
-                                                            method: 'POST',
-                                                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                                                            body: 'orderID=' + selectedOrderId + '&statusName=' + encodeURIComponent(selectedStatus)
-                                                        }).then(response => response.text()).then(data => {
-                                                            alert('Order status updated successfully');
-                                                            window.location.reload();
-                                                        }).catch(error => console.error('Error:', error));
-
-                                                        let deliveryModal = bootstrap.Modal.getInstance(document.getElementById('confirmDeliveryModal'));
-                                                        let normalModal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
-                                                        if (deliveryModal)
-                                                            deliveryModal.hide();
-                                                        if (normalModal)
-                                                            normalModal.hide();
-                                                    }
-
-        </script>
     </body>
 </html>
+<script>
+                                                 let selectedOrderId;
+                                                 let selectedStatus;
+
+                                                 function confirmUpdate(orderId, button) {
+                                                     selectedOrderId = orderId;
+                                                     let row = button.closest('tr');
+                                                     selectedStatus = row.querySelector('select').value;
+
+                                                     if (selectedStatus === "Delivery successful") {
+                                                         let modal = new bootstrap.Modal(document.getElementById('confirmDeliveryModal'));
+                                                         modal.show();
+                                                     } else {
+                                                         let modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+                                                         modal.show();
+                                                     }
+                                                 }
+
+                                                 document.getElementById('confirmDeliveryBtn').addEventListener('click', function () {
+                                                     updateOrderStatus();
+                                                 });
+
+                                                 document.getElementById('confirmUpdateBtn').addEventListener('click', function () {
+                                                     updateOrderStatus();
+                                                 });
+
+                                                 function filterOrders() {
+                                                     let filter = document.getElementById("filterStatus").value.toLowerCase();
+                                                     let filterText = document.getElementById("filterStatus").options[document.getElementById("filterStatus").selectedIndex].text;
+                                                     let rows = document.querySelectorAll("#orderTable tr");
+                                                     let found = false;
+
+                                                     let statusMapping = {
+                                                         "pending-processing": "pending processing",
+                                                         "processed": "processed",
+                                                         "order-cancellation-request": "order cancellation request",
+                                                         "cancel-order": "cancel order",
+                                                         "delivered-to-carrier": "delivered to the carrier",
+                                                         "delivery-failed": "delivery failed",
+                                                         "delivery-successful": "delivery successful"
+                                                     };
+
+                                                     rows.forEach(row => {
+                                                         if (row.id !== "notFoundRow") {  // ??m b?o không x? lý dòng "Not found"
+                                                             let status = row.cells[4].innerText.trim().toLowerCase();
+                                                             if (filter === "all" || status === statusMapping[filter]) {
+                                                                 row.style.display = "";
+                                                                 found = true; // N?u có ít nh?t 1 dòng h?p l?, không hi?n th? "Not found"
+                                                             } else {
+                                                                 row.style.display = "none";
+                                                             }
+                                                         }
+                                                     });
+
+                                                     // Xóa dòng "Not found" n?u có d? li?u h?p l?
+                                                     let notFoundRow = document.getElementById("notFoundRow");
+                                                     if (notFoundRow) {
+                                                         notFoundRow.remove();
+                                                     }
+
+                                                     // N?u không tìm th?y k?t qu?, thêm dòng "Not found" v?i tr?ng thái ?ã filter
+                                                     if (!found) {
+                                                         let tbody = document.getElementById("orderTable");
+                                                         let tr = document.createElement("tr");
+                                                         tr.id = "notFoundRow";
+                                                         tr.innerHTML = `<td colspan="7" class="text-danger fw-bold">The status you are looking for was NOT FOUND. ${filterText}</td>`;
+                                                         tbody.appendChild(tr);
+                                                     }
+                                                 }
+                                                 function acceptCancel(orderId) {
+                                                     fetch('<%= request.getContextPath()%>/OrderManagement', {
+                                                         method: 'POST',
+                                                         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                                         body: 'orderID=' + orderId + '&statusName=Cancel order'
+                                                     }).then(response => response.text()).then(data => {
+                                                         alert('Order has been cancelled.');
+                                                         window.location.reload();
+                                                     }).catch(error => console.error('Error:', error));
+                                                 }
+
+
+                                                 function searchOrders() {
+                                                     let keyword = document.getElementById("searchBox").value.toLowerCase();
+                                                     let rows = document.querySelectorAll("#orderTable tr");
+                                                     rows.forEach(row => {
+                                                         let text = row.innerText.toLowerCase();
+                                                         row.style.display = text.includes(keyword) ? "" : "none";
+                                                     });
+                                                 }
+
+                                                 function updateOrderStatus() {
+                                                     fetch('<%= request.getContextPath()%>/OrderManagement', {
+                                                         method: 'POST',
+                                                         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                                         body: 'orderID=' + selectedOrderId + '&statusName=' + encodeURIComponent(selectedStatus)
+                                                     }).then(response => response.text()).then(data => {
+                                                         alert('Order status updated successfully');
+                                                         window.location.reload();
+                                                     }).catch(error => console.error('Error:', error));
+
+                                                     let deliveryModal = bootstrap.Modal.getInstance(document.getElementById('confirmDeliveryModal'));
+                                                     let normalModal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+                                                     if (deliveryModal)
+                                                         deliveryModal.hide();
+                                                     if (normalModal)
+                                                         normalModal.hide();
+                                                 }
+
+</script>

@@ -59,7 +59,6 @@ public class CartController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect("View/LoginCustomer.jsp");
             return;
@@ -75,21 +74,24 @@ public class CartController extends HttpServlet {
             String cartID = request.getParameter("cartID");
             int quantity = Integer.parseInt(request.getParameter("quantity"));
 
-            String successMessage = "failed";
+            // Fetch the product's stock quantity for the specific variant (proVariantID)
+            int stockQuantity = cartDAO.getStockQuantityByCartItem(cartID); // Ensure this method is implemented
 
-            if (quantity == 0) {
-                if (quantity == 0) {
-                    cartDAO.removeFromCart(cartID);
-                    successMessage = "success"; // Xác nhận rằng việc xóa sản phẩm đã thành công
-                }
-            } else {
-                boolean success = cartDAO.updateCartItemQuan(cartID, quantity);
-                if (success) {
-                    successMessage = "success";
-                }
+            if (quantity > stockQuantity) {
+                // Send an error response indicating insufficient stock
+                JsonObject json = new JsonObject();
+                json.addProperty("status", "failed");
+                json.addProperty("message", "This product variation is not available in stock.");
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(json.toString());
+                return;
             }
 
-            // Tạo JSON phản hồi
+            // Proceed with updating the cart item quantity
+            boolean success = cartDAO.updateCartItemQuan(cartID, quantity);
+            String successMessage = success ? "success" : "failed";
+
             JsonObject json = new JsonObject();
             json.addProperty("status", successMessage);
             json.addProperty("cartID", cartID);
@@ -99,11 +101,12 @@ public class CartController extends HttpServlet {
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(json.toString());
         } else if ("delete".equals(action)) {
+            // Handle deletion as previously
             String cartID = request.getParameter("cartID");
             if (cartID != null && !cartID.isEmpty()) {
                 cartDAO.removeFromCart(cartID);
             }
-            response.sendRedirect(request.getContextPath() + "/Cart"); // Chỉ redirect, không forward
+            response.sendRedirect(request.getContextPath() + "/Cart");
             return;
         } else if ("clear".equals(action)) {
             cartDAO.clearCart(customerID);
@@ -111,7 +114,6 @@ public class CartController extends HttpServlet {
             return;
         }
 
-        // Nếu không phải hành động "update", "delete" hay "clear", thì mới forward
         List<CartItem> cartItems = cartDAO.viewCart(customerID);
         Map<CartItem, String> productIDs = new HashMap<>();
         for (CartItem item : cartItems) {

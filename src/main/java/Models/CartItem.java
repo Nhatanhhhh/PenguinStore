@@ -37,6 +37,16 @@ public class CartItem {
         this.imgNames = imgNames;
     }
 
+    public CartItem(String cartID, String productName, double price, int quantity, String colorName, String sizeName, String imgNames) {
+        this.cartID = cartID;
+        this.productName = productName;
+        this.price = price;
+        this.quantity = quantity;
+        this.colorName = (colorName != null) ? colorName : "";
+        this.sizeName = (sizeName != null) ? sizeName : "";
+        this.imgNames = imgNames;
+    }
+
     public CartItem(String productID, String productName, double price, int quantity) {
         this.productID = productID;
         this.productName = productName;

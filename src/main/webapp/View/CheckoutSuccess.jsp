@@ -6,33 +6,40 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Order Successful</title>
+        
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
+        
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
-        <style>
-
-        </style>
     </head>
     <body>
         <%@include file="Header.jsp"%>
-        <%            String orderID = request.getParameter("orderID");
-        %>
-        <div class="container">
-            <h2>Order Successful</h2>
-            <p>Thank you for your purchase!</p>
-            <p>Your order ID is: <span class="order-id"><%= orderID.length() >= 4 ? orderID.substring(0, 4) : orderID%></span></p>
-            <div class="button-group">
-                <a href="<%= request.getContextPath()%>/Product" class="back-home">Back to Home</a>
-                <a href="<%= request.getContextPath()%>/OrderHistory" class="my-order">My Order</a>
+        
+        <div class="container text-center mt-5">
+            <% String orderID = request.getParameter("orderID"); %>
+            <h2 class="text-success">Order Successful</h2>
+            <p class="lead">Thank you for your purchase!</p>
+            
+            <p>Your Order ID is: 
+                <span class="order-id font-weight-bold">
+                    <%= (orderID != null && orderID.length() >= 4) ? orderID.substring(0, 4).toUpperCase() : orderID.toUpperCase() %>
+                </span>
+            </p>
+            
+            <div class="button-group mt-4">
+                <a href="<%= request.getContextPath()%>/Product" class="btn btn-primary">Back to Home</a>
+                <a href="<%= request.getContextPath()%>/OrderHistory" class="btn btn-secondary">My Order</a>
             </div>
         </div>
+        
         <%@include file="Footer.jsp"%>
+        
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
-
     </body>
 </html>

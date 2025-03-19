@@ -167,7 +167,13 @@
                         <div class="col-md-10">
                             <div class="order-info">
                                 <p><strong>OrderID:</strong> <%= (order.getOrderID().length() >= 4) ? order.getOrderID().substring(0, 4) : order.getOrderID()%></p>
-                                <p><strong>Voucher code:</strong> <%= order.getVoucherName()%></p>
+                                <p><strong>Voucher code:</strong> 
+                                    <% if (order.getVoucherName() != null && !order.getVoucherName().isEmpty()) {%>
+                                    <%= order.getVoucherName()%>
+                                    <% } else { %>
+                                    You did not use a voucher
+                                    <% }%>
+                                </p>
                                 <p><strong>Order date:</strong> <%= order.getOrderDate()%></p>
                                 <span class="status <%= order.getStatusName().toLowerCase().replace(" ", "-")%>">
                                     <%= order.getStatusName()%>
@@ -187,16 +193,15 @@
                                     <input type="hidden" name="action" value="updateStatus">
                                     <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
                                     <input type="hidden" name="newStatus" value="Pending processing">
-                                    <button type="submit" class="btn btn-recancel" data-bs-toggle="modal" data-bs-target="#confirmModal">ReCancel</button>
+                                    <button type="submit" class="btn btn-recancel">ReCancel</button>
                                 </form>
                                 <% } else {%>
                                 <form action="<%= request.getContextPath()%>/OrderHistory" method="POST">
                                     <input type="hidden" name="action" value="updateStatus">
                                     <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
                                     <input type="hidden" name="newStatus" value="Order Cancellation Request">
-                                    <button type="submit" class="btn btn-cancel" data-bs-toggle="modal" data-bs-target="#confirmModal">Cancel Order</button>
+                                    <button type="submit" class="btn btn-cancel">Cancel Order</button>
                                 </form>
-
                                 <% } %>
                             </div>
                         </div>
@@ -234,7 +239,8 @@
 
         document.querySelectorAll(".btn-cancel, .btn-recancel").forEach(button => {
             button.addEventListener("click", function (event) {
-                event.preventDefault(); // Ngăn chặn submit ngay lập tức
+                event.preventDefault(); // Ngăn chặn submit form
+
                 selectedForm = this.closest("form");
 
                 let actionType = this.classList.contains("btn-cancel") ? "Cancel" : "ReCancel";
@@ -244,7 +250,6 @@
                 modal.show();
             });
         });
-
         document.getElementById("confirmAction").addEventListener("click", function () {
             if (selectedForm) {
                 selectedForm.submit();
