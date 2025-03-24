@@ -91,14 +91,14 @@ public class ManageProductController extends HttpServlet {
                     request.getRequestDispatcher("/View/ViewProductsAdmin.jsp").forward(request, response);
                     break;
                 case "edit":
-                    ArrayList<ProductVariant> productDetail = productVariantDAO.viewProductDetail(id);
-                    Product chooseProduct = productDAO.getOneProduct(id);
-                    System.out.println("Product Detail Size: " + productDetail.size());
-                    for (ProductVariant pv : productDetail) {
-                        System.out.println("Variant: " + pv.getColorName() + ", " + pv.getSizeName());
-                    }
-                    request.setAttribute("product", chooseProduct);
-                    request.setAttribute("productDetail", productDetail);
+                    ArrayList<Type> typeEdit = typeDAO.getAll();
+                    ArrayList<ProductVariant> listDetailEdit = productVariantDAO.viewProductDetail(id);
+                    ArrayList<Image> listImgEdit = imageDAO.getImageProduct(id);
+                    Product productEdit = productDAO.getOneProduct(id);
+                    request.setAttribute("listImg", listImgEdit);
+                    request.setAttribute("listType", typeEdit);
+                    request.setAttribute("productDetail", listDetailEdit);
+                    request.setAttribute("product", productEdit);
                     request.getRequestDispatcher("/View/EditProduct.jsp").forward(request, response);
                     break;
                 case "create":
@@ -150,7 +150,7 @@ public class ManageProductController extends HttpServlet {
             SizeDAO sizeDAO = new SizeDAO();
             ColorDAO colorDAO = new ColorDAO();
             TypeDAO typeDAO = new TypeDAO();
-
+            ArrayList<Type> listType = typeDAO.getAll();
             if (Objects.isNull(action)) {
                 if ("POST".equalsIgnoreCase(request.getMethod())) {
                     response.sendRedirect(request.getRequestURI());
@@ -194,7 +194,7 @@ public class ManageProductController extends HttpServlet {
                             filteredProducts.add(product);
                         }
                     }
-                    ArrayList<Type> listType = typeDAO.getAll();
+
                     request.setAttribute("listType", listType);
                     request.setAttribute("listProduct", filteredProducts);
                     request.setAttribute("productVariantsMap", productVariantsMap);
@@ -208,9 +208,29 @@ public class ManageProductController extends HttpServlet {
                     String typeId = request.getParameter("typeId");
                     String[] colorIds = request.getParameterValues("colorIds");
                     String[] sizeIds = request.getParameterValues("sizeIds");
+                    boolean isProductExist = productDAO.checkProduct(productName);
+                    if (isProductExist) {
+                        ArrayList<Size> listSize = sizeDAO.getAll();
+                        ArrayList<Color> listColor = colorDAO.getAll();
+                        request.setAttribute("listType", listType);
+                        request.setAttribute("listSize", listSize);
+                        request.setAttribute("listColor", listColor);
+                        request.setAttribute("productName", productName);
+                        request.setAttribute("description", description);
+                        request.setAttribute("price", price);
+                        request.setAttribute("category", category);
+                        request.setAttribute("typeId", typeId);
+                        request.setAttribute("selectedColorIds", colorIds);
+                        request.setAttribute("selectedSizeIds", sizeIds);
+                        request.setAttribute("errorMessage", "Product name already exists. Please choose a different name.");
+                        request.getRequestDispatcher("/View/CreateProduct.jsp").forward(request, response);
+                        return;
+                    }
                     String[] context = request.getServletContext().getRealPath("").split("target");
-                    String realPath = context[0] + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "Image" + File.separator + "Product";
+                    String realPath = context[0] + "src" + File.separator + "main" + File.separator
+                            + "webapp" + File.separator + "Image" + File.separator + "Product";
                     ArrayList<String> imageNames = new ArrayList<>();
+
                     for (Part part : request.getParts()) {
                         if (part.getName().equals("selectedFiles") && part.getSize() > 0) {
                             String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
@@ -218,8 +238,10 @@ public class ManageProductController extends HttpServlet {
                             imageNames.add(fileName);
                         }
                     }
+
                     String imageString = String.join(",", imageNames);
                     Product product = new Product(productName, description, price, typeId);
+
                     try {
                         int createProduct = productDAO.insertProduct(product);
                         int createProductVariant = productVariantDAO.insertProductVariant(productName, sizeIds, colorIds);
@@ -227,22 +249,29 @@ public class ManageProductController extends HttpServlet {
                     } catch (SQLException ex) {
                         Logger.getLogger(ManageProductController.class.getName()).log(Level.SEVERE, null, ex);
                     }
+
                     response.sendRedirect(request.getContextPath() + "/ManageProduct?action=view");
                     break;
 
                 case "updateProduct":
-                    try {
                     String productIDUpdate = request.getParameter("productID");
                     String updatedProductName = request.getParameter("productName");
                     String updatedDescription = request.getParameter("description");
-                    int updatedPrice = Integer.parseInt(request.getParameter("price"));
-                    boolean successIsSale = productDAO.updateProduct(productIDUpdate, updatedProductName, updatedDescription, updatedPrice);
-                    response.getWriter().write(successIsSale ? "Success" : "Error updating product");
-                } catch (IOException | NumberFormatException ex) {
-                    Logger.getLogger(ManageProductController.class.getName()).log(Level.SEVERE, null, ex);
-                    response.getWriter().write("Error: " + ex.getMessage());
-                }
-                break;
+                    String priceStr = request.getParameter("price");
+                    try {
+                        int updatedPrice = Integer.parseInt(priceStr);
+                        if (productDAO.checkNameUpdate(updatedProductName, productIDUpdate)) {
+                            response.getWriter().write("DuplicateName");
+                            return;
+                        }
+                        Product proUpdate = new Product(productIDUpdate, updatedProductName, updatedDescription, updatedPrice);
+                        boolean successIsSale = productDAO.updateProduct(proUpdate);
+                        response.getWriter().write(successIsSale ? "Success" : "Error updating product");
+                        System.out.println(successIsSale);
+                    } catch (NumberFormatException e) {
+                        response.getWriter().write("InvalidPrice");
+                    }
+                    break;
                 case "updateVariantStatus":
                     try {
                     String variantID = request.getParameter("variantID");

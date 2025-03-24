@@ -121,5 +121,19 @@
                 </div>
             </c:forEach>
         </nav>
+        <script>
+            document.getElementById("searchInput").addEventListener("keypress", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    let keysearch = this.value.trim();
+                    if (keysearch.length > 0) {
+                        window.location.href = "Product?action=search&keysearch=" + encodeURIComponent(keysearch);
+                    } else {
+                        window.location.href = "Product?action=view";
+                    }
+                }
+            });
+
+        </script>
     </body>
 </html>

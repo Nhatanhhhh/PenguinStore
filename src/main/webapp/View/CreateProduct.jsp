@@ -252,77 +252,100 @@
                 </div>
                 <div class="form-container-fluid col-md-10">
                     <%@include file="Admin/HeaderAD.jsp"%>
-                    <h2 style="text-align: center;">Create New Product</h2>
+                    <h2 style="text-align: center;">Create Product</h2>
                     <div class="d-flex justify-content-center mt-4">
+
                         <form style="min-width: 50vw;" id="create-product-form" action="<c:url value="/ManageProduct?action=create"/>" method="POST" 
-                              enctype="multipart/form-data" class="create-product-form">
+                              enctype="multipart/form-data" class="create-product-form"> 
+
+                            <!-- Hiển thị thông báo lỗi -->
+                            <c:if test="${not empty errorMessage}">
+                                <div class="alert alert-danger">${errorMessage}</div>
+                            </c:if>
+
                             <!-- Product Name -->
                             <label for="productName">Product Name:</label>
-                            <input type="text" id="productName" name="productName" placeholder="Enter name of product..." required>
+                            <input type="text" id="productName" name="productName" placeholder="Enter name of product..." 
+                                   required value="${productName}">
 
                             <!-- Description -->
                             <label for="description">Description:</label>
-                            <textarea id="description" name="description" rows="4" required placeholder="Enter description of product..."></textarea>
+                            <textarea id="description" name="description" rows="4" required placeholder="Enter description of product...">${description}</textarea>
 
                             <!-- Price -->
                             <label for="price">Price:</label>
-                            <input type="number" id="price" name="price" step="1" min="1" placeholder="Enter price of product (VND)..." required>
+                            <input type="number" id="price" name="price" step="1" min="1" placeholder="Enter price of product (VND)..." 
+                                   required value="${price}">
 
                             <!-- Select Category -->
                             <label for="category">Select Category:</label>
                             <select id="category" name="categoryId" required>
                                 <option value="">-- Select Category --</option>
-                                <option value="Top">Top</option>
-                                <option value="Bottom">Bottom</option>
-                                <option value="Accessory">Accessory</option>
+                                <option value="Top" ${category eq 'Top' ? 'selected' : ''}>Top</option>
+                                <option value="Bottom" ${category eq 'Bottom' ? 'selected' : ''}>Bottom</option>
+                                <option value="Accessory" ${category eq 'Accessory' ? 'selected' : ''}>Accessory</option>
                             </select>
+
                             <!-- Select Type  -->
                             <label for="type">Select Type:</label>
-                            <select id="type" name="typeId" required disabled="">
+                            <select id="type" name="typeId" required>
                                 <option value="">-- Select Type --</option>
                                 <c:forEach var="type" items="${listType}">
-                                    <option value="${type.typeID}" data-category="${type.categoryName}">
-                                        ${type.typeName}
-                                    </option>
+                                    <option value="${type.typeID}" data-category="${type.categoryName}" 
+                                            ${type.typeID eq typeId ? 'selected' : ''}>${type.typeName}</option>
                                 </c:forEach>
                             </select>
+
                             <!-- Colors -->
                             <label>Select Colors:</label>
                             <div class="color-container">
                                 <c:forEach var="color" items="${listColor}">
                                     <div class="color-item">
-                                        <!-- Checkbox -->
-                                        <input class="color-checkbox" type="checkbox" id="color-${color.colorID}" name="colorIds" value="${color.colorID}">
+                                        <input class="color-checkbox" type="checkbox" id="color-${color.colorID}" name="colorIds" value="${color.colorID}" 
+                                               <c:if test="${fn:contains(selectedColorIds, color.colorID)}">checked</c:if>>
                                         <label for="color-${color.colorID}" class="color-box" style="background-color: ${color.colorName};"></label>
                                     </div>
                                 </c:forEach>
                             </div>
+
                             <!-- Sizes -->
                             <label>Select Sizes:</label>
                             <div class="size-container">
                                 <c:forEach var="size" items="${listSize}">
                                     <label>
-                                        <input type="checkbox" name="sizeIds" value="${size.sizeID}"> ${size.sizeName}
-                                    </label>
+                                        <input type="checkbox" name="sizeIds" value="${size.sizeID}" 
+                                               <c:if test="${fn:contains(selectedSizeIds, size.sizeID)}">checked</c:if>> ${size.sizeName}
+                                        </label>
                                 </c:forEach>
                             </div>
+
                             <!-- Upload Multiple Product Images -->
                             <label for="productImages" class="label-upload">+</label>
                             <input type="file" id="productImages" name="productImages" accept="image/*" multiple>
-
                             <input type="file" id="hiddenFileInput" name="selectedFiles" multiple style="display: none;">
                             <br><br>
-
                             <div id="previewContainer"></div>
+
                             <input type="submit" value="Create Product" class="submit-btn" style="width: 150px">
                         </form>
+
                     </div>
                 </div>
             </div>
         </div>
 
-
         <script>
+            document.getElementById("create-product-form").addEventListener("submit", function (event) {
+                let colorCheckboxes = document.querySelectorAll(".color-checkbox:checked");
+
+                if (colorCheckboxes.length === 0) {
+                    event.preventDefault();
+                    alert("Please select at least one color!");
+                }
+            });
+            document.getElementById("price").addEventListener("input", function () {
+                this.value = this.value.replace(/\D/g, "");
+            });
             document.getElementById("productImages").addEventListener("change", function (event) {
                 let files = event.target.files;
                 let previewContainer = document.getElementById("previewContainer");
@@ -374,125 +397,169 @@
 
                 event.target.value = "";
             });
-
-            document.getElementById("category").addEventListener("change", function () {
-                let selectedCategory = this.value;
+            document.addEventListener("DOMContentLoaded", function () {
+                let categoryDropdown = document.getElementById("category");
                 let typeDropdown = document.getElementById("type");
                 let typeOptions = typeDropdown.getElementsByTagName("option");
 
-                if (selectedCategory) {
-                    typeDropdown.disabled = false;
-                } else {
-                    typeDropdown.disabled = true;
-                    typeDropdown.value = "";
-                    return;
-                }
-                typeDropdown.value = "";
-                for (let i = 1; i < typeOptions.length; i++) {
-                    let option = typeOptions[i];
-                    let optionCategory = option.getAttribute("data-category");
+                function updateTypeDropdown() {
+                    let selectedCategory = categoryDropdown.value;
+                    console.log("Selected Category:", selectedCategory); // Kiểm tra log
 
-                    if (optionCategory === selectedCategory) {
-                        option.style.display = "block";
-                    } else {
-                        option.style.display = "none";
-                    }
-                }
-            });
-
-            document.addEventListener("DOMContentLoaded", function () {
-                const form = document.getElementById("create-product-form");
-                const submitBtn = document.querySelector(".submit-btn");
-
-                submitBtn.addEventListener("click", function (event) {
-                    event.preventDefault(); // Ngăn form submit ngay lập tức
-
-                    // Kiểm tra dữ liệu nhập vào
-                    let isValid = true;
-                    let errorMessage = "";
-
-                    let productName = document.getElementById("productName").value.trim();
-                    let description = document.getElementById("description").value.trim();
-                    let price = document.getElementById("price").value.trim();
-                    let category = document.getElementById("category").value;
-                    let type = document.getElementById("type").value;
-                    let images = document.getElementById("hiddenFileInput").files.length;
-                    let colorsChecked = document.querySelectorAll(".color-checkbox:checked").length;
-                    let sizesChecked = document.querySelectorAll("input[name='sizeIds']:checked").length;
-
-                    if (!productName) {
-                        errorMessage += "- Product name can't be blank.\n";
-                        isValid = false;
-                    }
-                    if (!description) {
-                        errorMessage += "- Description of product can't be blank.\n";
-                        isValid = false;
-                    }
-                    if (!price || isNaN(price) || price <= 0) {
-                        errorMessage += "- Price must be greater than 0 and must be an integer.\n";
-                        isValid = false;
-                    }
-                    if (!category) {
-                        errorMessage += "- Please choose category of product.\n";
-                        isValid = false;
-                    }
-                    if (!type) {
-                        errorMessage += "- Please choose type of product.\n";
-                        isValid = false;
-                    }
-                    if (images === 0) {
-                        errorMessage += "- Please enter at least one product image.\n";
-                        isValid = false;
-                    }
-                    if (colorsChecked === 0) {
-                        errorMessage += "- Please select at least one color of product.\n";
-                        isValid = false;
-                    }
-
-                    if (category !== "Accessory" && sizesChecked === 0) {
-                        errorMessage += "- Please select at leat one size of product.\n";
-                        isValid = false;
-                    }
-
-                    // Nếu có lỗi, hiển thị alert và không submit form
-                    if (!isValid) {
-                        alert("Please check value of product:\n" + errorMessage);
+                    if (!selectedCategory) {
+                        typeDropdown.disabled = true;
+                        typeDropdown.value = ""; // Reset selection
                         return;
+                    } else {
+                        typeDropdown.disabled = false;
                     }
 
-                    // Nếu dữ liệu hợp lệ, hiển thị modal xác nhận
-                    const modal = document.createElement("div");
-                    modal.classList.add("modal");
-                    modal.style.position = "fixed";
-                    modal.style.top = "0";
-                    modal.style.left = "0";
-                    modal.style.width = "100%";
-                    modal.style.height = "100%";
-                    modal.style.backgroundColor = "rgba(0,0,0,0.5)";
-                    modal.style.display = "flex";
-                    modal.style.alignItems = "center";
-                    modal.style.justifyContent = "center";
-                    modal.innerHTML = `
-                <div class="modal-content" style="background: white; padding: 20px; border-radius: 8px; text-align: center;">
-                    <p>Please double check all information before creating product.</p>
-                    <button id="confirm-btn">Confirm</button>
-                    <button id="cancel-btn">Cancel</button>
-                </div>
-            `;
-                    document.body.appendChild(modal);
+                    let hasValidOption = false; // Kiểm tra có option nào hợp lệ không
 
-                    // Xác nhận submit form
-                    document.getElementById("confirm-btn").addEventListener("click", function () {
-                        modal.remove();
-                        form.submit();
-                    });
+                    for (let i = 1; i < typeOptions.length; i++) {
+                        let option = typeOptions[i];
+                        let optionCategory = option.getAttribute("data-category");
 
-                    // Hủy bỏ modal
-                    document.getElementById("cancel-btn").addEventListener("click", function () {
-                        modal.remove();
-                    });
-                });
+                        console.log("Checking:", option.text, "Category:", optionCategory); // Debug
+
+                        if (optionCategory === selectedCategory) {
+                            option.style.display = ""; // Hiển thị option hợp lệ
+                            if (!hasValidOption) {
+                                typeDropdown.value = option.value; // Chọn option hợp lệ đầu tiên
+                                hasValidOption = true;
+                            }
+                        } else {
+                            option.style.display = "none";
+                        }
+                    }
+
+                    if (!hasValidOption) {
+                        typeDropdown.value = ""; // Nếu không có option nào phù hợp, reset lại
+                    }
+                }
+
+                // Chạy khi trang vừa load (nếu có dữ liệu sẵn)
+                updateTypeDropdown();
+
+                // Gán sự kiện change cho category
+                categoryDropdown.addEventListener("change", updateTypeDropdown);
             });
+
+//            document.getElementById("category").addEventListener("change", function () {
+//                let selectedCategory = this.value;
+//                let typeDropdown = document.getElementById("type");
+//                let typeOptions = typeDropdown.getElementsByTagName("option");
+//
+//                if (selectedCategory) {
+//                    typeDropdown.disabled = false;
+//                } else {
+//                    typeDropdown.disabled = true;
+//                    typeDropdown.value = "";
+//                    return;
+//                }
+//                typeDropdown.value = "";
+//                for (let i = 1; i < typeOptions.length; i++) {
+//                    let option = typeOptions[i];
+//                    let optionCategory = option.getAttribute("data-category");
+//
+//                    if (optionCategory === selectedCategory) {
+//                        option.style.display = "block";
+//                    } else {
+//                        option.style.display = "none";
+//                    }
+//                }
+//            });
+
+
+//            document.addEventListener("DOMContentLoaded", function () {
+//                const form = document.getElementById("create-product-form");
+//                const submitBtn = document.querySelector(".submit-btn");
+//
+//                submitBtn.addEventListener("click", function (event) {
+//                    event.preventDefault();
+//
+//                    let isValid = true;
+//                    let errorMessage = "";
+//                    let productName = document.getElementById("productName").value.trim();
+//                    let description = document.getElementById("description").value.trim();
+//                    let price = document.getElementById("price").value.trim();
+//                    let category = document.getElementById("category").value;
+//                    let type = document.getElementById("type").value;
+//                    let images = document.getElementById("hiddenFileInput").files.length;
+//                    let colorsChecked = document.querySelectorAll(".color-checkbox:checked").length;
+//                    let sizesChecked = document.querySelectorAll("input[name='sizeIds']:checked").length;
+//
+//                    if (!productName) {
+//                        errorMessage += "- Product name can't be blank.\n";
+//                        isValid = false;
+//                    }
+//                    if (!description) {
+//                        errorMessage += "- Description of product can't be blank.\n";
+//                        isValid = false;
+//                    }
+//                    if (!price || isNaN(price) || price <= 0) {
+//                        errorMessage += "- Price must be greater than 0 and must be an integer.\n";
+//                        isValid = false;
+//                    }
+//                    if (!category) {
+//                        errorMessage += "- Please choose category of product.\n";
+//                        isValid = false;
+//                    }
+//                    if (!type) {
+//                        errorMessage += "- Please choose type of product.\n";
+//                        isValid = false;
+//                    }
+//                    if (images === 0) {
+//                        errorMessage += "- Please enter at least one product image.\n";
+//                        isValid = false;
+//                    }
+//                    if (colorsChecked === 0) {
+//                        errorMessage += "- Please select at least one color of product.\n";
+//                        isValid = false;
+//                    }
+//
+//                    if (category !== "Accessory" && sizesChecked === 0) {
+//                        errorMessage += "- Please select at leat one size of product.\n";
+//                        isValid = false;
+//                    }
+//
+//                    if (!isValid) {
+//                        alert("Please check value of product:\n" + errorMessage);
+//                        return;
+//                    }
+//
+//                    const modal = document.createElement("div");
+//                    modal.classList.add("modal");
+//                    modal.style.position = "fixed";
+//                    modal.style.top = "0";
+//                    modal.style.left = "0";
+//                    modal.style.width = "100%";
+//                    modal.style.height = "100%";
+//                    modal.style.backgroundColor = "rgba(0,0,0,0.5)";
+//                    modal.style.display = "flex";
+//                    modal.style.alignItems = "center";
+//                    modal.style.justifyContent = "center";
+//                    modal.innerHTML = `
+//                <div class="modal-content" style="background: white; padding: 20px; border-radius: 8px; text-align: center;">
+//                    <p>Please double check all information before creating product.</p>
+//                    <button id="confirm-btn">Confirm</button>
+//                    <button id="cancel-btn">Cancel</button>
+//                </div>
+//            `;
+//                    document.body.appendChild(modal);
+//
+//                    // Xác nhận submit form
+//                    document.getElementById("confirm-btn").addEventListener("click", function () {
+//                        modal.remove();
+//                        form.submit();
+//                    });
+//
+//                    // Hủy bỏ modal
+//                    document.getElementById("cancel-btn").addEventListener("click", function () {
+//                        modal.remove();
+//                    });
+//                });
+//            });
         </script>
 
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>

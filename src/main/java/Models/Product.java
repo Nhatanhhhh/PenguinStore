@@ -49,6 +49,13 @@ public class Product {
         this.typeID = typeID;
     }
 
+    public Product(String productID, String productName, String description, double price) {
+        this.productID = productID;
+        this.productName = productName;
+        this.description = description;
+        this.price = price;
+    }
+    
     public Product(String productID, String productName, double price) {
         this.productID = productID;
         this.productName = productName;

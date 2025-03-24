@@ -191,7 +191,7 @@
         <url-pattern>/OrderDetail</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
-        <welcome-file>View/index.jsp</welcome-file>
+        <welcome-file>HomePage</welcome-file>
     </welcome-file-list>
     <!--<error-page>
         <error-code>404</error-code>
