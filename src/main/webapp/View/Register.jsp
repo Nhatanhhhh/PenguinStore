@@ -18,8 +18,8 @@
             HttpSession sessionObj = request.getSession();
             String msg = (String) sessionObj.getAttribute("msg");
             sessionObj.removeAttribute("msg"); // Remove after displaying
-        %>
-        <div class="container" style="padding: 0; margin-top: 20px; border-radius: 15px; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+%>
+        <div class="container" style="padding: 0; margin-top: 20px; margin-bottom: 20px; border-radius: 15px; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
             <div class="row">
                 <div class="image-container-2 col-md-6" data-aos="fade-up-right" ></div>
 
@@ -41,12 +41,15 @@
                                     </div>
                                 </div>
 
-                                <!-- Full Name -->
+                                <!-- Phone Number -->
                                 <div class="col-md-6">
-                                    <span class="txt1 col" style="font-size: 16px;">Full Name</span>
-                                    <div class="wrap-input100 validate-input m-b-36" data-validate="Full Name is required">
-                                        <input class="input100" type="text" name="fullName" required>
+                                    <span class="txt1 col" style="font-size: 16px;">Phone Number</span>
+                                    <div class="wrap-input100 validate-input m-b-36" data-validate="Phone number is required">
+                                        <input id="phone" class="input100" type="tel" name="phone" required>
                                         <span class="focus-input100"></span>
+                                    </div>
+                                    <div id="phoneError" class="text-danger mt-2" style="display: none; font-size: 14px;">
+                                        Phone number must be 10-11 digits!
                                     </div>
                                 </div>
                             </div>
@@ -55,7 +58,7 @@
 
                             <div class="row">
                                 <!-- Email -->
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <span class="txt1 col" style="font-size: 16px;">Email Address</span>
                                     <div class="wrap-input100 validate-input m-b-36" data-validate="Valid email is required">
                                         <input id="email" class="input100" type="email" name="email" required>
@@ -66,15 +69,12 @@
                                     </div>
                                 </div>
 
-                                <!-- Phone Number -->
-                                <div class="col-md-6">
-                                    <span class="txt1 col" style="font-size: 16px;">Phone Number</span>
-                                    <div class="wrap-input100 validate-input m-b-36" data-validate="Phone number is required">
-                                        <input id="phone" class="input100" type="tel" name="phone" required>
+                                <!-- Full Name -->
+                                <div class="col-md-12">
+                                    <span class="txt1 col" style="font-size: 16px;">Full Name</span>
+                                    <div class="wrap-input100 validate-input m-b-36" data-validate="Full Name is required">
+                                        <input class="input100" type="text" name="fullName" required>
                                         <span class="focus-input100"></span>
-                                    </div>
-                                    <div id="phoneError" class="text-danger mt-2" style="display: none; font-size: 14px;">
-                                        Phone number must be 10-11 digits!
                                     </div>
                                 </div>
 
@@ -166,32 +166,15 @@
                 } else {
             <% if (msg != null) {%>
                     Swal.fire({
-                        title: "Oops!",
-                        text: "<%= msg%>",
-                        icon: "warning",
-                        confirmButtonText: "Try Again",
-                        timer: 3000,
-                        showCancelButton: true,
-                        cancelButtonText: "Close",
-                        confirmButtonColor: "#d33",
-                        cancelButtonColor: "#3085d6",
-                        backdrop: `
-                        rgba(0,0,0,0.4)
-                        url("https://i.gifer.com/4V0b.gif")
-                        center top
-                        no-repeat
-                    `,
-                        showClass: {
-                            popup: "animate__animated animate__fadeInDown"
-                        },
-                        hideClass: {
-                            popup: "animate__animated animate__fadeOutUp"
-                        }
+                        title: 'Oops!',
+                        text: '<%= msg%>',
+                        icon: 'error'
                     });
             <% }%>
                 }
             });
         </script>
+
         <script src="<%= request.getContextPath()%>/Assets/Javascript/register.js"></script>
 
     </body>

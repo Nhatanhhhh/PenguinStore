@@ -88,44 +88,40 @@ public class FeedbackDAO {
     }
 
     public static boolean saveFeedback(Feedback feedback) {
-        String sql = "INSERT INTO Feedback (feedbackID, customerID, productID, orderID, comment, rating, feedbackCreateAt, isResolved, isViewed) "
+        String sqlCheck = "SELECT COUNT(*) FROM Feedback WHERE customerID = ? AND productID = ? AND orderID = ?";
+        String sqlInsert = "INSERT INTO Feedback (feedbackID, customerID, productID, orderID, comment, rating, feedbackCreateAt, isResolved, isViewed) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBContext.getConn();  PreparedStatement psCheck = conn.prepareStatement(sqlCheck);  PreparedStatement psInsert = conn.prepareStatement(sqlInsert)) {
 
-            // Kiểm tra giá trị NULL hoặc chuỗi rỗng
-            if (feedback.getCustomerID() == null || feedback.getCustomerID().trim().isEmpty()) {
-                System.out.println("Error: customerID is NULL or empty.");
-                return false;
-            }
-            if (feedback.getProductID() == null || feedback.getProductID().trim().isEmpty()) {
-                System.out.println("Error: productID is NULL or empty.");
-                return false;
-            }
-            if (feedback.getOrderID() == null || feedback.getOrderID().trim().isEmpty()) {
-                System.out.println("Error: orderID is NULL or empty.");
-                return false;
+            // Kiểm tra xem feedback đã tồn tại chưa
+            psCheck.setObject(1, UUID.fromString(feedback.getCustomerID()));
+            psCheck.setObject(2, UUID.fromString(feedback.getProductID()));
+            psCheck.setObject(3, UUID.fromString(feedback.getOrderID()));
+
+            ResultSet rs = psCheck.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                System.out.println("Feedback already exists for this product in this order.");
+                return false;  // Feedback đã tồn tại
             }
 
-            // Chuyển đổi giá trị thành UUID hợp lệ
-            ps.setString(1, feedback.getFeedbackID());
-            ps.setObject(2, UUID.fromString(feedback.getCustomerID()));
-            ps.setObject(3, UUID.fromString(feedback.getProductID()));
-            ps.setObject(4, UUID.fromString(feedback.getOrderID()));
-            ps.setString(5, feedback.getComment());
-            ps.setDouble(6, feedback.getRating());
-            ps.setTimestamp(7, new java.sql.Timestamp(feedback.getFeedbackCreateAt().getTime()));
-            ps.setBoolean(8, feedback.isIsResolved());
-            ps.setBoolean(9, feedback.isIsViewed());
+            // Nếu feedback chưa tồn tại, thực hiện insert
+            psInsert.setString(1, feedback.getFeedbackID());
+            psInsert.setObject(2, UUID.fromString(feedback.getCustomerID()));
+            psInsert.setObject(3, UUID.fromString(feedback.getProductID()));
+            psInsert.setObject(4, UUID.fromString(feedback.getOrderID()));
+            psInsert.setString(5, feedback.getComment());
+            psInsert.setDouble(6, feedback.getRating());
+            psInsert.setTimestamp(7, new java.sql.Timestamp(feedback.getFeedbackCreateAt().getTime()));
+            psInsert.setBoolean(8, feedback.isIsResolved());
+            psInsert.setBoolean(9, feedback.isIsViewed());
 
-            int affectedRows = ps.executeUpdate();
+            int affectedRows = psInsert.executeUpdate();
             return affectedRows > 0;
 
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid UUID format: " + e.getMessage());
-            return false;
         } catch (SQLException e) {
             e.printStackTrace();
+            System.out.println("Error saving feedback: " + e.getMessage());
             return false;
         }
     }

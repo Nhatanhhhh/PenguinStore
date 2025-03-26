@@ -100,6 +100,22 @@
                 border: 1px solid #FF4D4D;
                 background: transparent;
             }
+            
+            .btn-recancel {
+                padding: 8px 20px;
+                border-radius: 4px;
+                background-color: #3498DB;
+                color: #FFF;
+                font-size: 13px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
+
+            .btn-recancel:hover {
+                color: #3498DB;
+                border: 1px solid #3498DB;
+                background: transparent;
+            }
         </style>
     </head>
     <body>
@@ -138,7 +154,7 @@
                     <div class="voucher"><a href="<%= request.getContextPath()%>/VVCustomer">Voucher</a></div>
                     <div class="orderhistory"><a style="font-weight: bold;">Order</a></div>
                     <div class="password"><a href="<%= request.getContextPath()%>/ChangePassword">Password</a></div>
-                    <div class="ViewFeedbackCustomer"><a href="<%= request.getContextPath()%>/ViewFeedbackCustomer">Feedback</a></div>
+                    <div class="ViewFeedbackCustomer"><a href="<%= request.getContextPath()%>/ViewFeedbackCustomer">View Reply</a></div>
                     <div class="divider"></div>
                 </div>
 
@@ -147,7 +163,7 @@
                     <div class="order row" data-status="<%= order.getStatusName()%>">
                         <div class="col-md-10">
                             <div class="order-info">
-                                <!-- Ẩn OrderID -->
+                                <p><strong>OrderID:</strong> <%= (order.getOrderID().length() >= 4) ? order.getOrderID().substring(0, 4) : order.getOrderID()%></p>
                                 <p><strong>Voucher code:</strong> <%= order.getVoucherName()%></p>
                                 <p><strong>Order date:</strong> <%= order.getOrderDate()%></p>
                                 <span class="status <%= order.getStatusName().toLowerCase().replace(" ", "-")%>">
@@ -171,14 +187,14 @@
                                     <input type="hidden" name="action" value="updateStatus">
                                     <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
                                     <input type="hidden" name="newStatus" value="Pending processing">
-                                    <button type="submit" class="btn btn-recancel" style="display: inline-block; white-space: nowrap;">ReCancel</button>
+                                    <button type="submit" class="btn btn-recancel" style="display: inline-block; white-space: nowrap; border-radius: 3px; width: 137px; height: 42px;">ReCancel</button>
                                 </form>
                                 <% } else {%>
                                 <form action="<%= request.getContextPath()%>/OrderHistory" method="POST">
                                     <input type="hidden" name="action" value="updateStatus">
                                     <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
                                     <input type="hidden" name="newStatus" value="Order Cancellation Request">
-                                    <button type="submit" class="btn btn-cancel" style="display: inline-block; white-space: nowrap; width: 137px;">Cancel Order</button>
+                                    <button type="submit" class="btn btn-cancel" style="display: inline-block; width: 137px; height: 42px;">Cancel Order</button>
                                 </form>
                                 <% } %>
                             </div>

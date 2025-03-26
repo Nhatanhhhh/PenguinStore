@@ -223,15 +223,7 @@
             scrollToTopBtn.addEventListener("click", function () {
                 window.scrollTo({top: 0, behavior: "smooth"});
             });
-            document.getElementById("searchInput").addEventListener("keypress", function (event) {
-                if (event.key === "Enter") {  
-                    event.preventDefault();  
-                    let keysearch = this.value.trim();
-                    if (keysearch.length > 0) {
-                        window.location.href = "Product?action=search&keysearch=" + encodeURIComponent(keysearch);
-                    }
-                }
-            });
+            
         </script>
     </body>
 </html>

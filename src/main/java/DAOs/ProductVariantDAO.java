@@ -51,23 +51,43 @@ public class ProductVariantDAO extends DBContext {
     }
 
     public int insertProductVariant(String productName, String[] listSize, String[] listColor) {
-        String colorPlaceholders = String.join(",", Collections.nCopies(listColor.length, "?"));
-        String sizePlaceholders = String.join(",", Collections.nCopies(listSize.length, "?"));
-        String sql = "INSERT INTO ProductVariants (productID, colorID, sizeID, status, stockQuantity) "
-                + "SELECT p.productID, c.colorID, s.sizeID, 0, 0 "
-                + "FROM Product p "
-                + "JOIN TypeProduct t ON p.typeID = t.typeID "
-                + "JOIN Category cat ON t.categoryID = cat.categoryID "
-                + "JOIN Color c ON c.colorID IN (" + colorPlaceholders + ") "
-                + "JOIN Size s ON s.sizeID IN (" + sizePlaceholders + ") "
-                + "WHERE p.productName = ?;";
+        if (listColor == null) {
+            listColor = new String[0];
+        }
+        String colorPlaceholders = listColor.length > 0 ? String.join(",", Collections.nCopies(listColor.length, "?")) : "NULL";
+
+        boolean hasSize = listSize != null && listSize.length > 0;
+        String sizePlaceholders = hasSize ? String.join(",", Collections.nCopies(listSize.length, "?")) : "";
+
+        String sql;
+        if (hasSize) {
+            sql = "INSERT INTO ProductVariants (productID, colorID, sizeID, status, stockQuantity) "
+                    + "SELECT p.productID, c.colorID, s.sizeID, 0, 0 "
+                    + "FROM Product p "
+                    + "JOIN TypeProduct t ON p.typeID = t.typeID "
+                    + "JOIN Category cat ON t.categoryID = cat.categoryID "
+                    + "JOIN Color c ON c.colorID IN (" + colorPlaceholders + ") "
+                    + "JOIN Size s ON s.sizeID IN (" + sizePlaceholders + ") "
+                    + "WHERE p.productName = ?;";
+        } else {
+            sql = "INSERT INTO ProductVariants (productID, colorID, status, stockQuantity) "
+                    + "SELECT p.productID, c.colorID, 0, 0 "
+                    + "FROM Product p "
+                    + "JOIN TypeProduct t ON p.typeID = t.typeID "
+                    + "JOIN Category cat ON t.categoryID = cat.categoryID "
+                    + "JOIN Color c ON c.colorID IN (" + colorPlaceholders + ") "
+                    + "WHERE p.productName = ?;";
+        }
 
         List<Object> paramList = new ArrayList<>();
         Collections.addAll(paramList, (Object[]) listColor);
-        Collections.addAll(paramList, (Object[]) listSize);
+        if (hasSize) {
+            Collections.addAll(paramList, (Object[]) listSize);
+        }
         paramList.add(productName);
 
         Object[] params = paramList.toArray();
+
         try {
             return execQuery(sql, params);
         } catch (SQLException ex) {

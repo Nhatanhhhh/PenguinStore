@@ -62,7 +62,7 @@
                                 <strong>Order</strong>
                             </a>
                             <ul id="orderMenu" class="nav flex-column collapse">
-                                <li><a class="nav-link" href="#">View Orders</a></li>
+                                <li><a class="nav-link" href="<c:url value='/OrderManagement'/>">View Orders</a></li>
                             </ul>
                         </li>
 
@@ -83,7 +83,7 @@
                                 <strong>Feedback</strong>
                             </a>
                             <ul id="feedbackMenu" class="nav flex-column collapse">
-                                <li><a class="nav-link" href="ListFeedbackForStaff">View Feedbacks</a></li>
+                                <li><a class="nav-link" href="ViewListFeedback">View Feedbacks</a></li>
                             </ul>
                         </li>
 

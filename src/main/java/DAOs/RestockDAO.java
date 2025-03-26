@@ -129,4 +129,69 @@ public class RestockDAO extends DBContext {
 
         return list;
     }
+
+    public Restock getOnlyById(String proVariantID) {
+        Restock restock = null;
+        String sql = "SELECT \n"
+                + "                    Product.productName, \n"
+                + "                    Size.sizeName, \n"
+                + "                    Color.colorName,   \n"
+                + "                    ProductVariants.proVariantID\n"
+                + "                FROM ProductVariants\n"
+                + "                LEFT JOIN Product ON Product.productID = ProductVariants.productID \n"
+                + "                LEFT JOIN Size ON Size.sizeID = ProductVariants.sizeID \n"
+                + "                LEFT JOIN Color ON Color.colorID = ProductVariants.colorID \n"
+                + "                WHERE ProductVariants.proVariantID = ? ";
+
+        Object param[] = {proVariantID};
+
+        try ( ResultSet rs = execSelectQuery(sql, param)) {
+            if (rs.next()) {
+                restock = new Restock(
+                        rs.getString("productName"),
+                        rs.getString("proVariantID"),
+                        rs.getString("sizeName"),
+                        rs.getString("colorName")
+                );
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(RestockDAO.class.getName()).log(Level.SEVERE, "GetOnlyByID failed", ex);
+        }
+        return restock;
+    }
+
+    public Restock getIdProduct(String proVariantID) {
+        Restock restock = null;
+        String sql = "select productID from ProductVariants where proVariantID = ?";
+
+        Object param[] = {proVariantID};
+
+        try ( ResultSet rs = execSelectQuery(sql, param)) {
+            if (rs.next()) {
+                restock = new Restock(
+                        rs.getString("productID")
+                );
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(RestockDAO.class.getName()).log(Level.SEVERE, "Get Product ID failed", ex);
+        }
+        return restock;
+    }
+
+    public int getTodayRestockQuantity() {
+        int totalQuantity = 0;
+        String query = "SELECT SUM(R.quantity) AS totalQuantity "
+                + "FROM Restock R "
+                + "WHERE CAST(R.restockDate AS DATE) = CAST(GETDATE() AS DATE)";
+
+        try ( ResultSet rs = execSelectQuery(query)) {
+            if (rs.next()) {
+                totalQuantity = rs.getInt("totalQuantity");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return totalQuantity;
+    }
+
 }

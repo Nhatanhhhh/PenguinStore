@@ -132,7 +132,7 @@ public class CheckoutDAO {
 
     public Customer getCustomerByID(String customerID) {
         Customer customer = null;
-        String query = "SELECT customerID, customerName, fullName, email, address, phoneNumber, state, zip "
+        String query = "SELECT customerID, customerName, fullName, address, email, phoneNumber, state, zip "
                 + "FROM Customer WHERE customerID = ?";
 
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
@@ -145,8 +145,8 @@ public class CheckoutDAO {
                         rs.getString("customerID"),
                         rs.getString("customerName"),
                         rs.getString("fullName"),
-                        rs.getString("email"),
                         rs.getString("address"),
+                        rs.getString("email"),
                         rs.getString("phoneNumber"),
                         rs.getString("state"),
                         rs.getString("zip")
@@ -158,22 +158,52 @@ public class CheckoutDAO {
         return customer;
     }
 
-    public String getProductVariantID(String cartID, String customerID, String productID) {
-        String sql = "SELECT c.proVariantID FROM dbo.[Cart] c "
-                + "JOIN dbo.[ProductVariants] pv ON c.proVariantID = pv.proVariantID "
-                + "WHERE c.cartID = ? AND c.customerID = ? AND pv.productID = ?";
+    public String getProductVariantID(String productID, String colorName, String sizeName) {
+        String proVariantID = null;
+        String sql = "SELECT pv.proVariantID "
+                + "FROM ProductVariants pv "
+                + "JOIN Color c ON pv.colorID = c.colorID "
+                + "JOIN Size s ON pv.sizeID = s.sizeID "
+                + "WHERE pv.productID = ? "
+                + "AND c.colorName = ? "
+                + "AND s.sizeName = ?";
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, productID);
+            ps.setString(2, colorName);
+            ps.setString(3, sizeName);
+
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    proVariantID = rs.getString("proVariantID");
+                } else {
+                    System.out.println("No ProductVariant found for ProductID=" + productID
+                            + ", Color=" + colorName + ", Size=" + sizeName);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return proVariantID;
+    }
+
+    public List<String> getProductVariantIDs(String cartID, String customerID, String productID) {
+        List<String> variantIDs = new ArrayList<>();
+        String sql = "SELECT proVariantID FROM Cart WHERE cartID = ? AND customerID = ? AND productID = ?";
+
         try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, cartID);
             stmt.setString(2, customerID);
             stmt.setString(3, productID);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getString("proVariantID");
+
+            while (rs.next()) {
+                variantIDs.add(rs.getString("proVariantID"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return variantIDs;
     }
 
     public String getPendingStatusOID() {

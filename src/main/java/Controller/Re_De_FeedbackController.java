@@ -25,7 +25,7 @@ import java.util.UUID;
  *
  * @author Thuan
  */
-@WebServlet(name = "FeedbackReplyController", urlPatterns = {"/feedbackreply"})
+@WebServlet(name = "Re_DE_FeedbackController", urlPatterns = {"/feedbackreply"})
 public class Re_De_FeedbackController extends HttpServlet{
     
     private FeedBackReplyDAO feedBackReplyDAO;

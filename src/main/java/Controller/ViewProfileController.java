@@ -5,7 +5,10 @@
 package Controller;
 
 import DAOs.CustomerDAO;
+import DAOs.ProductDAO;
+import DAOs.TypeDAO;
 import Models.Customer;
+import Models.Type;
 import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,6 +17,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -68,6 +75,16 @@ public class ViewProfileController extends HttpServlet {
             response.sendRedirect("Login");
             return;
         }
+        
+        ProductDAO productDAO = new ProductDAO();
+        TypeDAO typeDAO = new TypeDAO();
+        request.setAttribute("listProduct", productDAO.getProductCustomer());
+        List<Type> listType = typeDAO.getAll();
+        Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
+        for (Type type : listType) {
+            categoryMap.computeIfAbsent(type.getCategoryName(), k -> new ArrayList<>()).add(type);
+        }
+        request.setAttribute("categoryMap", categoryMap);
 
         // Lấy Customer từ session
         // Ở đây bạn có thể đổi tên attribute tùy ý, ví dụ session.setAttribute("Users", customer);

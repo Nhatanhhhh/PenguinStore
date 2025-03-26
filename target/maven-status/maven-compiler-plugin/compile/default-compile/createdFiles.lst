@@ -2,7 +2,6 @@ DAOs\CategoryDAO.class
 Models\Size.class
 DAOs\CheckoutDAO.class
 Controller\ViewFeedbackCustomer.class
-Filters\AuthorizationFilter.class
 Utils\CookieUtils.class
 Models\Category.class
 DAOs\CartDAO.class
@@ -16,6 +15,7 @@ Controller\DashBoardForStaffServlet.class
 Controller\LoginManagerController.class
 DTO\ShowCusDTO.class
 Models\StatisticProduct.class
+Filters\StaffFilter.class
 Controller\CreateFeedbackController.class
 Controller\TypeController.class
 Controller\RestockController.class
@@ -29,6 +29,7 @@ Models\Customer.class
 DAOs\ProductVariantDAO.class
 Models\Manager.class
 Controller\Checkout.class
+Service\EmailService$2.class
 Controller\RegisterController.class
 Controller\ViewListFeedbackAdminNoLogin.class
 DAOs\OrderDAO.class
@@ -38,6 +39,7 @@ Controller\ManageProductController.class
 Controller\GoogleLoginController.class
 DAOs\ColorDAO.class
 DAOs\OrderDetailDAO.class
+Controller\HomePageController.class
 DAOs\VVCustomerDAO.class
 Controller\AccessDeniedController.class
 Models\Cart.class
@@ -85,6 +87,7 @@ DAOs\FeedBackReplyDAO.class
 DAOs\RevenueDAO.class
 Models\Product.class
 DAOs\ChangePasswordDAO.class
+Filters\CustomerFilter.class
 DAOs\VoucherDAO.class
 Controller\ResetPasswordController.class
 Controller\Re_De_FeedbackController.class
@@ -101,3 +104,4 @@ DAOs\RegisterDAO.class
 Controller\Payment.class
 Controller\UseVoucher.class
 Models\ProductVariants.class
+Filters\AdminFilter.class

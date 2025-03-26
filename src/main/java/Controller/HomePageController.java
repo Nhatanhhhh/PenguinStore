@@ -4,27 +4,27 @@
  */
 package Controller;
 
+import DAOs.ProductDAO;
+import DAOs.TypeDAO;
+import Models.Type;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import DAOs.OrderStatisticDAO;
-import DAOs.RevenueDAO;
-import DAOs.RestockDAO;
-import DAOs.StatisticProductDAO;
-import Models.OrderStatistic;
-import Models.RevenueStatistic;
-import Models.StatisticProduct;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
- * @author Nguyen Nhat Anh - CE181843
+ * @author Huynh Cong Nghiem - CE181351
  */
-public class DashBoardForAdminServlet extends HttpServlet {
+@WebServlet(name = "HomePageController", urlPatterns = {"/HomePage"})
+public class HomePageController extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -38,28 +38,16 @@ public class DashBoardForAdminServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        OrderStatisticDAO dao = new OrderStatisticDAO();
-        RevenueDAO revenueDAO = new RevenueDAO();
-        StatisticProductDAO productDAO = new StatisticProductDAO();
-        RestockDAO restockDAO = new RestockDAO();
-        String timeUnit = request.getParameter("timeUnit");
-
-        if (timeUnit == null || (!timeUnit.equals("day") && !timeUnit.equals("month") && !timeUnit.equals("year"))) {
-            timeUnit = "day"; // Default to daily statistics
+        ProductDAO productDAO = new ProductDAO();
+        TypeDAO typeDAO = new TypeDAO();
+        request.setAttribute("listProduct", productDAO.getProductCustomer());
+        List<Type> listType = typeDAO.getAll();
+        Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
+        for (Type type : listType) {
+            categoryMap.computeIfAbsent(type.getCategoryName(), k -> new ArrayList<>()).add(type);
         }
-        int todayOrders = dao.getTodayOrderCount();
-        request.setAttribute("todayOrders", todayOrders);
-
-        double todayRevenue = revenueDAO.getWeeklyRevenue();
-        request.setAttribute("todayRevenue", todayRevenue);
-
-        int todayRestockQuantity = restockDAO.getTodayRestockQuantity();
-        request.setAttribute("todayRestockQuantity", todayRestockQuantity);
-
-        ArrayList<StatisticProduct> weeklySales = productDAO.getWeeklySales();
-        request.setAttribute("weeklySales", weeklySales);
-
-        request.getRequestDispatcher("/View/DashBoardForAdmin.jsp").forward(request, response);
+        request.setAttribute("categoryMap", categoryMap);
+        request.getRequestDispatcher("/View/index.jsp").forward(request, response);
     }
 
     /**
@@ -75,4 +63,15 @@ public class DashBoardForAdminServlet extends HttpServlet {
             throws ServletException, IOException {
 
     }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
 }

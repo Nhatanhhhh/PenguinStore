@@ -1,3 +1,6 @@
+<%@page import="java.time.format.DateTimeFormatter"%>
+<%@page import="java.time.LocalDate"%>
+<%@page import="Models.Manager"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
@@ -8,6 +11,7 @@
         <title>Create Staff</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/Assets/CSS/Admin/DashBoard.css"/>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 let today = new Date();
@@ -36,10 +40,24 @@
         </script>
     </head>
     <body>
-        <div class="container mt-4">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="card">
+        <%
+            Manager manager = (Manager) session.getAttribute("user");
+            String managerName = (manager != null) ? manager.getManagerName() : "Guest";
+            String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
+        %>
+        <%
+            LocalDate now = LocalDate.now();
+            String formattedDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        %>
+        <div>
+            <div class="row">
+                
+                <div class="col-md-2">
+                    <%@include file="Admin/NavigationMenu.jsp"%>
+                </div>
+                <div class="col-md-10">
+                    <%@include file="Admin/HeaderAD.jsp"%>
+                    <div class="card p-4">
                         <div class="card-header bg-success text-white text-center">
                             <h3>Create Staff</h3>
                         </div>

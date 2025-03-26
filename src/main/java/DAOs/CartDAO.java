@@ -18,15 +18,16 @@ public class CartDAO {
 
     public List<CartItem> viewCart(String customerID) {
         List<CartItem> cartItems = new ArrayList<>();
-        String sql = "SELECT ca.cartID, p.productName, p.price, ca.quantity, c.colorName, "
+        String sql = "SELECT ca.cartID, p.productName, p.price, ca.quantity, c.colorName, s.sizeName, "
                 + "STRING_AGG(i.imgName, ', ') AS imgName "
                 + "FROM Cart ca "
                 + "JOIN ProductVariants pv ON ca.proVariantID = pv.proVariantID "
                 + "JOIN Product p ON pv.productID = p.productID "
-                + "JOIN Color c ON pv.colorID = c.colorID "
+                + "LEFT JOIN Color c ON pv.colorID = c.colorID "
+                + "LEFT JOIN Size s ON pv.sizeID = s.sizeID "
                 + "LEFT JOIN Image i ON p.productID = i.productID "
                 + "WHERE ca.customerID = ? "
-                + "GROUP BY ca.cartID, p.productID, p.productName, p.price, ca.quantity, c.colorName";
+                + "GROUP BY ca.cartID, p.productID, p.productName, p.price, ca.quantity, c.colorName, s.sizeName";
 
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, customerID);
@@ -38,9 +39,10 @@ public class CartDAO {
                 double price = rs.getDouble("price");
                 int quantity = rs.getInt("quantity");
                 String colorName = rs.getString("colorName");
+                String sizeName = rs.getString("sizeName");
                 String imgNames = rs.getString("imgName");
 
-                cartItems.add(new CartItem(cartID, productName, price, quantity, colorName, imgNames));
+                cartItems.add(new CartItem(cartID, productName, price, quantity, colorName, sizeName, imgNames));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -84,6 +86,26 @@ public class CartDAO {
             e.printStackTrace();
         }
         return cartItems;
+    }
+
+    public int getStockQuantityByCartItem(String cartID) {
+        int stockQuantity = 0;
+        String sql = "SELECT pv.stockQuantity "
+                + "FROM ProductVariants pv "
+                + "JOIN Cart c ON c.proVariantID = pv.proVariantID "
+                + "WHERE c.cartID = ?";
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, cartID);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    stockQuantity = rs.getInt("stockQuantity");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return stockQuantity;
     }
 
     public String getCartIDByCustomerIDAndProductID(String customerID, String productID) {
@@ -165,13 +187,17 @@ public class CartDAO {
 //        }
 //    }
 
-    public void removeFromCart(String cartID) {
+    public boolean removeFromCart(String cartID) {
         String sql = "DELETE FROM Cart WHERE cartID = ?";
-        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, cartID);
-            ps.executeUpdate();
+        try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cartID);
+            int affectedRows = stmt.executeUpdate();
+
+            return affectedRows > 0; // Trả về true nếu có dòng bị xóa
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 

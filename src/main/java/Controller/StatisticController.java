@@ -7,9 +7,12 @@ package Controller;
 import DAOs.OrderStatisticDAO;
 import DAOs.RevenueDAO;
 import DAOs.StatisticProductDAO;
+import DAOs.OrderStatusStatisticDAO;
 import Models.OrderStatistic;
+import Models.OrderStatusStatistic;
 import Models.RevenueStatistic;
 import Models.StatisticProduct;
+import Models.TopOrderCustomer;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -30,6 +33,7 @@ public class StatisticController extends HttpServlet {
             throws ServletException, IOException {
         OrderStatisticDAO dao = new OrderStatisticDAO();
         RevenueDAO revenueDAO = new RevenueDAO();
+        OrderStatusStatisticDAO orderStatusStatisticDAO = new OrderStatusStatisticDAO();
         StatisticProductDAO productDAO = new StatisticProductDAO();
 
         String action = request.getParameter("action");
@@ -69,11 +73,54 @@ public class StatisticController extends HttpServlet {
                         revenuelist = revenueDAO.getRevenueByDay();
                         break;
                 }
+
                 request.setAttribute("revenuelist", revenuelist);
                 request.setAttribute("timeUnit", timeUnit);
                 request.getRequestDispatcher("/View/RevenueStatistic.jsp").forward(request, response);
                 break;
+                
+            case "orderStatusStatistic":
+                
+                List<OrderStatusStatistic> orderstatusList = switch (timeUnit) {
+                    case "month" -> orderStatusStatisticDAO.getLastMonth();
+                    case "year" -> orderStatusStatisticDAO.getLastYearToNow();
+                    default -> orderStatusStatisticDAO.getByDay();
+                };
 
+                orderstatusList.forEach(System.out::println); // Debug log
+
+                List<TopOrderCustomer> topCustomers = orderStatusStatisticDAO.getTopCustomersByOrderType();
+
+                request.setAttribute("topCustomersCompleted", extractEmails(topCustomers, "Delivery successful"));
+                request.setAttribute("topCustomersFailed", extractEmails(topCustomers, "Delivery failed"));
+                request.setAttribute("topCustomersCanceled", extractEmails(topCustomers, "Cancel order"));
+
+                request.setAttribute("statistics", orderstatusList);
+                request.setAttribute("timeUnit", timeUnit);
+                request.setAttribute("topCustomers", topCustomers);
+
+                request.getRequestDispatcher("/View/ViewOrderStatusStatistic.jsp").forward(request, response);
+                break;
+
+//            case "DashBoardForAdmin":
+//                
+//                switch (timeUnit) {
+//                    case "month":
+//                        revenuelist = revenueDAO.getRevenueByMonth();
+//                        break;
+//                    case "year":
+//                        revenuelist = revenueDAO.getRevenueByYear();
+//                        break;
+//                    default:
+//                        revenuelist = revenueDAO.getRevenueByDay();
+//                        break;
+//                }
+//                double totalRevenue = revenuelist.stream().mapToDouble(RevenueStatistic::getRevenue).sum();
+//                request.setAttribute("revenuelist", revenuelist);
+//                request.setAttribute("timeUnit", timeUnit);
+//                request.setAttribute("totalRevenue", totalRevenue);
+//                request.getRequestDispatcher("/View/DashBoardForAdmin.jsp").forward(request, response);
+//                break;    
             case "productStatistic":
                 List<StatisticProduct> productStatistics = productDAO.getAll(); // Thống kê nhập - xuất
                 List<StatisticProduct> bestSellingProducts = productDAO.getBestSellingProducts(); // Sản phẩm bán chạy nhất
@@ -88,5 +135,12 @@ public class StatisticController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/Statistic?action=orderStatistic&timeUnit=day");
                 break;
         }
+    }
+    
+    private List<String> extractEmails(List<TopOrderCustomer> customers, String status) {
+        return customers.stream()
+                .filter(c -> c.getStatusName().equals(status))
+                .map(TopOrderCustomer::getEmail)
+                .toList();
     }
 }

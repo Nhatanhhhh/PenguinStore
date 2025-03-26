@@ -28,6 +28,7 @@ body {
     border-bottom: 1px solid #ddd;
     padding: 10px 0;
 }
+
 .product img {
     width: 80px;
     height: auto;
@@ -35,11 +36,43 @@ body {
 .quantity {
     display: flex;
     align-items: center;
+    justify-content: center; /* Căn giữa nội dung */
+    gap: 10px; /* Khoảng cách giữa các phần tử */
 }
+
 .quantity button {
-    padding: 5px;
+    width: 30px; /* Điều chỉnh kích thước */
+    height: 30px;
+    font-size: 18px;
+    border: 1px solid #000;
+    background-color: white;
+    color: black;
     cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
+.quantity span {
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+}
+
+
+.quantity button:hover {
+    background-color: black; /* Khi hover sẽ đổi màu */
+    color: white; /* Chữ trắng để dễ nhìn */
+}
+
+.quantity span {
+    min-width: 30px;
+    text-align: center;
+    font-size: 16px;
+}
+
+
 .checkout {
     margin-top: 20px;
     text-align: center;
@@ -59,9 +92,6 @@ button {
     padding: 5px 10px;
     cursor: pointer;
     margin-top: 10px;
-}
-.remove-btn:hover {
-    background-color: darkred;
 }
 
 

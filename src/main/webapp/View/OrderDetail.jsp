@@ -1,4 +1,8 @@
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.util.Date"%>
 <%@ page import="java.util.List, DTO.OrderDetailDTO" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     List<OrderDetailDTO> orderDetails = (List<OrderDetailDTO>) request.getAttribute("orderDetails");
     String orderID = (String) request.getAttribute("orderID");
@@ -26,18 +30,47 @@
                 <img src="<%= request.getContextPath()%>/Image/Product/<%= detail.getImgName()%>" width="100" height="100" />
                 <div class="product-details">
                     <strong><%= detail.getProductName()%></strong><br>
+
+                    <% if (detail.getColorName() != null && !detail.getColorName().isEmpty()) {%>
                     Color: <%= detail.getColorName()%><br>
-                    Quantity: <%= detail.getQuantity()%>
+                    <% } %>
+
+                    <% if (detail.getSizeName() != null && !detail.getSizeName().isEmpty()) {%>
+                    Size: <%= detail.getSizeName()%><br>
+                    <% }%>
+
+                    Quantity: <%= detail.getQuantity()%><br>
+                    
+                    Unit Price: <fmt:formatNumber value="<%= detail.getUnitPrice() %>" pattern="#,###" /> </span>₫
                 </div>
-                <div class="price">$<%= detail.getUnitPrice()%></div>
+                <div class="price"> <fmt:formatNumber value="<%= detail.getUnitPrice() * detail.getQuantity() %>" pattern="#,###" />  </span>₫ </div> 
             </div>
             <% }%>
+            <%
+                // L?y ngày t? OrderDetailDTO (chu?i String)
+                String orderDateStr = orderDetails.get(0).getDateOrder();
+
+                // Chuy?n ??i String thành Date
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+                SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date orderDate = null;
+                String formattedDate = "N/A";
+
+                try {
+                    if (orderDateStr != null && !orderDateStr.isEmpty()) {
+                        orderDate = inputFormat.parse(orderDateStr);
+                        formattedDate = outputFormat.format(orderDate); 
+                    }
+                } catch (Exception e) {
+                    formattedDate = "Invalid Date"; 
+                }
+            %>
 
             <div class="summary">
-                <p>Order date: <strong><%= orderDetails.get(0).getDateOrder()%></strong></p>
-                <p>Subtotal: <strong>$<%= orderDetails.get(0).getTotalAmount()%></strong></p>
-                <p>Voucher Discount: <strong>$<%= orderDetails.get(0).getDiscountAmount()%></strong></p>
-                <p>Total: <strong>$<%= orderDetails.get(0).getFinalAmount()%></strong></p>
+                <p>Order date: <strong><%= formattedDate%></strong></p>
+                <p>Subtotal: <strong><fmt:formatNumber value="<%= orderDetails.get(0).getTotalAmount() %>" pattern="#,###" /> </strong>₫</p>
+                <p>Voucher Discount: <strong><fmt:formatNumber value="<%= orderDetails.get(0).getDiscountAmount()%>" pattern="#,###" /> </strong>₫</p>
+                <p>Total: <strong><fmt:formatNumber value="<%= orderDetails.get(0).getFinalAmount()%>" pattern="#,###" /> </strong>₫</p>
             </div>
 
             <div class="progress-container">
@@ -81,7 +114,6 @@
                     <% }%>
 
                 </p>
-
             </div>
             <div class="order-progress">
                 <%
@@ -227,7 +259,7 @@
         color: gray;
     }
 
-    /* ??m b?o tr?ng th�i ch?a th�nh c�ng/th?t b?i v?n hi?n th? m�u x�m */
+    /* ??m b?o tr?ng thái ch?a thành công/th?t b?i v?n hi?n th? màu xám */
     .progress-step:not(.completed):not(.failed) i,
     .progress-step:not(.completed):not(.failed) p,
     .progress-arrow:not(.completed) i {

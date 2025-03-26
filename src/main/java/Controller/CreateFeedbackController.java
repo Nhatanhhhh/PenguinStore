@@ -58,7 +58,7 @@ public class CreateFeedbackController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.getRequestDispatcher("View/Feedback.jsp").forward(request, response);
     }
 
     /**
@@ -91,7 +91,7 @@ public class CreateFeedbackController extends HttpServlet {
         if (productID == null || orderID == null || ratingParam == null || ratingParam.trim().isEmpty()) {
             session.setAttribute("message", "Please choose the number of stars and enter the assessment before sending!");
             session.setAttribute("messageType", "error");
-            response.sendRedirect(request.getContextPath() + "/View/Feedback.jsp");
+            response.sendRedirect("Feedback?orderID=" + orderID);
             return;
         }
 
@@ -101,14 +101,14 @@ public class CreateFeedbackController extends HttpServlet {
         } catch (NumberFormatException e) {
             session.setAttribute("message", "Rating is not valid");
             session.setAttribute("messageType", "error");
-            response.sendRedirect(request.getContextPath() + "/View/Feedback.jsp");
+            response.sendRedirect("Feedback?orderID=" + orderID);
             return;
         }
 
         if (comment == null || comment.trim().length() < 10) {
             session.setAttribute("message", "The evaluation content needs at least 10 characters!");
             session.setAttribute("messageType", "error");
-            response.sendRedirect(request.getContextPath() + "/View/Feedback.jsp");
+            response.sendRedirect("Feedback?orderID=" + orderID);
             return;
         }
 
@@ -130,10 +130,9 @@ public class CreateFeedbackController extends HttpServlet {
             session.setAttribute("message", "Send the success evaluation!");
             session.setAttribute("messageType", "success");
         } else {
-            session.setAttribute("message", "Send a failure assessment, please try again.");
+            session.setAttribute("message", "You have already submitted feedback for this product!");
             session.setAttribute("messageType", "error");
         }
-
         response.sendRedirect("Feedback?orderID=" + orderID);
     }
 

@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -54,34 +55,29 @@ public class RegisterController extends HttpServlet {
         HttpSession session = request.getSession();
         RegisterDAO registerDAO = new RegisterDAO();
 
-        // ✅ Step 1: Validate User Input
+        // Validate User Input
         if (username.isEmpty() || fullName.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            session.setAttribute("msg", "All fields are required!");
-            response.sendRedirect(request.getContextPath() + "/View/Register.jsp");
+            sendAlert(response, "All fields are required!");
             return;
         }
 
         if (!EMAIL_PATTERN.matcher(email).matches()) {
-            session.setAttribute("msg", "Invalid email format!");
-            response.sendRedirect(request.getContextPath() + "/View/Register.jsp");
+            sendAlert(response, "Invalid email format!");
             return;
         }
 
         if (!PHONE_PATTERN.matcher(phone).matches()) {
-            session.setAttribute("msg", "Phone number must be 10-11 digits!");
-            response.sendRedirect(request.getContextPath() + "/View/Register.jsp");
+            sendAlert(response, "Phone number must be 10-11 digits!");
             return;
         }
 
         if (!PASSWORD_PATTERN.matcher(password).matches()) {
-            session.setAttribute("msg", "Password must have at least 8 characters, including one uppercase letter, one number, and one special character.");
-            response.sendRedirect(request.getContextPath() + "/View/Register.jsp");
+            sendAlert(response, "Password must have at least 8 characters, including one uppercase letter, one number, and one special character.");
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            session.setAttribute("msg", "Passwords do not match!");
-            response.sendRedirect(request.getContextPath() + "/View/Register.jsp");
+            sendAlert(response, "Passwords do not match!");
             return;
         }
 
@@ -130,6 +126,28 @@ public class RegisterController extends HttpServlet {
         session.setAttribute("verificationCode", verificationCodeStr);
 
         // ✅ Step 5: Redirect to Email Verification Page
-        response.sendRedirect(request.getContextPath() + "/View/VerifyEmail.jsp");
+        response.sendRedirect(request.getContextPath() + "/VerifyEmail");
     }
+
+    private void sendAlert(HttpServletResponse response, String message) throws IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("<html>");
+        out.println("<head>");
+        out.println("<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>");
+        out.println("<script>");
+        out.println("Swal.fire({");
+        out.println("  title: 'Oops!',");
+        out.println("  text: '" + message + "',");
+        out.println("  icon: 'error'");
+        out.println("}).then(function() {");
+        out.println("  window.history.back();");
+        out.println("});");
+        out.println("</script>");
+        out.println("</head>");
+        out.println("<body>");
+        out.println("</body>");
+        out.println("</html>");
+    }
+
 }

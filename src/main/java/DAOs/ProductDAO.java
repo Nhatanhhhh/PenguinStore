@@ -118,17 +118,22 @@ public class ProductDAO extends DBContext {
 
     public ArrayList<Product> searchProduct(String keysearch) {
         ArrayList<Product> products = new ArrayList<>();
-        String sql = "SELECT p.productID, p.productName, p.description, p.price, \n"
-                + "       tp.typeName, c.categoryName, \n"
-                + "       STRING_AGG(i.imgName, ', ') AS imgName \n"
-                + "FROM Product p \n"
-                + "JOIN TypeProduct tp ON p.typeID = tp.typeID \n"
-                + "JOIN Category c ON tp.categoryID = c.categoryID \n"
-                + "LEFT JOIN Image i ON p.productID = i.productID \n"
-                + "WHERE p.isSale = 1 \n"
-                + "AND (? IS NULL OR p.productName LIKE ? \n"
-                + "OR tp.typeName LIKE ? OR c.categoryName LIKE ?) \n"
-                + "GROUP BY p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName;";
+        String sql = """
+                     SELECT p.productID, p.productName, p.description, p.price, 
+                            tp.typeName, c.categoryName, 
+                            STRING_AGG(i.imgName, ', ') AS imgName 
+                     FROM Product p 
+                     JOIN TypeProduct tp ON p.typeID = tp.typeID 
+                     JOIN Category c ON tp.categoryID = c.categoryID 
+                     LEFT JOIN Image i ON p.productID = i.productID 
+                     WHERE p.isSale = 1 
+                     AND (
+                         ? IS NULL OR 
+                         LOWER(p.productName) LIKE LOWER(CONCAT('%', ?, '%')) OR 
+                         LOWER(tp.typeName) LIKE LOWER(CONCAT('%', ?, '%')) OR 
+                         LOWER(c.categoryName) LIKE LOWER(CONCAT('%', ?, '%'))
+                     ) 
+                     GROUP BY p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName;""";
         Object param[] = {keysearch, keysearch, keysearch, keysearch};
         try ( ResultSet rs = execSelectQuery(sql, param)) {
             while (rs.next()) {
@@ -168,9 +173,9 @@ public class ProductDAO extends DBContext {
 
     }
 
-    public boolean updateProduct(String productID, String productName, String description, int price) {
+    public boolean updateProduct(Product proUpdate) {
         String sql = "UPDATE Product SET productName = ?, description = ?, price = ? WHERE productID = ?";
-        Object params[] = {productName, description, price, productID};
+        Object params[] = {proUpdate.getProductName(), proUpdate.getDescription(), proUpdate.getPrice(), proUpdate.getProductID()};
         try {
             execQuery(sql, params);
             return true;
@@ -251,4 +256,27 @@ public class ProductDAO extends DBContext {
             return false;
         }
     }
+
+    public boolean checkProduct(String productName) throws SQLException {
+        String query = "SELECT COUNT(*) FROM Product WHERE productName = ?";
+        Object params[] = {productName};
+        try ( ResultSet rs = execSelectQuery(query, params)) {
+            while (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        return false;
+    }
+
+    public boolean checkNameUpdate(String productName, String productID) throws SQLException {
+        String query = "SELECT COUNT(*) FROM Product WHERE productName = ? AND productID != ?";
+        Object params[] = {productName, productID};
+        try ( ResultSet rs = execSelectQuery(query, params)) {
+            if (rs.next()) {
+                return rs.getInt(1) > 0; // Nếu COUNT > 0 nghĩa là đã có sản phẩm khác trùng tên
+            }
+        }
+        return false;
+    }
+
 }

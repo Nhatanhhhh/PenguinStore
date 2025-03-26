@@ -45,4 +45,20 @@ public class OrderStatisticDAO extends DBContext {
         }
         return list;
     }
+
+    public int getTodayOrderCount() {
+        int totalOrders = 0;
+        String sql = "SELECT COUNT(*) AS orderCount FROM [Order] WHERE CAST(orderDate AS DATE) = CAST(GETDATE() AS DATE)";
+
+        try ( ResultSet rs = execSelectQuery(sql)) {
+            if (rs.next()) {
+                totalOrders = rs.getInt("orderCount");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return totalOrders;
+    }
+
 }

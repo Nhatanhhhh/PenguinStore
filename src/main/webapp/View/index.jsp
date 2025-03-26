@@ -1,4 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -11,6 +14,7 @@
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/customer.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/custom.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/styleViewProducts.css"/>
 
     </head>
     <body>
@@ -24,8 +28,32 @@
                 <img src="Image/Index/Background.png" class="" style="width: 100%; height: auto;" alt="Background" data-aos="fade-up">
             </div>
         </div>
-
-        <div class="div" style="margin-left: 58px; margin-bottom: 50px; margin-right: 20px;">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 justify-content-center" id="productList">
+            <c:forEach var="product" items="${listProduct}">
+                <div class="col d-flex justify-content-center mt-4">
+                    <a href="Product?id=${product.productID}&action=detail" class="text-decoration-none text-dark">
+                        <div class="card product-item text-center shadow-sm" style="width: 20rem;">
+                            <c:if test="${not empty product.imgName}">
+                                <c:set var="imgList" value="${fn:split(product.imgName, ',')}" />
+                                <c:set var="firstImg" value="${imgList[0]}" />
+                                <img src="Image/Product/${firstImg}" alt="Product Image" class="card-img-top img-fluid" style="height: 220px; object-fit: cover;">
+                            </c:if>
+                            <div class="card-body">
+                                <h5 class="card-title">${product.productName}</h5>
+                                <p class="card-text text-muted">
+                                    <fmt:setLocale value="vi_VN"/>
+                                    <fmt:formatNumber value="${product.price}" type="number" pattern="#,###" groupingUsed="true"/> VND
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </c:forEach>
+        </div>
+        <div style="margin-left: 50px; margin-top: 50px;" class="d-flex justify-content-center">
+            <a href="<c:url value='/Product'/>" class="button button-dark">View More</a>
+        </div>
+        <div class="div container-fluid" style="margin-left: 200px; margin-bottom: 50px; margin-right: 20px;">
             <div class="star-shooting-outline" data-aos="zoom-in"></div>
             <div class="div2" data-aos="fade-right">
                 <div class="modern-style-is-a-blend-of-minimalism-and-personality-highlighting-your-unique-personality">
@@ -51,7 +79,7 @@
                         <div style="width: 300px; height: 80px; margin-top: 40px;">
                             <h1 style="font-size: 40px; text-align: left;">DON'T FORGET OUR NEW PRODUCTS</h1>
                             <div style="margin-left: 50px; margin-top: 50px;">
-                                <a href="#" class="button button-dark">New Products</a>
+                                <a href="/Product" class="button button-dark">New Products</a>
                             </div>
                         </div>
                     </div>
@@ -95,6 +123,44 @@
                 } else {
                     console.error("SweetAlert2 is not loaded!");
                 }
+                const itemsPerPage = 12;
+                const productList = document.getElementById("productList");
+                const productItems = Array.from(productList.getElementsByClassName("product-item"));
+                const paginationControls = document.getElementById("paginationControls");
+                const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+                let currentPage = 1;
+                function showPage(page) {
+                    page = parseInt(page, 10);
+                    const start = (page - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+
+                    productItems.forEach((item, index) => {
+                        item.style.display = (index >= start && index < end) ? "block" : "none";
+                    });
+
+                    updatePaginationControls(page);
+                }
+
+                function updatePaginationControls(page) {
+                    page = parseInt(page, 10);
+                    const totalPages = Math.ceil(productItems.length / itemsPerPage);
+                    paginationControls.innerHTML = "";
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        const button = document.createElement("button");
+                        button.innerText = i;
+                        button.className = "btn btn-sm " + (i === page ? "btn-dark text-white" : "btn-outline-dark") + " mx-1";
+
+                        button.onclick = () => showPage(i);
+                        paginationControls.appendChild(button);
+                    }
+                }
+                showPage(currentPage);
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener("change", function () {
+                        filterForm.submit();
+                    });
+                });
             });
         </script>
 

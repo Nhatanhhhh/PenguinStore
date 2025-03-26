@@ -27,9 +27,8 @@
             </div>
             <div class="col-md-10">
                 <%@include file="Admin/HeaderAD.jsp"%>
-                <h2 class="text-center">ORDER STATISTICS</h2>
+                <h2 class="mt-4 text-danger">Order Management</h2>
                 <div class="px-4">
-                    <h2 class="mt-4 text-danger">Order Management</h2>
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item active">Manage Orders</li>
                     </ol>
@@ -98,11 +97,11 @@
                                         <td><%= order.getOrderStatus()%></td>
                                         <td>
                                             <% if (order.getOrderStatus().equals("Cancel order")) { %>
-                                            <span class="text-danger fw-bold">Confirmed order cancelled</span>
+                                            <span class="text-danger fw-bold">Confirmed cancelled</span>
                                             <% } else if (order.getOrderStatus().equals("Order Cancellation Request")) { %>
-                                            <span class="text-warning fw-bold">Order Cancellation Request</span>
+                                            <span class="text-warning fw-bold">Cancellation Request</span>
                                             <% } else if (order.getOrderStatus().equals("Delivery successful")) { %>
-                                            <span class="text-success fw-bold">Order has been delivered successfully</span>
+                                            <span class="text-success fw-bold">Order delivered </span>
                                             <% } else {%>
                                             <select class="form-select">
                                                 <option <%= order.getOrderStatus().equals("Pending processing") ? "selected" : ""%>>Pending processing</option>
@@ -119,25 +118,25 @@
                                             <% if (order.getOrderStatus().equals("Cancel order")) {%>
                                             <form action="<%= request.getContextPath()%>/OrderDetailStaff" method="GET">
                                                 <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
-                                                <button type="submit" class="btn btn-info">Order Detail</button>
+                                                <button type="submit" class="btn btn-info m-2">Order Detail</button>
                                             </form>
                                             <% } else if (order.getOrderStatus().equals("Order Cancellation Request")) {%>
                                             <button class="btn btn-danger" onclick="acceptCancel('<%= order.getOrderID()%>')">Accept Cancel</button>
                                             <form action="<%= request.getContextPath()%>/OrderDetailStaff" method="GET">
                                                 <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
-                                                <button type="submit" class="btn btn-info">Order Detail</button>
+                                                <button type="submit" class="btn btn-info m-2">Order Detail</button>
                                             </form>
                                             <% } else if (order.getOrderStatus().equals("Delivery successful")) {%>
                                             <!-- Không hi?n th? nút Update -->
                                             <form action="<%= request.getContextPath()%>/OrderDetailStaff" method="GET">
                                                 <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
-                                                <button type="submit" class="btn btn-info">Order Detail</button>
+                                                <button type="submit" class="btn btn-info m-2">Order Detail</button>
                                             </form>
                                             <% } else {%>
                                             <button class="btn btn-primary" onclick="confirmUpdate('<%= order.getOrderID()%>', this)">Update</button>
                                             <form action="<%= request.getContextPath()%>/OrderDetailStaff" method="GET">
                                                 <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
-                                                <button type="submit" class="btn btn-info">Order Detail</button>
+                                                <button type="submit" class="btn btn-info m-2">Order Detail</button>
                                             </form>
                                             <% } %>
                                         </td>

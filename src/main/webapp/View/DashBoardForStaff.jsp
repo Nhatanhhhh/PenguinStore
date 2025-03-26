@@ -111,7 +111,6 @@
                                             <th>Comment</th>
                                             <th>Rating</th>
                                             <th>Date</th>
-                                            <th>Viewed</th>
                                             <th>Resolved</th>
                                             <th>Actions</th>
                                         </tr>
@@ -132,9 +131,6 @@
                                                 java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
                                             %>
                                             <td><%= sdf.format(fb.getFeedbackCreateAt())%></td>
-                                            <td class="<%= fb.isIsViewed() ? "text-success" : "text-danger"%>">
-                                                <%= fb.isIsViewed() ? "<i class='fa fa-eye text-success'></i> Viewed" : "<i class='fa fa-eye-slash text-danger'></i> Not Viewed"%>
-                                            </td>
                                             <td class="<%= fb.isIsResolved() ? "text-success" : "text-danger"%>">
                                                 <%= fb.isIsResolved() ? "<i class='fa fa-check-circle text-success'></i> Resolved" : "<i class='fa fa-hourglass-half text-warning'></i> Pending"%>
                                             </td>
@@ -150,7 +146,6 @@
                                                 <button type="button" class="btn btn-primary btn-sm reply-btn" data-id="<%= fb.getFeedbackID()%>">
                                                     Reply
                                                 </button>
-
 
                                                 <div id="reply-box-<%= fb.getFeedbackID()%>" class="reply-box mt-2" style="display: none;">
                                                     <form action="feedbackreply" method="POST">

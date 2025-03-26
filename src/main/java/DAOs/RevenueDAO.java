@@ -78,4 +78,42 @@ public class RevenueDAO extends DBContext {
         }
         return list;
     }
+
+    public double getTodayRevenue() {
+        double totalRevenue = 0;
+        String query = "SELECT SUM(O.totalAmount) AS Revenue "
+                + "FROM dbo.[Order] O "
+                + "JOIN dbo.StatusOrder S ON O.statusOID = S.statusOID "
+                + "WHERE S.statusName = 'Delivery successful' "
+                + "AND CAST(O.orderDate AS DATE) = CAST(GETDATE() AS DATE)";
+
+        try ( ResultSet rs = execSelectQuery(query)) {
+            if (rs.next()) {
+                totalRevenue = rs.getDouble("Revenue");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return totalRevenue;
+    }
+
+    public double getWeeklyRevenue() {
+        double totalRevenue = 0;
+        String query = "SELECT SUM(O.totalAmount) AS Revenue "
+                + "FROM dbo.[Order] O "
+                + "JOIN dbo.StatusOrder S ON O.statusOID = S.statusOID "
+                + "WHERE S.statusName = 'Delivery successful' "
+                + "AND DATEPART(WEEK, O.orderDate) = DATEPART(WEEK, GETDATE()) "
+                + "AND YEAR(O.orderDate) = YEAR(GETDATE())"; // Đảm bảo đúng năm
+
+        try ( ResultSet rs = execSelectQuery(query)) {
+            if (rs.next()) {
+                totalRevenue = rs.getDouble("Revenue");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return totalRevenue;
+    }
+
 }

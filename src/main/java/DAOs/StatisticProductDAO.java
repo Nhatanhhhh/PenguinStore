@@ -1,3 +1,4 @@
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -90,6 +91,39 @@ public class StatisticProductDAO extends DBContext {
             Logger.getLogger(StatisticProductDAO.class.getName()).log(Level.SEVERE, "Error when getting best-selling products", ex);
         }
         return bestSelling;
+    }
+
+    public ArrayList<StatisticProduct> getWeeklySales() {
+        ArrayList<StatisticProduct> statistics = new ArrayList<>();
+        String query = "WITH DateRange AS (\n"
+                + "    SELECT CAST(DATEADD(DAY, number, DATEADD(DAY, -6, CAST(GETDATE() AS DATE))) AS DATE) AS timePeriod\n"
+                + "    FROM master.dbo.spt_values\n"
+                + "    WHERE type = 'P' AND number BETWEEN 0 AND 6\n"
+                + ")\n"
+                + "SELECT \n"
+                + "    d.timePeriod,\n"
+                + "    ISNULL(SUM(od.quantity), 0) AS soldQuantity\n"
+                + "FROM DateRange d\n"
+                + "LEFT JOIN [Order] o ON CAST(o.orderDate AS DATE) = d.timePeriod\n"
+                + "LEFT JOIN OrderDetail od ON o.orderID = od.orderID\n"
+                + "GROUP BY d.timePeriod\n"
+                + "ORDER BY d.timePeriod;";
+
+        try ( ResultSet rs = execSelectQuery(query)) {
+            while (rs.next()) {
+                statistics.add(new StatisticProduct(
+                        rs.getString("timePeriod"),
+                        "", // Không có productName
+                        "", // Không có sizeName
+                        "", // Không có colorName
+                        rs.getInt("soldQuantity"),
+                        0 // Không cần importedQuantity
+                ));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StatisticProductDAO.class.getName()).log(Level.SEVERE, "Error when getting weekly sales data", ex);
+        }
+        return statistics;
     }
 
 }

@@ -5,11 +5,19 @@
         <filter-class>Filters.LoginFilter</filter-class>
     </filter>
     <filter>
-        <filter-name>AuthorizationFilter</filter-name>
-        <filter-class>Filters.AuthorizationFilter</filter-class>
+        <filter-name>AdminFilter</filter-name>
+        <filter-class>Filters.AdminFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>StaffFilter</filter-name>
+        <filter-class>Filters.StaffFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>CustomerFilter</filter-name>
+        <filter-class>Filters.CustomerFilter</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>LoginFilter</filter-name>
+        <filter-name>CustomerFilter</filter-name>
         <url-pattern>/Cart</url-pattern>
         <url-pattern>/Checkout</url-pattern>
         <url-pattern>/Payment</url-pattern>
@@ -17,19 +25,20 @@
         <url-pattern>/Order</url-pattern>
         <url-pattern>/EditProfile</url-pattern>
         <url-pattern>/Feedback</url-pattern>
-        <url-pattern>/ChangePassword</url-pattern>
-        <url-pattern>/DashBoardForAdmin</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>StaffFilter</filter-name>
         <url-pattern>/DashBoardForStaff</url-pattern>
         <url-pattern>/ListFeedbackForStaff</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>AdminFilter</filter-name>
+        <url-pattern>/DashBoardForAdmin</url-pattern>
         <url-pattern>/ManageProduct</url-pattern>
         <url-pattern>/Type</url-pattern>
     </filter-mapping>
     <filter-mapping>
-        <filter-name>AuthorizationFilter</filter-name>
-        <url-pattern>/DashBoardForAdmin</url-pattern>
-        <url-pattern>/DashBoardForStaff</url-pattern>
-        <url-pattern>/ManageProduct</url-pattern>
-        <url-pattern>/Restock</url-pattern>
+        <filter-name>LoginFilter</filter-name>
         <url-pattern>/Cart</url-pattern>
         <url-pattern>/Checkout</url-pattern>
         <url-pattern>/Payment</url-pattern>
@@ -174,6 +183,10 @@
         <servlet-name>UseVoucher</servlet-name>
         <servlet-class>Controller.UseVoucher</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>HomePageController</servlet-name>
+        <servlet-class>Controller.HomePageController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/Logout</url-pattern>
@@ -191,7 +204,7 @@
         <url-pattern>/OrderDetail</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
-        <welcome-file>View/index.jsp</welcome-file>
+        <welcome-file>HomePage</welcome-file>
     </welcome-file-list>
     <!--<error-page>
         <error-code>404</error-code>
@@ -275,7 +288,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ViewListFeedback</servlet-name>
-        <url-pattern>/ListFeedbackForStaff</url-pattern>
+        <url-pattern>/ViewListFeedback</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DashBoardForStaffServlet</servlet-name>
@@ -316,6 +329,10 @@
     <servlet-mapping>
         <servlet-name>UseVoucher</servlet-name>
         <url-pattern>/UseVoucher</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>HomePageController</servlet-name>
+        <url-pattern>/HomePage</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

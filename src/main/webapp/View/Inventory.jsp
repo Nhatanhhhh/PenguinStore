@@ -18,13 +18,64 @@
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/styleViewProductDetail.css"/>
         <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <style>
+
+
+            .product-images {
+                flex: 1;
+                max-width: 400px; /* Định kích thước tối đa cho ảnh */
+
+            }
+
+            .thumbnail-container {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .img-wrapper {
+                border: 1px solid #ddd;
+                padding: 5px;
+                border-radius: 5px;
+            }
+
+            .thumbnail-img {
+                width: 80px;
+                height: 80px;
+                cursor: pointer;
+                object-fit: cover;
+            }
+
+            .product-main-img {
+                width: 300px;
+                height: 300px;
+                margin-top: 20px;
+                border-radius: 8px;
+                object-fit: cover;
+            }
+
+            .product-details {
+                flex: 1;
+                max-width: 400px;
+                text-align: left;
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            }
+
             .form-group {
                 margin-bottom: 15px;
             }
-            input, textarea, select {
-                width: 100%;
-                padding: 8px;
-                margin-top: 5px;
+
+            .form-group label {
+                font-weight: bold;
+                display: block;
+            }
+
+            .form-group p {
+                margin: 5px 0 0;
+                font-size: 16px;
             }
 
             #layoutSidenav {
@@ -61,7 +112,6 @@
                 cursor: pointer;
             }
 
-            /* Mặc định màu chữ trắng */
             .sale-status-group select {
                 color: white;
             }
@@ -73,89 +123,10 @@
             .sale-status-group.sale-inactive select {
                 color: #ff3b3b;
             }
-            .thumbnail-container {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-
-            .img-wrapper {
-                position: relative;
-                display: inline-block;
-            }
-
-            .thumbnail-img {
-                width: 100px;
-                height: 100px;
-                object-fit: cover;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-
-            .remove-btn {
-                position: absolute;
-                top: -5px;
-                right: -5px;
-                background: red;
-                color: white;
-                border: none;
-                border-radius: 50%;
-                width: 20px;
-                height: 20px;
-                font-size: 12px;
-                cursor: pointer;
-            }
-
-            .label-upload {
-                width: 150px;
-                height: 150px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: black;
-                font-size: 20px;
-                cursor: pointer;
-                border-radius: 10px;
-                border: 2px solid black;
-                margin-top: 10px;
-            }
-
-            .label-upload:hover {
-                opacity: 0.8;
-            }
-
-            #layoutSidenav {
-                display: flex;
-                min-height: 100vh; /* Giữ chiều cao tự động */
-            }
-            #productImages {
-                display: none;
-            }
-            #previewContainer {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-                margin-top: 10px;
-            }
-
-            .img-preview-container {
-                position: relative;
-                display: inline-block;
-            }
-
-            .preview-image {
-                width: 100px;
-                height: 100px;
-                object-fit: cover;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-            }
-
         </style>
     </head>
     <body>
-        <%
+         <%
             Manager manager = (Manager) session.getAttribute("user");
             String managerName = (manager != null) ? manager.getManagerName() : "Guest";
             String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
@@ -167,75 +138,67 @@
             <div class="col-md-10">
                 <%@include file="Admin/HeaderAD.jsp"%>
                 <div class="container p-3">
-                    <h2>Product Images</h2>
-                    <div class="product-images">
-                        <div class="thumbnail-container">
-                            <c:forEach var="img" items="${listImg}">
-                                <div class="img-wrapper" data-img-id="${img.imgID}">
-                                    <img src="Image/Product/${img.imgName}" alt="Thumbnail" class="thumbnail-img" onclick="viewImage(this)">
-                                    <button class="remove-btn" onclick="deleteImage('${img.imgID}', this)">X</button>
+                    <div class="container mt-4">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="product-images d-flex justify-content-between">
+                                    <div class="thumbnail-container d-flex flex-column me-3">
+                                        <c:forEach var="img" items="${listImg}">
+                                            <div class="img-wrapper mb-2" data-img-id="${img.imgID}">
+                                                <img src="Image/Product/${img.imgName}" alt="Thumbnail" class="thumbnail-img img-thumbnail" onclick="viewImage(this)">
+                                            </div>
+                                        </c:forEach>
+                                    </div>
+
+                                    <c:if test="${not empty listImg}">
+                                        <div class="main-image-container ms-auto">
+                                            <img id="mainImage" src="Image/Product/${listImg[0].imgName}" class="product-main-img img-fluid" alt="Product Image">
+                                        </div>
+                                    </c:if>
                                 </div>
-                            </c:forEach>
+                            </div>
+
+
+                            <div class="col-md-5">
+                                <div class="product-details p-3 border rounded shadow-sm">
+                                    <h2 class="mb-3">Product Information</h2>
+                                    <div class="form-group">
+                                        <label><strong>Product Name:</strong></label>
+                                        <p class="text-muted">${product.productName}</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label><strong>Description:</strong></label>
+                                        <p class="text-muted">${product.description}</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label><strong>Price:</strong></label>
+                                        <p class="text-muted">${product.price}</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label><strong>Category:</strong></label>
+                                        <p class="text-muted">${product.categoryName}</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label><strong>Type:</strong></label>
+                                        <p class="text-muted">${product.typeName}</p>
+                                    </div>
+                                    <div class="form-group sale-status-group">
+                                        <label><strong>Sale Status:</strong></label>
+                                        <p class="text-muted">${product.isSale ? 'On Sale' : 'Not On Sale'}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <!-- Hiển thị ảnh lớn -->
-                        <c:if test="${not empty listImg}">
-                            <img id="mainImage" src="Image/Product/${listImg[0].imgName}" class="product-main-img" alt="Product Image" height="300px" width="300px" style="margin-left: 20px">
-                        </c:if>
                     </div>
 
-                    <!-- Phần thêm hình ảnh mới -->
-                    <h3>Add New Images</h3>
-                    <form action="<c:url value="/ManageProduct?action=updateImage&id=${product.productID}"/>"  method="POST" 
-                          enctype="multipart/form-data">
-                        <label for="productImages" class="label-upload">+</label>
-                        <input type="file" id="productImages" name="productImages" accept="image/*" multiple>
-                        <input type="file" id="hiddenFileInput" name="selectedFiles" multiple style="display: none;">
-                        <br><br>
-                        <div id="previewContainer"></div>
-                        <input type="submit" value="Update Image" class="submit-btn" style="width: 150px">
-                    </form>
-
-                    <h2>Product Information</h2>
-                    <form id="editProductForm" action="<c:url value='/ManageProduct'/>" method="POST">
-                        <input type="hidden" name="action" value="updateProduct">
-                        <input type="hidden" name="productID" value="${product.productID}">
-                        <div class="form-group">
-                            <label for="productName"><strong>Product Name:</strong></label>
-                            <input type="text" id="productName" name="productName" value="${product.productName}" readonly required>
-                        </div>
-                        <div class="form-group">
-                            <label for="description"><strong>Description:</strong></label>
-                            <textarea id="description" name="description" rows="4" readonly required>${product.description}</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="price"><strong>Price:</strong></label>
-                            <input type="number" id="price" name="price" step="1" min="1" value="${product.price}" readonly required>
-                        </div>
-                        <div class="form-group">
-                            <label for="category"><strong>Category:</strong> 
-                                <input type="text" id="categoryName" name="categoryName" value="${product.categoryName}" readonly></label>
-                        </div>
-                        <div class="form-group">
-                            <label for="type"><strong>Type:</strong>
-                                <input type="text" id="typeName" name="typeName" value="${product.typeName}" readonly></label>
-                        </div>
-                        <button type="button" id="editProductBtn" class="btn btn-primary btn-sm">Edit</button>
-                        <input type="submit" id="saveProductBtn" class="btn btn-success btn-sm" value="Save" style="display: none; width: 50px;">
-                        <button type="button" id="cancelEditBtn" class="btn btn-secondary btn-sm" style="display: none;">Cancel</button>
-                    </form>
-                    <div class="form-group sale-status-group">
-                        <label for="isSale"><strong>Sale Status:</strong></label>
-                        <select id="isSale" name="isSale" class="form-control" style="width: auto; display: inline-block;">
-                            <option value="true" ${product.isSale ? 'selected' : ''} >On Sale</option>
-                            <option value="false" ${!product.isSale ? 'selected' : ''} >Not On Sale</option>
-                        </select>
-                    </div>
                     <h2 class="mt-4">Product Variants</h2>
                     <table class="table table-bordered text-center">
                         <thead class="table-dark">
                             <tr>
                                 <th>Color</th>
-                                <th>Size</th>
+                                    <c:if test="${not empty productDetail[0].sizeName}">
+                                    <th>Size</th>
+                                    </c:if>
                                 <th>Quantity</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -247,13 +210,12 @@
                                     <td>
                                         <div style="width: 25px; height: 25px; border-radius: 50%; border: 2px solid gray; background-color: ${variant.colorName}; margin: auto;"></div>
                                     </td>
-                                    <td>${variant.sizeName}</td>
+                                    <c:if test="${not empty variant.sizeName}">
+                                        <td>${variant.sizeName}</td>
+                                    </c:if>
                                     <td>${variant.stockQuantity}</td>
-                                    <td>
-                                        <select class="status-dropdown" data-variant-id="${variant.proVariantID}">
-                                            <option value="true" ${variant.status ? 'selected' : ''}>In Stock</option>
-                                            <option value="false" ${!variant.status ? 'selected' : ''}>Out of Stock</option>
-                                        </select>
+                                    <td class="${variant.status ? 'text-success' : 'text-danger'}">
+                                        ${variant.status ? 'In Stock' : 'Out of Stock'}
                                     </td>
                                     <td>
                                         <a href="<c:url value='/Restock?action=restock&id=${variant.proVariantID}'/>" class="btn btn-primary btn-sm">Restock</a>
@@ -262,7 +224,6 @@
                             </c:forEach>
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>

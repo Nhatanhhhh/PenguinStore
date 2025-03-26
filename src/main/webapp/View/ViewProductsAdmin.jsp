@@ -57,6 +57,38 @@
             .filter-form button:hover {
                 background-color: #e67e22;
             }
+            .pagination-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .page-btn {
+                width: 40px;
+                height: 40px;
+                border-radius: 8px;
+                border: none;
+                background-color: #343a40; /* Màu tối */
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: background-color 0.3s, color 0.3s;
+            }
+
+            .page-btn:hover {
+                background-color: #495057;
+                color: white;
+            }
+
+            .page-btn.active {
+                background-color: #f8f9fa;
+                color: #343a40;
+                font-weight: bold;
+            }
+
+
         </style>
     </head>
     <body>
@@ -92,68 +124,75 @@
                             <button type="submit">Filter</button>
                         </form>
                     </div>
-                    <div id="productContainer">
-                        <div class="row row-cols-1 row-cols-md-3 g-4" id="productList">
+                    <table id="productTable" class="table table-bordered text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Image</th>
+                                <th>Product Name</th>
+                                <th>Price</th>
+                                <th>Variants</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             <c:forEach var="product" items="${listProduct}">
                                 <c:set var="lowStockCount" value="0" />
                                 <c:set var="outOfStockCount" value="0" />
-
                                 <c:if test="${not empty productVariantsMap[product.productID]}">
                                     <c:forEach var="variant" items="${productVariantsMap[product.productID]}">
-                                        <c:if test="${variant.stockQuantity <= 5}">
+                                        <c:if test="${variant.stockQuantity <= 10}">
                                             <c:set var="lowStockCount" value="${lowStockCount + 1}" />
                                         </c:if>
-                                        <c:if test="${variant.stockQuantity <= 0}">
+                                        <c:if test="${variant.stockQuantity <= 5}">
                                             <c:set var="outOfStockCount" value="${outOfStockCount + 1}" />
                                         </c:if>
                                     </c:forEach>
                                 </c:if>
 
-                                <a href="<c:url value="ManageProduct?id=${product.productID}&action=inventory"/>" class="text-decoration-none product-item">
-                                    <div class="col mt-3">
-                                        <div class="card ${lowStockCount > 5 ? 'border border-danger border-3' : ''}" 
-                                             style="${lowStockCount > 5 ? 'border-color: #dc3545 !important;' : ''}">
-
-                                            <c:if test="${not empty product.imgName}">
-                                                <c:set var="imgList" value="${fn:split(product.imgName, ',')}" />
-                                                <c:set var="firstImg" value="${imgList[0]}" />
-                                                <img src="Image/Product/${firstImg}" class="card-img-top" alt="Product Image">
-                                            </c:if>
-                                            <div class="card-body">
-                                                <p class="card-title">${product.productName}</p>
-                                                <p class="card-text text-muted">
-                                                    <fmt:setLocale value="vi_VN"/>
-                                                    <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true"/> VND
-                                                </p>
-                                                <p class="fw-bold">
-                                                    Is Sale:
-                                                    <span class="${product.isSale ? 'text-success' : 'text-danger'}">
-                                                        ${product.isSale ? 'Sale' : 'Not For Sale'}
-                                                    </span>
-                                                </p>
-                                                <c:if test="${outOfStockCount <= 5 && not empty productVariantsMap[product.productID]}">
-                                                    <div class="d-flex flex-wrap">
-                                                        <c:forEach var="variant" items="${productVariantsMap[product.productID]}">
-                                                            <c:if test="${variant.stockQuantity <= 5}">
-                                                                <div class="border border-danger border-3 rounded p-2 m-1 text-center" 
-                                                                     style="width: 100px; border-color: #dc3545 !important;">
-                                                                    <div style="width: 20px; height: 20px; border-radius: 50%; background-color: ${variant.colorName}; margin: auto;"></div>
-                                                                    <p class="mb-0 small">Size: ${variant.sizeName}</p>
-                                                                    <p class="mb-0 small">Qty: ${variant.stockQuantity}</p>
-                                                                </div>
-                                                            </c:if>
-                                                        </c:forEach>
-                                                    </div>
-                                                </c:if>
-                                                <p class="card-text ${lowStockCount > 5 ? 'text-danger fw-bold' : 'text-muted'}">Click To Edit/Restock</p>
-                                            </div>
+                                <tr>
+                                    <td>
+                                        <c:if test="${not empty product.imgName}">
+                                            <c:set var="imgList" value="${fn:split(product.imgName, ',')}" />
+                                            <c:set var="firstImg" value="${imgList[0]}" />
+                                            <img src="Image/Product/${firstImg}" class="img-thumbnail" style="width: 50px; height: 50px;" alt="Product Image">
+                                        </c:if>
+                                    </td>
+                                    <td>${product.productName}</td>
+                                    <td>
+                                        <fmt:setLocale value="vi_VN"/>
+                                        <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true"/> VND
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-wrap justify-content-center">
+                                            <c:choose>
+                                                <c:when test="${outOfStockCount > 3}">
+                                                    <p class="text-danger fw-bold">Restock Warning</p>
+                                                </c:when>
+                                                <c:when test="${lowStockCount > 3}">
+                                                    <p class="text-warning fw-bold">Restock Warning</p>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <p class="text-success fw-bold">Stock is Stable</p>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
-                                    </div>
-                                </a>
+                                    </td>
+                                    <td>
+                                        <span class="${product.isSale ? 'text-success' : 'text-danger'}">
+                                            ${product.isSale ? 'Sale' : 'Not For Sale'}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="<c:url value="ManageProduct?id=${product.productID}&action=edit"/>" class="btn btn-primary btn-sm" style="font-size: 12px;"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+                                        <a href="<c:url value="ManageProduct?id=${product.productID}&action=inventory"/>" class="btn btn-warning btn-sm" style="font-size: 12px;">Inventory</a>
+                                    </td>
+                                </tr>
                             </c:forEach>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-center mt-3" id="paginationControls"></div>
+                        </tbody>
+                    </table>
+                    <div id="paginationControls" class="d-flex justify-content-center mt-3"></div>
+
                 </div>
                 <c:if test="${empty listProduct}">
                     <p class="text-center text-danger mt-3">No products available.</p>
@@ -163,39 +202,56 @@
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                const itemsPerPage = 12; // Số sản phẩm hiển thị trên mỗi trang
-                const productList = document.getElementById("productList");
-                const productItems = Array.from(productList.getElementsByClassName("product-item"));
-                const paginationControls = document.getElementById("paginationControls");
+                let table = document.getElementById("productTable");
+                let tbody = table.getElementsByTagName("tbody")[0];
+                let rows = tbody.getElementsByTagName("tr");
+                let rowsPerPage = 10;
                 let currentPage = 1;
 
-                function showPage(page) {
-                    const start = (page - 1) * itemsPerPage;
-                    const end = start + itemsPerPage;
+                function displayTablePage(page) {
+                    let start = (page - 1) * rowsPerPage;
+                    let end = start + rowsPerPage;
 
-                    productItems.forEach((item, index) => {
-                        item.style.display = (index >= start && index < end) ? "block" : "none";
-                    });
-
-                    updatePaginationControls(page);
-                }
-
-                function updatePaginationControls(page) {
-                    const totalPages = Math.ceil(productItems.length / itemsPerPage);
-                    paginationControls.innerHTML = "";
-
-                    for (let i = 1; i <= totalPages; i++) {
-                        const button = document.createElement("button");
-                        button.innerText = i;
-                        button.className = "btn btn-sm " + (i === page ? "btn-dark text-white" : "btn-outline-dark") + " mx-1";
-                        button.onclick = () => showPage(i);
-                        paginationControls.appendChild(button);
+                    for (let i = 0; i < rows.length; i++) {
+                        rows[i].style.display = i >= start && i < end ? "" : "none";
                     }
                 }
 
-                showPage(currentPage);
+                function setupPagination() {
+                    let paginationControls = document.getElementById("paginationControls");
+                    paginationControls.innerHTML = "";
+
+                    let totalPages = Math.ceil(rows.length / rowsPerPage);
+                    if (totalPages <= 1)
+                        return;
+
+                    let pageInfo = document.createElement("div");
+                    pageInfo.className = "pagination-container";
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        let pageButton = document.createElement("button");
+                        pageButton.innerText = i;
+                        pageButton.className = "page-btn";
+                        if (i === currentPage) {
+                            pageButton.classList.add("active"); // Đánh dấu trang hiện tại
+                        }
+                        pageButton.addEventListener("click", function () {
+                            currentPage = i;
+                            updatePagination();
+                        });
+                        pageInfo.appendChild(pageButton);
+                    }
+
+                    paginationControls.appendChild(pageInfo);
+                }
+
+                function updatePagination() {
+                    displayTablePage(currentPage);
+                    setupPagination();
+                }
+
+                updatePagination();
             });
         </script>
-
     </body>
 </html>

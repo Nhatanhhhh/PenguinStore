@@ -13,6 +13,7 @@ import java.time.LocalDate;
 public class Restock {
 
     private String productName;
+    private String productID;
     private String restockID;
     private String proVariantID;
     private int quantity;
@@ -44,6 +45,19 @@ public class Restock {
         this.restockDate = restockDate;
     }
 
+    public Restock(String productName, String proVariantID, String sizeName, String colorName) {
+        this.productName = productName;
+        this.proVariantID = proVariantID;
+        this.sizeName = sizeName;
+        this.colorName = colorName;
+    }
+
+    public Restock(String productID) {
+        this.productID = productID;
+        
+    }
+
+    
     public String getProductName() {
         return productName;
     }
@@ -54,6 +68,14 @@ public class Restock {
 
     public LocalDate getRestockDate() {
         return restockDate;
+    }
+
+    public String getProductID() {
+        return productID;
+    }
+
+    public void setProductID(String productID) {
+        this.productID = productID;
     }
 
     public void setRestockDate(LocalDate restockDate) {

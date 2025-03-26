@@ -1,7 +1,6 @@
 (function ($) {
     "use strict";
 
-
     /*==================================================================
      [ Validate ]*/
     var input = $('.validate-input .input100');
@@ -19,7 +18,6 @@
         return check;
     });
 
-
     $('.validate-form .input100').each(function () {
         $(this).focus(function () {
             hideValidate(this);
@@ -28,14 +26,14 @@
 
     function showValidate(input) {
         var thisAlert = $(input).parent();
-
-        $(thisAlert).addClass('alert-validate');
+        $(thisAlert).addClass('alert-validate'); // Add error styles
+        $(thisAlert).find('.error-message').show(); // Show the error message
     }
 
     function hideValidate(input) {
         var thisAlert = $(input).parent();
-
-        $(thisAlert).removeClass('alert-validate');
+        $(thisAlert).removeClass('alert-validate'); // Remove error styles
+        $(thisAlert).find('.error-message').hide(); // Hide the error message
     }
 
     /*==================================================================
@@ -53,59 +51,84 @@
             $(this).find('i').addClass('fa-eye');
             showPass = 0;
         }
-
     });
-
 
 })(jQuery);
 
 document.addEventListener("DOMContentLoaded", function () {
-    const password = document.getElementById("password");
-    const confirmPassword = document.getElementById("confirm_password");
-    const passwordStrength = document.getElementById("passwordStrength");
+    // Set custom validation messages
+    window.ub.form.validationMessages.username.required = 'You forgot to enter your name!';
+    window.ub.form.validationMessages.email.email = "That doesn't seem to be a valid email!";
+    window.ub.form.validationMessages.phone.phone = "Phone number must be 10-11 digits!";
+
+    // Email validation
+    const emailInput = document.getElementById("email");
+    const emailError = document.getElementById("emailError");
+
+    emailInput.addEventListener("input", function () {
+        const emailValue = emailInput.value.trim();
+        const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
+
+        if (!isValidEmail) {
+            emailError.style.display = "block"; // Show error message
+            emailInput.classList.add("error");  // Add error class to input
+            emailError.innerText = window.ub.form.validationMessages.email.email;  // Show custom message
+        } else {
+            emailError.style.display = "none"; // Hide error message
+            emailInput.classList.remove("error");  // Remove error class
+            emailInput.classList.add("success");  // Add success class
+        }
+    });
+
+    // Password validation
+    const passwordInput = document.getElementById("password");
     const passwordError = document.getElementById("passwordError");
 
-    function validatePasswordStrength() {
-        const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        const mediumRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+    passwordInput.addEventListener("input", function () {
+        const passwordValue = passwordInput.value.trim();
+        const isValidPassword = passwordValue.length >= 8;
 
-        passwordStrength.classList.remove("alert-validate");
-
-        if (password.value.length < 8) {
-            passwordStrength.innerText = "⚠️ Password must be at least 8 characters";
-            passwordStrength.style.color = "#FF0000";
-            passwordStrength.style.display = "block";
-        } else if (strongRegex.test(password.value)) {
-            passwordStrength.innerText = "✅ Strong password!";
-            passwordStrength.style.color = "#008000";
-            passwordStrength.style.display = "block";
-        } else if (mediumRegex.test(password.value)) {
-            passwordStrength.innerText = "⚠️ Medium: Add special characters for a stronger password!";
-            passwordStrength.style.color = "#FFA500";
-            passwordStrength.style.display = "block";
+        if (!isValidPassword) {
+            passwordError.style.display = "block"; // Show error message
+            passwordInput.classList.add("error");  // Add error class to input
+            passwordError.innerText = "Password must be at least 8 characters"; // Custom message
         } else {
-            passwordStrength.innerText = "⚠️ Weak: Add uppercase, number & special character!";
-            passwordStrength.style.color = "#FF4500";
-            passwordStrength.style.display = "block";
+            passwordError.style.display = "none"; // Hide error message
+            passwordInput.classList.remove("error");  // Remove error class
+            passwordInput.classList.add("success");  // Add success class
         }
-    }
-
-    function validatePasswordMatch() {
-        if (password.value !== confirmPassword.value) {
-            passwordError.style.display = "block";
-            confirmPassword.classList.add("input-error");
-            confirmPassword.setCustomValidity("Passwords do not match");
-        } else {
-            passwordError.style.display = "none";
-            confirmPassword.classList.remove("input-error");
-            confirmPassword.setCustomValidity("");
-        }
-    }
-
-    // Kiểm tra khi nhập
-    password.addEventListener("input", function () {
-        validatePasswordStrength();
-        validatePasswordMatch();
     });
-    confirmPassword.addEventListener("input", validatePasswordMatch);
+
+    // Phone number validation
+    const phoneInput = document.getElementById("phone");
+    const phoneError = document.getElementById("phoneError");
+
+    phoneInput.addEventListener("input", function () {
+        const phoneValue = phoneInput.value.trim();
+        const isValidPhone = /^\d{10,11}$/.test(phoneValue);
+
+        if (!isValidPhone) {
+            phoneError.style.display = "block"; // Show error message
+            phoneInput.classList.add("error");  // Add error class to input
+            phoneError.innerText = window.ub.form.validationMessages.phone.phone;  // Show custom message
+        } else {
+            phoneError.style.display = "none"; // Hide error message
+            phoneInput.classList.remove("error");  // Remove error class
+            phoneInput.classList.add("success");  // Add success class
+        }
+    });
+
+    // Form submission validation
+    const form = document.querySelector(".register100-form");
+    form.addEventListener("submit", function (event) {
+        const phoneValue = phoneInput.value.trim();
+        const isValidPhone = /^\d{10,11}$/.test(phoneValue);
+
+        // If the phone number is not valid, prevent form submission
+        if (!isValidPhone) {
+            event.preventDefault();  // Prevent form submission if invalid
+            phoneError.style.display = "block"; // Show error tooltip
+        }
+    });
 });
+

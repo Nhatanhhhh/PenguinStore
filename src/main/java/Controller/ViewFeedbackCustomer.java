@@ -5,7 +5,10 @@
 package Controller;
 
 import DAOs.FeedbackDAO;
+import DAOs.ProductDAO;
+import DAOs.TypeDAO;
 import Models.Customer;
+import Models.Type;
 import Models.ViewFeedbackCus;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,7 +17,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -33,12 +39,20 @@ public class ViewFeedbackCustomer extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         Customer customer = (Customer) session.getAttribute("user");
         
-        System.out.println("ViewFeedbackCustomer Servlet is running...");
+        ProductDAO productDAO = new ProductDAO();
+        TypeDAO typeDAO = new TypeDAO();
+        request.setAttribute("listProduct", productDAO.getProductCustomer());
+        List<Type> listType = typeDAO.getAll();
+        Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
+        for (Type type : listType) {
+            categoryMap.computeIfAbsent(type.getCategoryName(), k -> new ArrayList<>()).add(type);
+        }
+        request.setAttribute("categoryMap", categoryMap);
 
-
+        
         if (customer.getCustomerID() != null && !customer.getCustomerID().isEmpty()) {
             List<ViewFeedbackCus> feedbackList = feedbackDAO.getFeedbackByCustomerID(customer.getCustomerID());
             

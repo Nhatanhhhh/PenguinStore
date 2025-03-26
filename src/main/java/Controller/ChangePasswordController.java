@@ -5,8 +5,11 @@
 package Controller;
 
 import DAOs.ChangePasswordDAO;
+import DAOs.ProductDAO;
+import DAOs.TypeDAO;
 import DB.DBContext;
 import Models.Customer;
+import Models.Type;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,6 +18,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,6 +69,15 @@ public class ChangePasswordController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        ProductDAO productDAO = new ProductDAO();
+        TypeDAO typeDAO = new TypeDAO();
+        request.setAttribute("listProduct", productDAO.getProductCustomer());
+        List<Type> listType = typeDAO.getAll();
+        Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
+        for (Type type : listType) {
+            categoryMap.computeIfAbsent(type.getCategoryName(), k -> new ArrayList<>()).add(type);
+        }
+        request.setAttribute("categoryMap", categoryMap);
         request.getRequestDispatcher("View/ChangePassword.jsp").forward(request, response);
     }
 

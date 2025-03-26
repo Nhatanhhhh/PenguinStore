@@ -50,37 +50,37 @@ public class UseVoucher extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         if (voucher == null) {
-            out.print("{\"status\": \"error\", \"message\": \"Voucher không tồn tại hoặc đã hết hạn\"}");
+            out.print("{\"status\": \"error\", \"message\": \"Voucher does not exist or has expired\"}");
             return;
         }
 
-        // Kiểm tra thời hạn của voucher
+// Check the validity period of the voucher
         java.util.Date currentDate = new java.util.Date();
         if (voucher.getValidFrom() != null && voucher.getValidFrom().after(currentDate)) {
-            out.print("{\"status\": \"error\", \"message\": \"Voucher chưa có hiệu lực\"}");
+            out.print("{\"status\": \"error\", \"message\": \"Voucher is not yet valid\"}");
             return;
         }
         if (voucher.getValidUntil() != null && voucher.getValidUntil().before(currentDate)) {
-            out.print("{\"status\": \"error\", \"message\": \"Voucher đã hết hạn\"}");
+            out.print("{\"status\": \"error\", \"message\": \"Voucher has expired\"}");
             return;
         }
 
         double discount = 0;
-        if (voucher.getDiscountPer() > 0) { // Giảm theo %
+        if (voucher.getDiscountPer() > 0) { // Percentage discount
             if (subtotal < voucher.getMinOrderValue()) {
-                out.print("{\"status\": \"error\", \"message\": \"Giá trị đơn hàng cần lớn hơn $" + voucher.getMinOrderValue() + " để áp dụng\"}");
+                out.print("{\"status\": \"error\", \"message\": \"Order value must be greater than " + voucher.getMinOrderValue() + "đ  to apply\"}");
                 return;
             }
             discount = (subtotal * voucher.getDiscountPer()) / 100;
             if (discount > voucher.getMaxDiscountAmount()) {
                 discount = voucher.getMaxDiscountAmount();
             }
-
         } else { // Giảm số tiền cố định
             discount = voucher.getDiscountAmount();
         }
 
-        out.print("{\"status\": \"success\", \"discount\": " + discount + "}");
+        out.print(
+                "{\"status\": \"success\", \"discount\": " + discount + "}");
     }
 
     @Override

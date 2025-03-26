@@ -111,7 +111,6 @@
                                             <th>Comment</th>
                                             <th>Rating</th>
                                             <th>Date</th>
-                                            <th>Viewed</th>
                                             <th>Resolved</th>
                                             <th>Actions</th>
                                         </tr>
@@ -132,28 +131,24 @@
                                                 java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
                                             %>
                                             <td><%= sdf.format(fb.getFeedbackCreateAt())%></td>
-                                            <td class="<%= fb.isIsViewed() ? "text-success" : "text-danger"%>">
-                                                <%= fb.isIsViewed() ? "<i class='fa fa-eye text-success'></i> Viewed" : "<i class='fa fa-eye-slash text-danger'></i> Not Viewed"%>
-                                            </td>
                                             <td class="<%= fb.isIsResolved() ? "text-success" : "text-danger"%>">
                                                 <%= fb.isIsResolved() ? "<i class='fa fa-check-circle text-success'></i> Resolved" : "<i class='fa fa-hourglass-half text-warning'></i> Pending"%>
                                             </td>
 
 
-                                            <td>
-                                                <form action="<%= request.getContextPath()%>/feedbackreply" method="POST">
+                                            <td class="row">
+                                                <form class="col-md-6" action="feedbackreply" method="POST" style="display:inline;">
 
                                                     <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID()%>">
                                                     <input type="hidden" name="redirectPage" value="View/ListFeedbackAdmin.jsp">
                                                     <button type="submit" name="action" value="delete" class="btn btn-warning btn-sm">Delete</button>
                                                 </form>
 
-                                                <button type="button" class="btn btn-primary btn-sm reply-btn" data-id="<%= fb.getFeedbackID()%>">
+                                                <button type="button" class="btn btn-primary btn-sm reply-btn col-md-6" data-id="<%= fb.getFeedbackID().trim()%>">
                                                     Reply
                                                 </button>
 
-
-                                                <div id="reply-box-<%= fb.getFeedbackID()%>" class="reply-box mt-2" style="display: none;">
+                                                <div id="reply-box-<%= fb.getFeedbackID().trim()%>" class="reply-box mt-2" style="display: none;">
                                                     <form action="<%= request.getContextPath()%>/feedbackreply" method="POST">
                                                         <input type="hidden" name="redirectPage" value="View/ListFeedbackAdmin.jsp">
                                                         <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID()%>">

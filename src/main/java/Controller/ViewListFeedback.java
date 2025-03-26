@@ -64,7 +64,7 @@ public class ViewListFeedback extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("role") == null) {
             LOGGER.log(Level.WARNING, "Unauthorized access attempt to feedback list");
-            response.sendRedirect(request.getContextPath() + "/Login.jsp");
+            response.sendRedirect(request.getContextPath() + "/Login");
             return;
         }
 
@@ -73,7 +73,7 @@ public class ViewListFeedback extends HttpServlet {
         List<Feedback> feedbacks = feedbackDAO.getAllFeedbacks();
 
         request.setAttribute("feedbacks", feedbacks);
-        if ("ADMIN".equalsIgnoreCase(role)) {
+        if ("ADMIN".equals(role)) {
             LOGGER.log(Level.INFO, "Admin is viewing feedback list");
             request.getRequestDispatcher("/View/ListFeedbackAdmin.jsp").forward(request, response);
         } else {

@@ -6,7 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -47,7 +47,7 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>Voucher Code</th>
-                                <th>Discount Percentage</th>
+                                
                                 <th>Discount Amount</th>
                                 <th>Minimum Order Value</th>
                                 <th>Date Created</th>
@@ -61,12 +61,14 @@
                             <c:forEach var="voucher" items="${voucherList}">
                                 <tr class="${voucher.voucherStatus ? 'valid' : 'expired'}">
                                     <td>${voucher.voucherCode}</td>
-                                    <td>${voucher.discountPer}</td>
-                                    <td>${voucher.discountAmount}</td>
-                                    <td>${voucher.minOrderValue}</td>
+                                    
+                                    <td><fmt:formatNumber value="${voucher.discountAmount}" pattern="#,###" /> ₫</td>
+                                    <td><fmt:formatNumber value="${voucher.minOrderValue}" pattern="#,###" /> ₫</td>
+
                                     <td>${voucher.validFrom}</td>
                                     <td>${voucher.validUntil}</td>
-                                    <td>${voucher.maxDiscountAmount}</td>
+                                    <td><fmt:formatNumber value="${voucher.maxDiscountAmount}" pattern="#,###" /> ₫</td>
+
                                     <td>
                                         <c:choose>
                                             <c:when test="${voucher.voucherStatus}">
@@ -90,7 +92,7 @@
                                                     Edit
                                                 </a>
 
-                                                <button class="btn btn-primary btn-sm" onclick="openSendVoucherModal('${voucher.voucherID}')">Send</button>
+                                                <button class="btn btn-primary btn-sm" style="pointer-events: none; opacity: 0.6;" onclick="openSendVoucherModal('${voucher.voucherID}')">Send</button>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>

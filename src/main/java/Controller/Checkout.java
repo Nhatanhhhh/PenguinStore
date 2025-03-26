@@ -2,10 +2,13 @@ package Controller;
 
 import DAOs.CartDAO;
 import DAOs.CheckoutDAO;
+import DAOs.ProductDAO;
+import DAOs.TypeDAO;
 import DAOs.VVCustomerDAO;
 import DAOs.VoucherDAO;
 import Models.CartItem;
 import Models.Customer;
+import Models.Type;
 import Models.UsedVoucher;
 import Models.Voucher;
 import java.io.IOException;
@@ -17,6 +20,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Checkout extends HttpServlet {
 
@@ -31,6 +37,15 @@ public class Checkout extends HttpServlet {
             response.sendRedirect("View/LoginCustomer.jsp");
             return;
         }
+        ProductDAO productDAO = new ProductDAO();
+        TypeDAO typeDAO = new TypeDAO();
+        request.setAttribute("listProduct", productDAO.getProductCustomer());
+        List<Type> listType = typeDAO.getAll();
+        Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
+        for (Type type : listType) {
+            categoryMap.computeIfAbsent(type.getCategoryName(), k -> new ArrayList<>()).add(type);
+        }
+        request.setAttribute("categoryMap", categoryMap);
 
         Customer customer = (Customer) session.getAttribute("user");
         String customerID = customer.getCustomerID();

@@ -99,6 +99,14 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
         String rememberMe = request.getParameter("remember-me");
 
+        if (username != null) {
+            username = username.replaceAll("\\s+", ""); 
+        }
+
+        if (password != null) {
+            password = password.trim(); 
+        }
+
         HttpSession session = request.getSession(true);
         Integer failedAttempts = (Integer) session.getAttribute("failedAttempts");
         if (failedAttempts == null) {

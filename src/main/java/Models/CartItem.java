@@ -18,7 +18,16 @@ public class CartItem {
         this.colorName = colorName;
         this.imgNames = imgNames;
     }
-
+   public CartItem(String cartID, String productName, double price, int quantity, String colorName, String sizeName, String imgNames) {
+         this.cartID = cartID;
+         this.productName = productName;
+         this.price = price;
+         this.quantity = quantity;
+         this.colorName = (colorName != null) ? colorName : "";
+         this.sizeName = (sizeName != null) ? sizeName : "";
+         this.imgNames = imgNames;
+     }
+   
     public CartItem(String productName, double price, int quantity, String sizeName, String colorName, String imgNames) {
         this.productName = productName;
         this.price = price;

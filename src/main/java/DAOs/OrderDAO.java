@@ -8,12 +8,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class OrderDAO {
 
-    private DBContext db = new DBContext();
+    private final DBContext db = new DBContext();
 
+    // Lấy danh sách đơn hàng theo Customer ID
     public List<Order> getOrdersByCustomerID(String customerID) {
         List<Order> orderList = new ArrayList<>();
         String query = "SELECT o.orderID, v.voucherCode, s.statusName, o.orderDate, o.totalAmount "
@@ -42,54 +42,33 @@ public class OrderDAO {
         return orderList;
     }
 
-    public String createOrder(Order order) {
-        String orderID = UUID.randomUUID().toString();
-        String sql = "INSERT INTO [Order] (orderID, customerID, totalAmount, discountAmount, finalAmount, orderDate, statusOID, voucherID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try ( Connection conn = db.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, orderID);
-            ps.setString(2, order.getCustomerID());
-            ps.setDouble(3, order.getTotalAmount());
-            ps.setDouble(4, order.getDiscountAmount());
-            ps.setDouble(5, order.getFinalAmount());
-            ps.setDate(6, new java.sql.Date(order.getOrderDate().getTime()));
-            ps.setString(7, order.getStatusOID());
-            ps.setString(8, order.getVoucherID());
-
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return orderID;
-    }
-
-    //Use for Staff
+    // Lấy tất cả đơn hàng (dùng cho Staff/Admin)
     public List<Order> getAllOrders() {
         List<Order> orderList = new ArrayList<>();
-        String query = "SELECT o.orderID, c.fullName, o.orderDate, o.finalAmount, s.statusName "
-                + "FROM dbo.[Order] o "
-                + "JOIN dbo.Customer c ON o.customerID = c.customerID "
-                + "JOIN dbo.StatusOrder s ON o.statusOID = s.statusOID "
+        String query = "SELECT o.orderID, c.fullName, o.orderDate, o.totalAmount, s.statusName "
+                + "FROM [Order] o "
+                + "JOIN Customer c ON o.customerID = c.customerID "
+                + "JOIN StatusOrder s ON o.statusOID = s.statusOID "
                 + "ORDER BY o.orderDate DESC";
 
-        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(query);  ResultSet rs = ps.executeQuery()) {
+        try ( Connection conn = db.getConn();  PreparedStatement ps = conn.prepareStatement(query);  ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Order order = new Order();
                 order.setOrderID(rs.getString("orderID"));
                 order.setFullName(rs.getString("fullName"));
                 order.setOrderDate(rs.getDate("orderDate"));
-                order.setTotalAmount(rs.getDouble("finalAmount"));
+                order.setTotalAmount(rs.getDouble("totalAmount"));
                 order.setOrderStatus(rs.getString("statusName"));
                 orderList.add(order);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return orderList;
     }
-    // Lấy statusOID từ statusName
 
+    // Lấy statusOID từ statusName
     public String getStatusOIDByName(String statusName) {
         String query = "SELECT statusOID FROM StatusOrder WHERE statusName = ?";
         try ( Connection conn = db.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
@@ -104,8 +83,13 @@ public class OrderDAO {
         return null;
     }
 
-// Cập nhật trạng thái đơn hàng
-    public boolean updateOrderStatus(String orderID, String statusOID) {
+    // Cập nhật trạng thái đơn hàng (gộp 2 hàm updateOrderStatus và updateOrderStatusForCus)
+    public boolean updateOrderStatus(String orderID, String newStatus) {
+        String statusOID = getStatusOIDByName(newStatus);
+        if (statusOID == null) {
+            return false;
+        }
+
         String query = "UPDATE [Order] SET statusOID = ? WHERE orderID = ?";
         try ( Connection conn = db.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, statusOID);
@@ -116,21 +100,22 @@ public class OrderDAO {
         }
         return false;
     }
+    
+    // Khôi phục số lượng stock khi đơn hàng bị hủy
+    public void restoreStockQuantity(String orderID) {
+        String query = "UPDATE ProductVariant "
+                + "SET stockQuantity = stockQuantity + ( "
+                + "    SELECT quantity FROM OrderDetail WHERE orderID = ? AND ProductVariant.proVariantID = OrderDetail.proVariantID "
+                + ") "
+                + "WHERE proVariantID IN (SELECT proVariantID FROM OrderDetail WHERE orderID = ?)";
 
-    public boolean updateOrderStatusForCus(String orderID, String newStatus) {
-        String statusOID = getStatusOIDByName(newStatus);  // Lấy ID của trạng thái mới
-        if (statusOID == null) {
-            return false;
-        }
-
-        String sql = "UPDATE [Order] SET statusOID = ? WHERE orderID = ?";
-        try ( Connection conn = db.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, statusOID);
-            stmt.setString(2, orderID);
-            return stmt.executeUpdate() > 0;
+        try ( Connection conn = db.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, orderID);
+            ps.setString(2, orderID);
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
     }
+
 }

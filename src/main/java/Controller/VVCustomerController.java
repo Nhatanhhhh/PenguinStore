@@ -4,8 +4,11 @@
  */
 package Controller;
 
+import DAOs.ProductDAO;
+import DAOs.TypeDAO;
 import DAOs.VVCustomerDAO;
 import Models.Customer;
+import Models.Type;
 import Models.Voucher;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,7 +17,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -62,6 +68,15 @@ public class VVCustomerController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         Customer customer = (Customer) session.getAttribute("user");
+        ProductDAO productDAO = new ProductDAO();
+        TypeDAO typeDAO = new TypeDAO();
+        request.setAttribute("listProduct", productDAO.getProductCustomer());
+        List<Type> listType = typeDAO.getAll();
+        Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
+        for (Type type : listType) {
+            categoryMap.computeIfAbsent(type.getCategoryName(), k -> new ArrayList<>()).add(type);
+        }
+        request.setAttribute("categoryMap", categoryMap);
 
         if (customer != null) {
             VVCustomerDAO dao = new VVCustomerDAO();
@@ -69,6 +84,9 @@ public class VVCustomerController extends HttpServlet {
 
             // Đặt danh sách voucher vào request để sử dụng trong JSP
             request.setAttribute("vouchers", vouchers);
+        }else{
+            response.sendRedirect("Login");
+            return;
         }
 
         request.getRequestDispatcher("View/ViewVoucherCustomer.jsp").forward(request, response);

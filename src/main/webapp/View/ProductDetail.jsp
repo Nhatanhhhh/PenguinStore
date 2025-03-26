@@ -89,8 +89,11 @@
                                 (${totalReviews} reviews)
                             </p>
                         </div>
-
-                        <p class="price">$${product.price}</p>
+                        <p class="card-text text-muted">
+                            <strong>Price: </strong> 
+                            <fmt:setLocale value="vi_VN"/>
+                            <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true"/> VND
+                        </p>
                         <p><strong>Type:</strong> ${product.typeName}</p>
                         <p><strong>Category:</strong> ${product.categoryName}</p>
 

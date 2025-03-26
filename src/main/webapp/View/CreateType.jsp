@@ -27,7 +27,7 @@
                 <div class="container mt-4"> 
                     <h3 class="text-center">Create Type</h3>
                 </div>
-                <div class="container mt-6">
+                <div class="container d-flex justify-content-center align-items-center">
                     <c:if test="${not empty error}">
                         <div class="alert alert-danger text-center">${error}</div>
                     </c:if>

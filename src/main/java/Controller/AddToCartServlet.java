@@ -110,7 +110,7 @@ public class AddToCartServlet extends HttpServlet {
             }
 
             // Chuyển hướng về trang sản phẩm kèm thông báo thành công
-            response.sendRedirect("Product?id=" + productID + "&message=success");
+             response.sendRedirect("Product?action=detail&id=" + productID + "&message=success");
 
         } catch (Exception e) {
             e.printStackTrace();

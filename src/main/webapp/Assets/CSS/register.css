@@ -393,75 +393,69 @@ iframe {
     background-color: var(--color-one);
 }
 
-/*------------------------------------------------------------------
-[ Alert validate ]*/
-
-.validate-input {
-    position: relative;
+/*---------------------------------------------------------
+[ Error Message Styling - Positioned Absolutely to Avoid Layout Shifts]
+--------------------------------------------------------*/
+.error-message {
+    position: absolute;  /* Position the error message absolutely */
+    top: 100%;  /* Position below the input field */
+    left: 0;  /* Align it to the left of the input */
+    background-color: #ff4d4d;  /* Red background */
+    color: white;  /* White text */
+    padding: 5px 10px;  /* Padding inside the error message */
+    border-radius: 5px;  /* Rounded corners */
+    font-size: 12px;  /* Smaller text size */
+    display: none;  /* Initially hidden */
+    z-index: 1000;  /* Ensure it's on top of other content */
+    white-space: nowrap;  /* Prevent text from wrapping */
 }
 
-.alert-validate .btn-show-pass {
-    visibility: hidden;
-}
-
-.alert-validate::before {
-    content: attr(data-validate);
+.error-message {
     position: absolute;
-    max-width: 70%;
-    background-color: #fff;
-    border: 1px solid #c80000;
-    border-radius: 3px;
-    padding: 4px 25px 5px 10px;
-    top: 50%;
-    -webkit-transform: translateY(-50%);
-    -moz-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    transform: translateY(-50%);
-    right: 12px;
-    pointer-events: none;
+    top: 100%;  /* Vị trí dưới input */
+    left: 0;
+    background-color: #ff4d4d;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    display: none;  /* Mặc định ẩn */
+    z-index: 1000;
+    white-space: nowrap;
+}
 
-    font-family: Raleway-Medium;
-    color: #c80000;
+.error-message::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 10px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #ff4d4d transparent;
+}
+
+
+/* Thêm viền đỏ khi input không hợp lệ */
+.input100.error {
+    border: 1px solid #ff4d4d;
+}
+
+/* Thêm viền xanh khi input hợp lệ */
+.input100.success {
+    border: 1px solid #28a745;
+    background-color: #d4edda;
+}
+
+
+/* Keep password strength in the same place */
+#passwordStrength {
     font-size: 14px;
-    line-height: 1.4;
-    text-align: left;
-
-    visibility: hidden;
-    opacity: 0;
-
-    -webkit-transition: opacity 0.4s;
-    -o-transition: opacity 0.4s;
-    -moz-transition: opacity 0.4s;
-    transition: opacity 0.4s;
+    color: #FF4500; /* Default color for strength feedback */
+    display: none; /* Initially hidden */
 }
 
-.alert-validate::after {
-    content: "\f12a";
-    font-family: FontAwesome;
-    display: block;
-    position: absolute;
-    color: var(--color-one);
-    font-size: 18px;
-    top: 50%;
-    -webkit-transform: translateY(-50%);
-    -moz-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    transform: translateY(-50%);
-    right: 18px;
-}
-
-.alert-validate:hover:before {
-    visibility: visible;
-    opacity: 1;
-}
-
-@media (max-width: 992px) {
-    .alert-validate::before {
-        visibility: visible;
-        opacity: 1;
-    }
+.input100.error + .error-message {
+    display: block; /* Show error message */
 }
 
 
