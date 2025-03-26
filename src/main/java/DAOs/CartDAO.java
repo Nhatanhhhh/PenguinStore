@@ -187,13 +187,17 @@ public class CartDAO {
 //        }
 //    }
 
-    public void removeFromCart(String cartID) {
+    public boolean removeFromCart(String cartID) {
         String sql = "DELETE FROM Cart WHERE cartID = ?";
-        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, cartID);
-            ps.executeUpdate();
+        try ( Connection conn = DBContext.getConn();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cartID);
+            int affectedRows = stmt.executeUpdate();
+
+            return affectedRows > 0; // Trả về true nếu có dòng bị xóa
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 

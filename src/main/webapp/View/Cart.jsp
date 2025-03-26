@@ -43,7 +43,7 @@
                     <p>Size: <%= item.getSizeName()%></p>
                     <% }%>
 
-                    <p>Price: <span class="price"><fmt:formatNumber value="<%= item.getPrice()%>" /></span></p>
+                    <p>Price: <span class="price"><fmt:formatNumber value="<%= item.getPrice()%>" pattern="#,###"/></span></p>
 
                     <form action="<%= request.getContextPath()%>/Cart" method="post">
                         <input type="hidden" name="action" value="delete">
@@ -57,7 +57,7 @@
                     <button onclick="changeQuantity(1, <%= item.getPrice()%>, '<%= item.getCartID()%>')">+</button>
                 </div>
                 <p>Total: <span id="total_<%= item.getCartID()%>">
-                        <fmt:formatNumber value="<%= item.getPrice() * item.getQuantity()%>"  /> 
+                        <fmt:formatNumber value="<%= item.getPrice() * item.getQuantity()%>" pattern="#,###"/> ₫
                     </span></p>
             </div>
             <% subtotal += item.getPrice() * item.getQuantity(); %>
@@ -70,7 +70,7 @@
             </p>
             <% }%>
             <p>Subtotal: <span id="subtotal" data-subtotal="<%= subtotal%>">
-                    <fmt:formatNumber value="<%= subtotal%>" />
+                    <fmt:formatNumber value="<%= subtotal%>" pattern="#,###"/> ₫
                 </span></p>
             <form action="<%= request.getContextPath()%>/Cart" method="post">
                 <input type="hidden" name="action" value="clear">
@@ -112,7 +112,9 @@
         }
 
         quantityElement.innerText = newQuantity;
-        totalElement.innerText = "$" + (price * newQuantity).toLocaleString();
+        totalElement.innerText = (price * newQuantity).toLocaleString('vi-VN', {
+            maximumFractionDigits: 0
+        }) + " ₫";
 
         // Proceed with the AJAX call to update the cart
         $.ajax({
@@ -136,21 +138,21 @@
         });
     }
 
-
     function updateSubtotal() {
-        let totalElements = document.querySelectorAll("[id^=total_]");
+        let totalElements = document.querySelectorAll("[id^=total_]"); // Lấy danh sách các tổng giá sản phẩm
         let subtotalElement = document.getElementById("subtotal");
         let subtotal = 0;
 
         totalElements.forEach(el => {
-            let value = parseFloat(el.innerText.replace("$", "").replace(/,/g, ""));
+            let value = parseFloat(el.innerText.replace(/\D/g, "")); // Loại bỏ ký tự không phải số
             if (!isNaN(value)) {
                 subtotal += value;
             }
         });
 
-        subtotalElement.innerText = "$" + subtotal.toLocaleString();
-        subtotalElement.setAttribute("data-subtotal", subtotal);
+        if (subtotalElement) {
+            subtotalElement.innerText = subtotal.toLocaleString('vi-VN') + " ₫";
+            subtotalElement.setAttribute("data-subtotal", subtotal);
+        }
     }
-
 </script>

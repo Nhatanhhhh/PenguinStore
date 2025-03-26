@@ -73,9 +73,22 @@ public class CartController extends HttpServlet {
         if ("update".equals(action)) {
             String cartID = request.getParameter("cartID");
             int quantity = Integer.parseInt(request.getParameter("quantity"));
+            if (quantity == 0) {
+                // Xóa sản phẩm khỏi giỏ hàng nếu quantity = 0
+                boolean deleted = cartDAO.removeFromCart(cartID);
 
-            // Fetch the product's stock quantity for the specific variant (proVariantID)
-            int stockQuantity = cartDAO.getStockQuantityByCartItem(cartID); // Ensure this method is implemented
+                JsonObject json = new JsonObject();
+                json.addProperty("status", deleted ? "deleted" : "failed");
+                json.addProperty("cartID", cartID);
+
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(json.toString());
+                return;
+            }
+
+            // Kiểm tra số lượng tồn kho
+            int stockQuantity = cartDAO.getStockQuantityByCartItem(cartID);
 
             if (quantity > stockQuantity) {
                 // Send an error response indicating insufficient stock

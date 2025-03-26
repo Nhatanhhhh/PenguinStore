@@ -150,7 +150,7 @@
                             </form>
 
                         </div>
-                        <c:if test="${not empty message}">
+                        <c:if test="${not empty param.message and param.message eq 'success'}">
                             <div class="after-cart">
                                 <div class="cart-success">
                                     <p>✅ Product has been added to your cart!</p>
@@ -158,7 +158,7 @@
                                 <div>
                                     <a href="Cart" class="btn btn-primary">🛒 View Cart</a>
                                     <a href="Checkout" class="btn btn-success">💳 Checkout</a>
-                                    <a href="Product" class="btn btn-warning">💳 Continue Shopping</a>
+                                    <a href="Product" class="btn btn-warning">🛍 Continue Shopping</a>
                                 </div>
                             </div>
                         </c:if>
@@ -262,7 +262,7 @@
                     });
                 });
 
-               
+
 
                 // 🔹 Chọn mặc định giá trị đầu tiên
                 if (hasSize) {

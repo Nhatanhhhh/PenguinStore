@@ -1,6 +1,8 @@
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.util.Date"%>
 <%@ page import="java.util.List, DTO.OrderDetailDTO" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     List<OrderDetailDTO> orderDetails = (List<OrderDetailDTO>) request.getAttribute("orderDetails");
     String orderID = (String) request.getAttribute("orderID");
@@ -39,17 +41,16 @@
 
                     Quantity: <%= detail.getQuantity()%><br>
                     
-                    Unit Price: $<%= detail.getUnitPrice() %>
-                    
+                    Unit Price: <fmt:formatNumber value="<%= detail.getUnitPrice() %>" pattern="#,###" /> </span>â‚«
                 </div>
-                <div class="price">$<%= detail.getUnitPrice() * detail.getQuantity() %></div>
+                <div class="price"> <fmt:formatNumber value="<%= detail.getUnitPrice() * detail.getQuantity() %>" pattern="#,###" />  </span>â‚« </div> 
             </div>
             <% }%>
             <%
-                // L?y ngày t? OrderDetailDTO (chu?i String)
+                // L?y ngÃ y t? OrderDetailDTO (chu?i String)
                 String orderDateStr = orderDetails.get(0).getDateOrder();
 
-                // Chuy?n ??i String thành Date
+                // Chuy?n ??i String thÃ nh Date
                 SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
                 SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date orderDate = null;
@@ -67,9 +68,9 @@
 
             <div class="summary">
                 <p>Order date: <strong><%= formattedDate%></strong></p>
-                <p>Subtotal: <strong>$<%= orderDetails.get(0).getTotalAmount()%></strong></p>
-                <p>Voucher Discount: <strong>$<%= orderDetails.get(0).getDiscountAmount()%></strong></p>
-                <p>Total: <strong>$<%= orderDetails.get(0).getFinalAmount()%></strong></p>
+                <p>Subtotal: <strong><fmt:formatNumber value="<%= orderDetails.get(0).getTotalAmount() %>" pattern="#,###" /> </strong>â‚«</p>
+                <p>Voucher Discount: <strong><fmt:formatNumber value="<%= orderDetails.get(0).getDiscountAmount()%>" pattern="#,###" /> </strong>â‚«</p>
+                <p>Total: <strong><fmt:formatNumber value="<%= orderDetails.get(0).getFinalAmount()%>" pattern="#,###" /> </strong>â‚«</p>
             </div>
 
             <div class="progress-container">
@@ -113,7 +114,6 @@
                     <% }%>
 
                 </p>
-
             </div>
             <div class="order-progress">
                 <%
@@ -259,7 +259,7 @@
         color: gray;
     }
 
-    /* ??m b?o tr?ng thái ch?a thành công/th?t b?i v?n hi?n th? màu xám */
+    /* ??m b?o tr?ng thÃ¡i ch?a thÃ nh cÃ´ng/th?t b?i v?n hi?n th? mÃ u xÃ¡m */
     .progress-step:not(.completed):not(.failed) i,
     .progress-step:not(.completed):not(.failed) p,
     .progress-arrow:not(.completed) i {

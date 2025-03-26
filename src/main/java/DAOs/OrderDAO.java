@@ -100,8 +100,8 @@ public class OrderDAO {
         }
         return false;
     }
+    
     // Khôi phục số lượng stock khi đơn hàng bị hủy
-
     public void restoreStockQuantity(String orderID) {
         String query = "UPDATE ProductVariant "
                 + "SET stockQuantity = stockQuantity + ( "

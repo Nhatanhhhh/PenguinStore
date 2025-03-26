@@ -50,8 +50,8 @@
                     <input type="hidden" name="total" id="hiddenTotal">
                     <% if (cartItems != null && !cartItems.isEmpty()) { %>
                     <% for (CartItem item : cartItems) {%>
-                        <input type="hidden" name="sizeName" value="<%= item.getSizeName() != null ? item.getSizeName() : ""%>">
-                        <input type="hidden" name="colorName" value="<%= item.getColorName() != null ? item.getColorName() : ""%>">
+                    <input type="hidden" name="sizeName" value="<%= item.getSizeName() != null ? item.getSizeName() : ""%>">
+                    <input type="hidden" name="colorName" value="<%= item.getColorName() != null ? item.getColorName() : ""%>">
                     <% } %>
                     <% } %>
                     <button type="submit" id="payNow">Order Now</button>
@@ -93,7 +93,7 @@
                 </div>
 
                 <p>Voucher Discount: <span id="discount">0 ₫</span></p>
-                <p>Shipping: 40.00 ₫</p>
+                <p>Shipping: 400000 ₫</p>
                 <h3>Total: <span id="total"><fmt:formatNumber value="<%= subtotal%>" pattern="#,###" /> </span>₫</h3>
                 <% } else { %>
                 <p>Your cart is empty!</p>
@@ -113,55 +113,81 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var discount = 0.00; // Bi?n to�n c?c l?u gi?m gi�
-        var shippingFee = 40.00; // Ph� v?n chuy?n c? ??nh
+        var shippingFee = 40000; // Ph� v?n chuy?n c? ??nh
 
-        function updateTotal() {
-            let subtotal = parseFloat(document.getElementById("subtotal").textContent);
-            let total = subtotal + shippingFee - discount;
+        function changeQuantity(amount, price, cartID, stockQuantity) {
+            console.log("Updating cart - cartID:", cartID);
+            let quantityElement = document.getElementById("quantity_" + cartID);
+            let totalElement = document.getElementById("total_" + cartID);
+            let productElement = quantityElement.closest(".product"); // Lấy phần tử sản phẩm
+            let subtotalElement = document.getElementById("subtotal");
 
-            // C?p nh?t t?ng ti?n hi?n th?
-            document.getElementById("total").textContent = +total.toFixed(2);
-
-            // C?p nh?t input hidden ?? g?i l�n server
-            document.getElementById("hiddenSubtotal").value = subtotal.toFixed(2);
-            document.getElementById("hiddenDiscount").value = discount.toFixed(2);
-            document.getElementById("hiddenTotal").value = total.toFixed(2);
-        }
-
-        // �p d?ng voucher
-        document.getElementById("applyVoucher").addEventListener("click", function () {
-            let voucherCode = document.getElementById("voucher").value.trim();
-
-            if (!voucherCode) {
-                alert("Vui l�ng nh?p m� voucher!");
+            if (!quantityElement || !totalElement || !subtotalElement) {
+                console.error("Error: Element not found for cartID:", cartID);
                 return;
             }
 
-            $.ajax({
-                url: "<%= request.getContextPath()%>/UseVoucher",
-                type: "GET",
-                data: {
-                    voucherCode: voucherCode,
-                    subtotal: parseFloat(document.getElementById("subtotal").textContent)
-                },
-                dataType: "json",
-                success: function (response) {
-                    if (response.status === "error") {
-                        alert(response.message);
-                        discount = 0.00;
-                        document.getElementById("discount").textContent = "$0.00";
-                    } else {
-                        discount = response.discount; // C?p nh?t gi?m gi�
-                        document.getElementById("discount").textContent = "$" + response.discount.toFixed(2);
-                        document.getElementById("hiddenVoucher").value = voucherCode; // L?u m� voucher
+            let currentQuantity = parseInt(quantityElement.innerText);
+            let newQuantity = currentQuantity + amount;
+
+            if (newQuantity < 0) {
+                return; // Không cho phép số âm (tránh lỗi)
+            }
+
+            // Nếu số lượng = 0, thực hiện xóa sản phẩm khỏi giỏ hàng
+            if (newQuantity === 0) {
+                $.ajax({
+                    url: "<%= request.getContextPath()%>/Cart",
+                    type: "POST",
+                    data: {
+                        action: 'update',
+                        cartID: cartID,
+                        quantity: 0
+                    },
+                    success: function (data) {
+                        if (data.status === "deleted") {
+                            productElement.remove(); // Xóa sản phẩm khỏi giao diện
+                            updateSubtotal();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error deleting cart item:", error);
                     }
-                    updateTotal(); // C?p nh?t t?ng ti?n
+                });
+                return;
+            }
+
+            if (newQuantity > stockQuantity) {
+                alert("This product variation is not available in stock.");
+                return;
+            }
+
+            // Cập nhật số lượng trên giao diện
+            quantityElement.innerText = newQuantity;
+            totalElement.innerText = (price * newQuantity).toLocaleString('vi-VN', {
+                maximumFractionDigits: 0
+            }) + " ₫";
+
+            // Gửi request cập nhật số lượng
+            $.ajax({
+                url: "<%= request.getContextPath()%>/Cart",
+                type: "POST",
+                data: {
+                    action: 'update',
+                    cartID: cartID,
+                    quantity: newQuantity
                 },
-                error: function () {
-                    alert("L?i khi ki?m tra voucher!");
+                success: function (data) {
+                    if (data.status === "success") {
+                        updateSubtotal();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error updating cart:", error);
                 }
             });
-        });
+        }
+
 
         // N?u c� m� voucher tr�n URL, t? ??ng ?i?n v�o input
         let params = new URLSearchParams(window.location.search);
