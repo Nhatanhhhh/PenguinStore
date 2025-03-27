@@ -80,7 +80,7 @@ public class VVCustomerController extends HttpServlet {
 
         if (customer != null) {
             VVCustomerDAO dao = new VVCustomerDAO();
-            List<Voucher> vouchers = dao.getVouchersByCustomerID(customer.getCustomerID());
+            List<Voucher> vouchers = dao.getAvailableVouchersByCustomerID(customer.getCustomerID());
 
             // Đặt danh sách voucher vào request để sử dụng trong JSP
             request.setAttribute("vouchers", vouchers);

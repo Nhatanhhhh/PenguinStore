@@ -96,7 +96,7 @@
                                 %>
                                 <tr>
                                     <td><%= voucher.getVoucherCode()%></td>
-                                    <td><fmt:formatNumber value="<%= voucher.getDiscountAmount()%>" pattern="#,###" /> ₫</td>
+                                    <td><fmt:formatNumber value="<%= voucher.getDiscountAmount()%>" pattern="#,###" /> VND</td>
                                     <td>
                                         <% if (isExpired) { %>
                                         <span style="color: red; font-weight: bold;">Expired</span>

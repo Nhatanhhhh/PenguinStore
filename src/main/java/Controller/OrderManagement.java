@@ -71,7 +71,7 @@ public class OrderManagement extends HttpServlet {
         // Lấy thông tin từ request
         String orderID = request.getParameter("orderID");
         String statusName = request.getParameter("statusName");
-
+        
         // Cập nhật trạng thái đơn hàng
         OrderDAO orderDAO = new OrderDAO();
         String statusOID = orderDAO.getStatusOIDByName(statusName);

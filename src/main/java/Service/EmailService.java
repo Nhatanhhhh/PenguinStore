@@ -93,11 +93,11 @@ public class EmailService {
         }
     }
 
-    public boolean sendInvoiceEmail(String toEmail, String orderID, List<CartItem> cartItems, double subtotal, double discount, double total) {
+    public boolean sendInvoiceEmail(String toEmail, String orderID, List<CartItem> cartItems, double subtotal, double discount, double total) throws UnsupportedEncodingException {
         try {
             Session session = getSession();
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(SENDER_EMAIL));
+           message.setFrom(new InternetAddress(SENDER_EMAIL, "Penguin Store comfirm Order", "UTF-8"));
             String shortOrderID = orderID.substring(0, 4).toUpperCase();
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Order Confirmation - Order ID: " + shortOrderID);
@@ -125,15 +125,15 @@ public class EmailService {
                         .append("<td style='padding: 10px; border: 1px solid #ddd;'>").append(item.getSizeName()).append("</td>")
                         .append("<td style='padding: 10px; border: 1px solid #ddd;'>").append(item.getColorName()).append("</td>")
                         .append("<td style='padding: 10px; border: 1px solid #ddd; text-align: center;'>").append(item.getQuantity()).append("</td>")
-                        .append("<td style='padding: 10px; border: 1px solid #ddd; text-align: right;'>").append(String.format("%,.2f", item.getPrice() * item.getQuantity())).append(" ₫</td>")
+                        .append("<td style='padding: 10px; border: 1px solid #ddd; text-align: right;'>").append(String.format("%,.0f", item.getPrice() * item.getQuantity())).append(" ₫</td>")
                         .append("</tr>");
             }
 
             emailContent.append("</table>")
                     .append("<hr style='border: 1px solid #ddd;'>")
-                    .append("<p><strong>Subtotal:</strong> ").append(String.format("%,.2f", subtotal)).append(" ₫</p>")
-                    .append("<p><strong>Discount:</strong> -").append(String.format("%,.2f", discount)).append(" ₫</p>")
-                    .append("<p><strong style='font-size: 18px;'>Total:</strong> <span style='color: #E44D26; font-size: 18px;'>").append(String.format("%,.2f", total)).append(" ₫</span></p>")
+                    .append("<p><strong>Subtotal:</strong> ").append(String.format("%,.0f", subtotal)).append(" ₫</p>")
+                    .append("<p><strong>Discount:</strong> -").append(String.format("%,.0f", discount)).append(" ₫</p>")
+                    .append("<p><strong style='font-size: 18px;'>Total:</strong> <span style='color: #E44D26; font-size: 18px;'>").append(String.format("%,.0f", total)).append(" ₫</span></p>")
                     .append("<hr style='border: 1px solid #ddd;'>")
                     .append("<div style='text-align: center;'>")
                     .append("<p>📦 Your order will be shipped soon. Stay tuned!</p>")

@@ -34,8 +34,10 @@
                 <img src="<%= request.getContextPath()%>/Image/Product/<%= item.getFirstImage()%>" 
                      alt="<%= item.getProductName()%>">
                 <div>
-                    <p><strong><%= item.getProductName()%></strong></p>
-                    <% if (item.getColorName() != null && !item.getColorName().isEmpty()) {%>
+                    <p><strong>
+                            <%= item.getProductName().length() > 15 ? item.getProductName().substring(0, 15) + "..." : item.getProductName()%>
+                        </strong></p>
+                        <% if (item.getColorName() != null && !item.getColorName().isEmpty()) {%>
                     <p>Color: <%= item.getColorName()%></p>
                     <% } %>
 

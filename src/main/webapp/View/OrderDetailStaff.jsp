@@ -8,6 +8,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="DTO.OrderDetailDTO" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -47,10 +48,10 @@
                     <div>Color: <%= detail.getColorName()%></div>
                     <div>Size: <%= detail.getSizeName()%></div>
                     <div>Quantity: <%= detail.getQuantity()%></div>
-                    <div>Unit Price <%= detail.getUnitPrice()%></div>
+                    <div>Unit Price: <fmt:formatNumber value="<%= detail.getUnitPrice()%>" pattern="#,###" /> ₫</div>
 
                 </div>
-                <div class="ods-price">$<%= detail.getUnitPrice() * detail.getQuantity()%></div>
+                <div class="ods-price"><fmt:formatNumber value="<%= detail.getUnitPrice() * detail.getQuantity()%>" pattern="#,###" /> ₫</div>
             </div>
             <% }%>
             <%
@@ -75,9 +76,9 @@
 
             <div class="ods-order-info">
                 <div><span>Order date:</span> <span><strong><%= formattedDate%></strong></span></div>
-                <div><span>Subtotal:</span> <span><strong>$<%= firstDetail.getTotalAmount()%></strong></span></div>
-                <div><span>Voucher Discount:</span> <span><strong>$<%= firstDetail.getDiscountAmount()%></strong></span></div>
-                <div><span>Total:</span> <span><strong>$<%= firstDetail.getFinalAmount()%></strong></span></div>
+                <div><span>Subtotal:</span> <span><strong><fmt:formatNumber value="<%= firstDetail.getTotalAmount()%>" pattern="#,###" /> ₫</strong></span></div>
+                <div><span>Voucher Discount:</span> <span><strong><fmt:formatNumber value="<%= firstDetail.getDiscountAmount()%>" pattern="#,###" /> ₫</strong></span></div>
+                <div><span>Total:</span> <span><strong><fmt:formatNumber value="<%= firstDetail.getFinalAmount()%>" pattern="#,###" /> ₫</strong></span></div>
             </div>
 
             <div class="progress-container">
@@ -202,7 +203,7 @@
             </div>
 
             <% } else { %>
-            <div class="ods-no-data">Không có d? li?u</div>
+            <div class="ods-no-data">No order Data</div>
             <% }%>
         </div>
 

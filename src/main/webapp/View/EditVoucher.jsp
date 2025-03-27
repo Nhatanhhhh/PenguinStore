@@ -65,8 +65,8 @@
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="discountPer" class="form-label">Discount Percentage (%):</label>
-                                                <input type="number" class="form-control" id="discountPer" name="discountPer" value="${voucher.discountPer}" step="0.1" min="0" required>
+                                                
+                                                <input type="hidden" class="form-control" id="discountPer" name="discountPer" value="${voucher.discountPer}" step="0.1" min="0" required>
                                             </div>
 
                                             <div class="mb-3">
@@ -92,8 +92,8 @@
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="maxDiscountAmount" class="form-label">Maximum Discount Amount:</label>
-                                                <input type="number" class="form-control" id="maxDiscountAmount" name="maxDiscountAmount" value="${voucher.maxDiscountAmount}" step="0.1" min="0" readonly>
+                                                
+                                                <input type="hidden" class="form-control" id="maxDiscountAmount" name="maxDiscountAmount" value="${voucher.maxDiscountAmount}" step="0.1" min="0" readonly>
                                             </div>
 
                                             <button type="submit" class="btn btn-primary">Update</button>

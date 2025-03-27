@@ -44,10 +44,10 @@
                     </div>
 
                     <%-- Input hidden để gửi giá trị --%>
-                    <input type="hidden" name="subtotal" id="hiddenSubtotal" value="0">
-                    <input type="hidden" name="voucher" id="hiddenVoucher">
-                    <input type="hidden" name="discount" id="hiddenDiscount">
-                    <input type="hidden" name="total" id="hiddenTotal">
+                    <input type="hidden" id="hiddenSubtotal" name="subtotal" value="0">
+                    <input type="hidden" id="hiddenDiscount" name="discount" value="0">
+                    <input type="hidden" id="hiddenTotal" name="total" value="0">
+                    <input type="hidden" id="hiddenVoucher" name="voucher" value="">
                     <% if (cartItems != null && !cartItems.isEmpty()) { %>
                     <% for (CartItem item : cartItems) {%>
                     <input type="hidden" name="sizeName" value="<%= item.getSizeName() != null ? item.getSizeName() : ""%>">
@@ -94,7 +94,7 @@
 
                 <p>Voucher Discount: <span id="discount">0 ₫</span></p>
                 <p>Shipping: 40.000 ₫</p>
-                <h3>Total: <span id="total"><fmt:formatNumber value="<%= subtotal%>" pattern="#,###" /> </span></h3>
+                <h3>Total: <span id="total"><fmt:formatNumber value="<%= subtotal + 40000%>" pattern="#,###" /> ₫</span></h3>
                 <% } else { %>
                 <p>Your cart is empty!</p>
                 <% }%>
@@ -112,34 +112,31 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var discount = 0.00; // Bi?n to�n c?c l?u gi?m gi�
-        var shippingFee = 40000; // Ph� v?n chuy?n c? ??nh
+        var discount = 0; // Changed from 0,00 to 0 (numeric value)
+        var shippingFee = 40000; // Fixed shipping fee
+
         function updateSubtotal() {
             let subtotal = 0;
-            // Lặp qua tất cả các sản phẩm và tính tổng
             document.querySelectorAll('.product').forEach(product => {
                 let totalElement = product.querySelector('[id^="total_"]');
                 if (totalElement) {
                     let totalText = totalElement.innerText.replace(' ₫', '').replace(/\./g, '');
-                    subtotal += parseFloat(totalText);
+                    subtotal += parseFloat(totalText.replace(',', '.'));
                 }
             });
 
-            // Cập nhật subtotal
             let subtotalElement = document.getElementById("subtotal");
             if (subtotalElement) {
                 subtotalElement.innerText = subtotal.toLocaleString('vi-VN', {
                     maximumFractionDigits: 0
-                }) + " ₫";
+                }).replace(/\./g, ',') + " ₫";
             }
 
-            // Cập nhật hidden field nếu có
             let hiddenSubtotal = document.getElementById("hiddenSubtotal");
             if (hiddenSubtotal) {
                 hiddenSubtotal.value = subtotal;
             }
 
-            // Gọi hàm updateTotal để tính toán lại tổng cuối cùng
             updateTotal();
         }
 
@@ -147,35 +144,33 @@
             let subtotal = 0;
             let subtotalElement = document.getElementById("subtotal");
             if (subtotalElement) {
-                let subtotalText = subtotalElement.innerText.replace(' ₫', '').replace(/\./g, '');
-                subtotal = parseFloat(subtotalText);
+                // Xử lý chuỗi tiền tệ đúng cách
+                let subtotalText = subtotalElement.innerText.replace(/[^\d]/g, ''); // Loại bỏ tất cả ký tự không phải số
+                subtotal = parseInt(subtotalText, 10) || 0; // Chuyển sang số nguyên
             }
-
-            // Lấy phí vận chuyển và giảm giá
-            let shippingFee = 40000; // Hoặc lấy từ element nếu có
-            let discount = 0; // Hoặc lấy từ element nếu có
 
             let total = subtotal + shippingFee - discount;
 
-            // Cập nhật tổng tiền
+            // Update display - sử dụng toLocaleString mà không cần replace thêm
             let totalElement = document.getElementById("total");
             if (totalElement) {
-                totalElement.innerText = total.toLocaleString('vi-VN', {
-                    maximumFractionDigits: 0
-                }) + " ₫";
+                totalElement.innerText = total.toLocaleString('vi-VN') + " ₫";
             }
 
-            // Cập nhật hidden fields nếu có
-            let hiddenDiscount = document.getElementById("hiddenDiscount");
-            if (hiddenDiscount) {
-                hiddenDiscount.value = discount;
+            let discountElement = document.getElementById("discount");
+            if (discountElement) {
+                discountElement.innerText = discount.toLocaleString('vi-VN') + " ₫";
             }
 
-            let hiddenTotal = document.getElementById("hiddenTotal");
-            if (hiddenTotal) {
-                hiddenTotal.value = total;
-            }
+            // Cập nhật các trường ẩn
+            document.getElementById("hiddenSubtotal").value = subtotal;
+            document.getElementById("hiddenDiscount").value = discount;
+            document.getElementById("hiddenTotal").value = total;
+
+            console.log("Updated - Subtotal:", subtotal, "Discount:", discount, "Total:", total);
         }
+
+
         function changeQuantity(amount, price, cartID, stockQuantity) {
             console.log("Updating cart - cartID:", cartID);
             let quantityElement = document.getElementById("quantity_" + cartID);
@@ -249,18 +244,108 @@
             });
         }
 
+        // Áp dụng voucher
+        document.getElementById("applyVoucher").addEventListener("click", function () {
+            let voucherCode = document.getElementById("voucher").value.trim();
 
-        // N?u c� m� voucher tr�n URL, t? ??ng ?i?n v�o input
+            if (!voucherCode) {
+                alert("Vui lòng nhập mã voucher!");
+                return;
+            }
+
+            // Lấy subtotal từ element
+            let subtotalElement = document.getElementById("subtotal");
+            let subtotal = 0;
+            if (subtotalElement) {
+                subtotalElement.innerText = subtotal.toLocaleString('vi-VN', {
+                    maximumFractionDigits: 0
+                }).replace(/\./g, ',') + " ₫";
+            }
+
+
+            $.ajax({
+                url: "<%= request.getContextPath()%>/UseVoucher",
+                type: "GET",
+                data: {
+                    voucherCode: voucherCode,
+                    subtotal: subtotal
+                },
+                dataType: "json",
+                success: function (response) {
+                    if (response.status === "error") {
+                        alert(response.message);
+                        discount = 0.00;
+                    } else {
+                        discount = response.discount; // Cập nhật giảm giá
+                        // Lưu mã voucher vào hidden field nếu có
+                        let hiddenVoucher = document.getElementById("hiddenVoucher");
+                        if (hiddenVoucher) {
+                            hiddenVoucher.value = voucherCode;
+                        }
+                    }
+                    updateTotal(); // Cập nhật tổng tiền
+                },
+                error: function () {
+                    alert("Lỗi khi kiểm tra voucher!");
+                }
+            });
+        });
+
+        // Nếu có mã voucher trên URL, tự động điền vào input
         let params = new URLSearchParams(window.location.search);
         let voucherCode = params.get("voucher");
         if (voucherCode) {
             document.getElementById("voucher").value = voucherCode;
         }
-        // C?p nh?t t?ng ti?n ban ??u
+
+        // Cập nhật tổng tiền ban đầu
         updateTotal();
     });
+    function validateDeliveryFields() {
+        const address = document.querySelector('input[name="address"]').value;
+        const zip = document.querySelector('input[name="zip"]').value;
+        const state = document.querySelector('input[name="state"]').value;
 
+        // Kiểm tra null hoặc empty
+        if (address === null || address.trim() === "" ||
+                zip === null || zip.trim() === "" ||
+                state === null || state.trim() === "") {
+
+            // Tạo alert box
+            const alertBox = `
+                <div id="deliveryAlert" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                    background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;">
+                    <div style="background: white; padding: 20px; border-radius: 5px; text-align: center; max-width: 80%;">
+                        <p style="margin-bottom: 20px; font-size: 16px;">You must enter complete shipping information</p>
+                        <button id="alertOK" style="padding: 8px 20px; background-color: #007bff; color: white; 
+                            border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">OK</button>
+                    </div>
+                </div>
+            `;
+
+            // Thêm alert box vào DOM nếu chưa có
+            if (!document.getElementById('deliveryAlert')) {
+                document.body.insertAdjacentHTML('beforeend', alertBox);
+
+                // Xử lý sự kiện khi bấm OK
+                document.getElementById('alertOK').addEventListener('click', function () {
+                    window.location.href = "<%= request.getContextPath()%>/EditProfile";
+                });
+            }
+
+            return false;
+        }
+        return true;
+    }
+// Xử lý khi bấm nút Order Now
+    document.getElementById('payNow').addEventListener('click', function (e) {
+        if (!validateDeliveryFields()) {
+            e.preventDefault(); // Ngăn form submit nếu validation fail
+        }
+        // Nếu validation pass, form sẽ submit bình thường
+    });
     document.querySelector("form").addEventListener("submit", function (e) {
+
         console.log("Subtotal:", document.getElementById("hiddenSubtotal").value);
         console.log("Discount:", document.getElementById("hiddenDiscount").value);
         console.log("Total:", document.getElementById("hiddenTotal").value);

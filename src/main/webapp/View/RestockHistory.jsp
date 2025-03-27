@@ -187,7 +187,7 @@
                                 </tr>
                             </c:forEach>
                         </table>
-                        <a href="javascript:history.back()" class="btn btn-secondary mt-3">Cancel</a>
+                        <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
                     </c:if>
                 </div>
 

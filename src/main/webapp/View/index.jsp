@@ -79,7 +79,7 @@
                         <div style="width: 300px; height: 80px; margin-top: 40px;">
                             <h1 style="font-size: 40px; text-align: left;">DON'T FORGET OUR NEW PRODUCTS</h1>
                             <div style="margin-left: 50px; margin-top: 50px;">
-                                <a href="/Product" class="button button-dark">New Products</a>
+                                <a href="<%= request.getContextPath()%>/Product" class="button button-dark">New Products</a>
                             </div>
                         </div>
                     </div>

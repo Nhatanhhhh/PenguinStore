@@ -72,7 +72,7 @@ public class OrderHistory extends HttpServlet {
         String newStatus = request.getParameter("newStatus");
 
         OrderDAO orderDAO = new OrderDAO();
-        boolean success = orderDAO.updateOrderStatus(orderID, newStatus);
+        boolean success = orderDAO.updateOrderStatusCus(orderID, newStatus);
 
         if (success) {
             request.setAttribute("successMessage", "Order status updated successfully.");

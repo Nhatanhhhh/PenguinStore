@@ -8,8 +8,23 @@
 
 <%
     List<Order> orders = (List<Order>) request.getAttribute("orders");
-    if (orders == null)
+    if (orders == null) {
         orders = new ArrayList<Order>();
+    }
+
+    // Pagination variables
+    int currentPage = 1;
+    int recordsPerPage = 10;
+
+    if (request.getParameter("page") != null) {
+        currentPage = Integer.parseInt(request.getParameter("page"));
+    }
+
+    int start = (currentPage - 1) * recordsPerPage;
+    int end = Math.min(start + recordsPerPage, orders.size());
+    int totalPages = (int) Math.ceil((double) orders.size() / recordsPerPage);
+
+    List<Order> ordersPerPage = orders.subList(start, end);
 %>
 
 <!DOCTYPE html>
@@ -41,14 +56,46 @@
                 border-radius: 5px;
             }
 
-            .delivered {
-                background-color: #E1FCEF;
-                color: #198754;
+            /* Delivery successful - Green */
+            .delivery-successful {
+                background-color: #4CAF50;
+                color: white;
             }
 
-            .in-process {
-                background-color: #FFF4E5;
-                color: #D97706;
+            /* Processed - Light yellow */
+            .processed {
+                background-color: #FFF9C4;
+                color: #FF8F00;
+            }
+
+            /* Order Cancellation Request - Gray */
+            .order-cancellation-request {
+                background-color: #9E9E9E;
+                color: white;
+            }
+
+            /* Pending processing - Dark yellow */
+            .pending-processing {
+                background-color: #FFC107;
+                color: white;
+            }
+
+            /* Delivered to the carrier - Orange */
+            .delivered-to-the-carrier {
+                background-color: #FF9800;
+                color: white;
+            }
+
+            /* Cancel order - Red */
+            .cancel-order {
+                background-color: #F44336;
+                color: white;
+            }
+
+            /* Delivery failed - Red */
+            .delivery-failed {
+                background-color: #F44336;
+                color: white;
             }
 
             .btn-container {
@@ -100,7 +147,7 @@
                 border: 1px solid #FF4D4D;
                 background: transparent;
             }
-            
+
             .btn-recancel {
                 padding: 8px 20px;
                 border-radius: 4px;
@@ -115,6 +162,30 @@
                 color: #3498DB;
                 border: 1px solid #3498DB;
                 background: transparent;
+            }
+
+            .pagination {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+            }
+
+            .pagination a {
+                color: black;
+                padding: 8px 16px;
+                text-decoration: none;
+                border: 1px solid #ddd;
+                margin: 0 4px;
+            }
+
+            .pagination a.active {
+                background-color: #000;
+                color: white;
+                border: 1px solid #000;
+            }
+
+            .pagination a:hover:not(.active) {
+                background-color: #ddd;
             }
         </style>
     </head>
@@ -159,16 +230,18 @@
                 </div>
 
                 <div class="col-md-10">
-                    <% for (Order order : orders) {%>
+                    <% for (Order order : ordersPerPage) {%>
                     <div class="order row" data-status="<%= order.getStatusName()%>">
                         <div class="col-md-10">
                             <div class="order-info">
                                 <p><strong>OrderID:</strong> <%= (order.getOrderID().length() >= 4) ? order.getOrderID().substring(0, 4) : order.getOrderID()%></p>
                                 <p><strong>Voucher code:</strong> <%= order.getVoucherName()%></p>
                                 <p><strong>Order date:</strong> <%= order.getOrderDate()%></p>
-                                <span class="status <%= order.getStatusName().toLowerCase().replace(" ", "-")%>">
-                                    <%= order.getStatusName()%>
-                                </span> Your product has been <%= order.getStatusName().toLowerCase()%>
+                                <p><strong>Your order status:</strong> 
+                                    <span class="status <%= order.getStatusName().toLowerCase().replace(" ", "-")%>">
+                                        <%= order.getStatusName()%>
+                                    </span>
+                                </p>
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -177,6 +250,7 @@
                                     <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
                                     <button type="submit" class="button button-outline-dark" style="display: inline-block; white-space: nowrap; border-radius: 3px; width: 137px;">View Order</button>
                                 </form>
+                                <% if (!"Cancel order".equals(order.getStatusName())) { %>
                                 <% if ("Delivery successful".equals(order.getStatusName())) {%>
                                 <form action="<%= request.getContextPath()%>/Feedback" method="GET">
                                     <input type="hidden" name="orderID" value="<%= order.getOrderID()%>">
@@ -197,10 +271,25 @@
                                     <button type="submit" class="btn btn-cancel" style="display: inline-block; width: 137px; height: 42px;">Cancel Order</button>
                                 </form>
                                 <% } %>
+                                <% } %>
                             </div>
                         </div>
                     </div>
                     <% }%>
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <% if (currentPage > 1) {%>
+                        <a href="?page=<%= currentPage - 1%>">«</a>
+                        <% } %>
+
+                        <% for (int i = 1; i <= totalPages; i++) {%>
+                        <a href="?page=<%= i%>" <%= (i == currentPage) ? "class='active'" : ""%>><%= i%></a>
+                        <% } %>
+
+                        <% if (currentPage < totalPages) {%>
+                        <a href="?page=<%= currentPage + 1%>">»</a>
+                        <% }%>
+                    </div>
                 </div>
             </div>
         </div>

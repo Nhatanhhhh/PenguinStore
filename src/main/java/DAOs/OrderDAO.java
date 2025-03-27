@@ -45,7 +45,7 @@ public class OrderDAO {
     // Lấy tất cả đơn hàng (dùng cho Staff/Admin)
     public List<Order> getAllOrders() {
         List<Order> orderList = new ArrayList<>();
-        String query = "SELECT o.orderID, c.fullName, o.orderDate, o.totalAmount, s.statusName "
+        String query = "SELECT o.orderID, c.fullName, o.orderDate, o.finalAmount, s.statusName "
                 + "FROM [Order] o "
                 + "JOIN Customer c ON o.customerID = c.customerID "
                 + "JOIN StatusOrder s ON o.statusOID = s.statusOID "
@@ -58,7 +58,7 @@ public class OrderDAO {
                 order.setOrderID(rs.getString("orderID"));
                 order.setFullName(rs.getString("fullName"));
                 order.setOrderDate(rs.getDate("orderDate"));
-                order.setTotalAmount(rs.getDouble("totalAmount"));
+                order.setTotalAmount(rs.getDouble("finalAmount"));
                 order.setOrderStatus(rs.getString("statusName"));
                 orderList.add(order);
             }
@@ -83,13 +83,25 @@ public class OrderDAO {
         return null;
     }
 
-    // Cập nhật trạng thái đơn hàng (gộp 2 hàm updateOrderStatus và updateOrderStatusForCus)
-    public boolean updateOrderStatus(String orderID, String newStatus) {
+    public boolean updateOrderStatusCus(String orderID, String newStatus) {
         String statusOID = getStatusOIDByName(newStatus);
         if (statusOID == null) {
             return false;
         }
 
+        String query = "UPDATE [Order] SET statusOID = ? WHERE orderID = ?";
+        try ( Connection conn = db.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, statusOID);
+            ps.setString(2, orderID);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    } 
+   
+    // Cập nhật trạng thái đơn hàng cho Admin
+    public boolean updateOrderStatus(String orderID, String statusOID) {
         String query = "UPDATE [Order] SET statusOID = ? WHERE orderID = ?";
         try ( Connection conn = db.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, statusOID);

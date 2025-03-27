@@ -34,6 +34,28 @@
             String formattedDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         %>
         <div class="row">
+            <c:if test="${not empty errorMessage}">
+                <script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: '${errorMessage}',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#ffc107'
+                    });
+                </script>
+            </c:if>
+            <c:if test="${not empty successMessage}">
+                <script>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: '${successMessage}',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#28a745'
+                    });
+                </script>
+            </c:if>
             <div class="col-md-2">
                 <%@include file="Admin/NavigationMenu.jsp"%>
             </div>
@@ -59,8 +81,8 @@
 
 
                         <div class="mb-3">
-                            <label for="discountPer" class="form-label">Discount Percentage (%):</label>
-                            <input type="number" class="form-control" id="discountPer" name="discountPer" step="1" min="0" value="0" required>
+                            
+                            <input type="hidden" class="form-control" id="discountPer" name="discountPer" step="1" min="0" value="0" required>
                         </div>
 
                         <div class="mb-3">
@@ -81,8 +103,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="maxDiscountAmount" class="form-label">Maximum Discount Amount:</label>
-                            <input type="number" class="form-control" id="maxDiscountAmount" name="maxDiscountAmount" min="discountAmount" step="1000" value="discountAmount" readonly>
+                            
+                            <input type="hidden" class="form-control" id="maxDiscountAmount" name="maxDiscountAmount" min="discountAmount" step="1000" value="discountAmount" readonly>
                         </div>
 
                         <br>

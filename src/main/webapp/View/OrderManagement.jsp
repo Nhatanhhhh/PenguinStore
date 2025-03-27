@@ -3,7 +3,7 @@
     Created on : N/A
     Author     : Le Minh Loc CE180992
 --%>
-
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@page import="Models.Order"%>
 <%@page import="java.util.List"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -150,7 +150,7 @@
                                             <td><%= (order.getOrderID().length() >= 4) ? order.getOrderID().substring(0, 4) : order.getOrderID()%></td>
                                             <td><%= order.getFullName()%></td>
                                             <td><%= order.getOrderDate()%></td>
-                                            <td>$<%= order.getTotalAmount()%></td>
+                                            <td><fmt:formatNumber value="<%= order.getTotalAmount()%>" pattern="#,###" /> ₫</td>
                                             <td><%= order.getOrderStatus()%></td>
                                             <td>
                                                 <% if (order.getOrderStatus().equals("Cancel order")) { %>
@@ -265,14 +265,22 @@
 
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
         <script src="<%= request.getContextPath()%>/Assets/Javascript/Staff/scripts.js"></script>
-        <script>
+
+    </body>
+</html>
+<script>
                                                     let selectedOrderId;
                                                     let selectedStatus;
 
                                                     function confirmUpdate(orderId, button) {
                                                         selectedOrderId = orderId;
                                                         let row = button.closest('tr');
-                                                        selectedStatus = row.querySelector('select').value;
+                                                        let selectElement = row.querySelector('select');
+                                                        if (!selectElement) {
+                                                            alert('Không thể cập nhật trạng thái này');
+                                                            return;
+                                                        }
+                                                        selectedStatus = selectElement.value;
 
                                                         if (selectedStatus === "Delivery successful") {
                                                             let modal = new bootstrap.Modal(document.getElementById('confirmDeliveryModal'));
@@ -355,10 +363,9 @@
                                                         });
                                                     }
 
-
-
-
                                                     function updateOrderStatus() {
+                                                        console.log("Debug - OrderID:", selectedOrderId);
+                                                        console.log("Debug - Status:", selectedStatus);
                                                         fetch('<%= request.getContextPath()%>/OrderManagement', {
                                                             method: 'POST',
                                                             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -376,6 +383,4 @@
                                                             normalModal.hide();
                                                     }
 
-        </script>
-    </body>
-</html>
+</script>

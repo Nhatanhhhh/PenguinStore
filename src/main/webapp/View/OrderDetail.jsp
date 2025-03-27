@@ -110,7 +110,7 @@
                     <%= statusMessage%>
 
                     <% if ("Delivery successful".equals(statusOrder)) {%>
-                    <a href="<%= request.getContextPath()%>/ControllerFeedback?orderID=<%= orderID%>" class="review-link">Write a review</a>
+                    <a href="<%= request.getContextPath()%>/Feedback?orderID=<%= orderID%>" class="review-link">Write a review</a>
                     <% }%>
 
                 </p>
