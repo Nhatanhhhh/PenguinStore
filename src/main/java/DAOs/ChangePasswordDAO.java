@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 /**
  *
- * @author Nguyen Nhat Anh - CE181843
+ * @author Thuan
  */
 public class ChangePasswordDAO {
 
