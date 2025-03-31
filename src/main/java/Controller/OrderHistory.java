@@ -44,6 +44,11 @@ public class OrderHistory extends HttpServlet {
         Customer customer = (Customer) session.getAttribute("user");
         String customerID = customer.getCustomerID();
 
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+
+        // Lấy danh sách đơn hàng với trạng thái mới nhất từ database
         OrderDAO orderDAO = new OrderDAO();
         List<Order> orders = orderDAO.getOrdersByCustomerID(customerID);
 

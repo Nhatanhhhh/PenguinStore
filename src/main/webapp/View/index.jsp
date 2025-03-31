@@ -6,98 +6,505 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Home Page</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Penguin Store - Fashion for Everyone</title>
         <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/customer.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/custom.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/styleViewProducts.css"/>
-
+        <style>
+            :root {
+                --primary: #000;
+                --secondary: #e74c3c;
+                --light: #f8f9fa;
+                --dark: #212529;
+                --accent: #3498db;
+                --gray: #6c757d;
+                --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                --transition: all 0.3s ease;
+                --border-radius: 12px;
+            }
+            
+            body {
+                font-family: 'Raleway', sans-serif;
+                color: var(--dark);
+                background-color: #f9f9f9;
+            }
+            
+            /* Hero Section */
+            
+            /* Product Cards */
+            .section-title {
+                font-size: 2.5rem;
+                font-weight: 700;
+                margin-bottom: 3rem;
+                position: relative;
+                display: inline-block;
+            }
+            
+            .section-title:after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 0;
+                width: 60px;
+                height: 4px;
+                background-color: var(--secondary);
+            }
+            
+            .product-card {
+                transition: var(--transition);
+                border: none;
+                border-radius: var(--border-radius);
+                overflow: hidden;
+                margin-bottom: 2rem;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                background: white;
+            }
+            
+            .product-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            }
+            
+            .product-card img {
+                height: 300px;
+                object-fit: cover;
+                width: 100%;
+                transition: var(--transition);
+            }
+            
+            .product-card:hover img {
+                transform: scale(1.05);
+            }
+            
+            .product-card .card-body {
+                padding: 1.5rem;
+            }
+            
+            .product-card .card-title {
+                font-size: 1.2rem;
+                font-weight: 600;
+                margin-bottom: 0.75rem;
+                color: var(--primary);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .product-card .card-text {
+                font-size: 1.2rem;
+                color: var(--secondary);
+                font-weight: 700;
+            }
+            
+            .product-badge {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background-color: var(--secondary);
+                color: white;
+                padding: 5px 10px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                z-index: 1;
+            }
+            
+            /* Buttons */
+            .btn-main {
+                background-color: var(--primary);
+                color: white;
+                padding: 12px 32px;
+                border-radius: 30px;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                transition: var(--transition);
+                border: 2px solid var(--primary);
+                text-transform: uppercase;
+            }
+            
+            .btn-main:hover {
+                background-color: transparent;
+                color: var(--primary);
+                transform: translateY(-3px);
+            }
+            
+            .btn-outline-main {
+                background-color: transparent;
+                color: var(--primary);
+                border: 2px solid var(--primary);
+                padding: 12px 32px;
+                border-radius: 30px;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                transition: var(--transition);
+                text-transform: uppercase;
+            }
+            
+            .btn-outline-main:hover {
+                background-color: var(--primary);
+                color: white;
+                transform: translateY(-3px);
+            }
+            
+            /* Inspiration Section */
+            .inspiration-section {
+                background: linear-gradient(135deg, #f5f7fa 0%, #e6e9f0 100%);
+                padding: 100px 0;
+                margin: 80px 0;
+                position: relative;
+            }
+            
+            .inspiration-content {
+                background: white;
+                border-radius: var(--border-radius);
+                padding: 60px;
+                position: relative;
+                max-width: 850px;
+                margin: 0 auto;
+                box-shadow: var(--shadow);
+            }
+            
+            .inspiration-quote {
+                font-size: 1.8rem;
+                line-height: 1.6;
+                font-weight: 500;
+                margin-bottom: 2rem;
+                position: relative;
+                text-align: center;
+                color: var(--primary);
+            }
+            
+            .star-icon {
+                position: absolute;
+                color: var(--secondary);
+                font-size: 60px;
+                opacity: 0.3;
+            }
+            
+            .star-top {
+                top: -30px;
+                right: 30%;
+            }
+            
+            .star-bottom {
+                bottom: -30px;
+                left: 30%;
+            }
+            
+            .image-gallery {
+                display: flex;
+                gap: 30px;
+                margin-top: 60px;
+                justify-content: center;
+            }
+            
+            .gallery-image {
+                border-radius: var(--border-radius);
+                width: 100%;
+                max-width: 400px;
+                height: 500px;
+                object-fit: cover;
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+                transition: var(--transition);
+            }
+            
+            .gallery-image:hover {
+                transform: scale(1.03);
+            }
+            
+            /* New Arrivals */
+            .new-products-section {
+                padding: 100px 0;
+                background-color: white;
+            }
+            
+            .new-products-content {
+                background: linear-gradient(135deg, #f5f7fa 0%, #e6e9f0 100%);
+                border-radius: var(--border-radius);
+                padding: 60px;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .new-products-image {
+                border-radius: var(--border-radius);
+                box-shadow: var(--shadow);
+                transition: var(--transition);
+            }
+            
+            .new-products-image:hover {
+                transform: scale(1.02);
+            }
+            
+            /* Features */
+            .features-section {
+                padding: 80px 0;
+                background-color: var(--light);
+            }
+            
+            .feature-box {
+                text-align: center;
+                padding: 30px;
+                background: white;
+                border-radius: var(--border-radius);
+                box-shadow: var(--shadow);
+                transition: var(--transition);
+                height: 100%;
+            }
+            
+            .feature-box:hover {
+                transform: translateY(-10px);
+            }
+            
+            .feature-icon {
+                font-size: 3rem;
+                color: var(--secondary);
+                margin-bottom: 1.5rem;
+            }
+            
+            .feature-title {
+                font-size: 1.5rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+                color: var(--primary);
+            }
+            
+            /* Newsletter */
+            .newsletter-section {
+                padding: 80px 0;
+                background-color: var(--primary);
+                color: white;
+            }
+            
+            .newsletter-form {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            
+            .newsletter-input {
+                border: none;
+                border-radius: 30px;
+                padding: 15px 25px;
+                width: 100%;
+                font-size: 1rem;
+            }
+            
+            /* Responsive */
+            @media (max-width: 992px) {
+                .hero-title {
+                    font-size: 2.5rem;
+                }
+                
+                .hero-subtitle {
+                    font-size: 1.2rem;
+                }
+                
+                .inspiration-quote {
+                    font-size: 1.5rem;
+                }
+                
+                .image-gallery {
+                    flex-direction: column;
+                    align-items: center;
+                }
+                
+                .gallery-image {
+                    height: 400px;
+                    max-width: 100%;
+                }
+            }
+            
+            @media (max-width: 768px) {
+                .hero-content {
+                    padding: 2rem;
+                }
+                
+                .hero-title {
+                    font-size: 2rem;
+                }
+                
+                .hero-subtitle {
+                    font-size: 1rem;
+                }
+                
+                .section-title {
+                    font-size: 2rem;
+                }
+                
+                .inspiration-content {
+                    padding: 40px 20px;
+                }
+                
+                .inspiration-quote {
+                    font-size: 1.2rem;
+                }
+                
+                .new-products-content {
+                    padding: 40px;
+                }
+            }
+            
+            @media (max-width: 576px) {
+                .hero-title {
+                    font-size: 1.8rem;
+                }
+                
+                .section-title {
+                    font-size: 1.8rem;
+                }
+                
+                .product-card img {
+                    height: 250px;
+                }
+            }
+        </style>
     </head>
     <body>
         <%@include file="Header.jsp"%>
-        <p class="d-flex justify-content-center" style="color:red;">
-            <%= session.getAttribute("errorMessage") != null ? session.getAttribute("errorMessage") : ""%>
-        </p>
-
-        <div class="container" style="padding-bottom: 50px;">
-            <div class="row">
-                <img src="Image/Index/Background.png" class="" style="width: 100%; height: auto;" alt="Background" data-aos="fade-up">
+        
+        <c:if test="${not empty sessionScope.errorMessage}">
+            <div class="alert alert-danger text-center animate__animated animate__fadeIn">
+                ${sessionScope.errorMessage}
             </div>
-        </div>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 justify-content-center" id="productList">
-            <c:forEach var="product" items="${listProduct}">
-                <div class="col d-flex justify-content-center mt-4">
-                    <a href="Product?id=${product.productID}&action=detail" class="text-decoration-none text-dark">
-                        <div class="card product-item text-center shadow-sm" style="width: 20rem;">
+        </c:if>
+
+        <!-- Hero Section -->
+        <section class="hero-section animate__animated animate__fadeIn d-flex justify-content-center">
+            <img src="Image/Index/Background.png" style="width: 60vw;" class="hero-image" alt="Fashion Collection">
+        </section>
+
+        <!-- Featured Products -->
+        <section id="featured-products" class="container py-5 animate__animated animate__fadeInUp">
+            <h2 class="section-title text-center mb-5">Featured Products</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="productList">
+                <c:forEach var="product" items="${listProduct}">
+                    <div class="col mt-5">
+                        <div class="product-card h-100">
                             <c:if test="${not empty product.imgName}">
                                 <c:set var="imgList" value="${fn:split(product.imgName, ',')}" />
                                 <c:set var="firstImg" value="${imgList[0]}" />
-                                <img src="Image/Product/${firstImg}" alt="Product Image" class="card-img-top img-fluid" style="height: 220px; object-fit: cover;">
+                                <img src="Image/Product/${firstImg}" alt="${product.productName}" class="card-img-top">
                             </c:if>
-                            <div class="card-body">
+                            <div class="card-body text-center">
                                 <h5 class="card-title">${product.productName}</h5>
-                                <p class="card-text text-muted">
+                                <p class="card-text">
                                     <fmt:setLocale value="vi_VN"/>
                                     <fmt:formatNumber value="${product.price}" type="number" pattern="#,###" groupingUsed="true"/> VND
                                 </p>
+                                <a href="Product?id=${product.productID}&action=detail" class="btn btn-outline-main">View Details</a>
                             </div>
                         </div>
-                    </a>
-                </div>
-            </c:forEach>
-        </div>
-        <div style="margin-left: 50px; margin-top: 50px;" class="d-flex justify-content-center">
-            <a href="<c:url value='/Product'/>" class="button button-dark">View More</a>
-        </div>
-        <div class="div container-fluid" style="margin-left: 200px; margin-bottom: 50px; margin-right: 20px;">
-            <div class="star-shooting-outline" data-aos="zoom-in"></div>
-            <div class="div2" data-aos="fade-right">
-                <div class="modern-style-is-a-blend-of-minimalism-and-personality-highlighting-your-unique-personality">
-                    Modern style is a blend of minimalism and personality, highlighting your unique personality
-                </div>
-                <div class="fashion-is-not-just-about-clothes-it-s-also-about-how-you-tell-your-own-story">
-                    Fashion is not just about clothes, it&#039;s also about how you tell your own story
-                </div>
-                <span class="mdi mdi-star-shooting vector" style="font-size: 100px;" data-aos="flip-left"></span>
-                <span class="mdi mdi-star-shooting vector2" style="font-size: 100px;" data-aos="flip-right"></span>
+                    </div>
+                </c:forEach>
             </div>
-            <img class="pexels-pixabay-157675-1" src="Image/Account/item12.jpg" data-aos="fade-up"/>
-            <img class="image" src="Image/Product/item7.jpg" data-aos="fade-up" data-aos-delay="200"/>
-        </div>
+            
+            <div class="text-center mt-5">
+                <a href="<c:url value='/Product'/>" class="btn btn-main">View All Products</a>
+            </div>
+        </section>
 
-        <div class="section-1">
+        <!-- Features Section -->
+        <section class="features-section">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-6" data-aos="fade-left">
-                        <img style="width: 380px; height: 380px;" src="Image/Product/window.png" />
+                    <div class="col-md-4">
+                        <div class="feature-box animate__animated animate__fadeInUp" data-wow-delay="0.1s">
+                            <div class="feature-icon mdi mdi-truck-fast"></div>
+                            <h3 class="feature-title">Free Shipping</h3>
+                            <p>Free shipping on all orders over 500,000 VND</p>
+                        </div>
                     </div>
-                    <div class="col-md-6" data-aos="fade-right">
-                        <div style="width: 300px; height: 80px; margin-top: 40px;">
-                            <h1 style="font-size: 40px; text-align: left;">DON'T FORGET OUR NEW PRODUCTS</h1>
-                            <div style="margin-left: 50px; margin-top: 50px;">
-                                <a href="<%= request.getContextPath()%>/Product" class="button button-dark">New Products</a>
-                            </div>
+                    <div class="col-md-4">
+                        <div class="feature-box animate__animated animate__fadeInUp" data-wow-delay="0.2s">
+                            <div class="feature-icon mdi mdi-undo"></div>
+                            <h3 class="feature-title">Easy Returns</h3>
+                            <p>30-day return policy for all items</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-box animate__animated animate__fadeInUp" data-wow-delay="0.3s">
+                            <div class="feature-icon mdi mdi-shield-check"></div>
+                            <h3 class="feature-title">Secure Payment</h3>
+                            <p>100% secure payment methods</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- Inspiration Section -->
+        <section class="inspiration-section animate__animated animate__fadeIn">
+            <div class="container">
+                <div class="inspiration-content">
+                    <div class="inspiration-quote">
+                        "Modern style is a blend of minimalism and personality, highlighting your unique personality"
+                    </div>
+                    <div class="inspiration-quote">
+                        "Fashion is not just about clothes, it's also about how you tell your own story"
+                    </div>
+                    
+                    <div class="image-gallery">
+                        <img src="Image/Account/item12.jpg" class="gallery-image" alt="Fashion Inspiration 1">
+                        <img src="Image/Product/item7.jpg" class="gallery-image" alt="Fashion Inspiration 2">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Arrivals -->
+        <section class="new-products-section">
+            <div class="container">
+                <div class="new-products-content">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 mb-4 mb-lg-0">
+                            <img src="Image/Product/window.png" class="new-products-image img-fluid" alt="New Arrivals">
+                        </div>
+                        <div class="col-lg-6 text-center text-lg-start">
+                            <h1 class="section-title mb-4">DON'T MISS OUR NEW PRODUCTS</h1>
+                            <p class="lead mb-4">Discover our latest collection with fresh designs and premium quality materials.</p>
+                            <a href="<%= request.getContextPath()%>/Product" class="btn btn-main">Explore New Arrivals</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                // Lấy thông báo từ session
-                var successMessage = "<%= session.getAttribute("successMessage") != null ? session.getAttribute("successMessage") : ""%>";
-                var errorMessage = "<%= session.getAttribute("errorMessage") != null ? session.getAttribute("errorMessage") : ""%>";
-                var showSweetAlert = "<%= session.getAttribute("showSweetAlert") != null ? session.getAttribute("showSweetAlert") : "false"%>";
+                // Animation on scroll
+                const animateElements = document.querySelectorAll('.animate__animated');
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const animation = entry.target.getAttribute('data-animation');
+                            entry.target.classList.add('animate__fadeInUp');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.1
+                });
+                
+                animateElements.forEach(el => {
+                    observer.observe(el);
+                });
+                
+                // Handle messages from session
+                const successMessage = "<%= session.getAttribute("successMessage") != null ? session.getAttribute("successMessage") : ""%>";
+                const errorMessage = "<%= session.getAttribute("errorMessage") != null ? session.getAttribute("errorMessage") : ""%>";
+                const showSweetAlert = "<%= session.getAttribute("showSweetAlert") != null ? session.getAttribute("showSweetAlert") : "false"%>";
 
-                // Xóa session sau khi lấy dữ liệu
-            <% session.removeAttribute("successMessage"); %>
-            <% session.removeAttribute("errorMessage"); %>
-            <% session.removeAttribute("showSweetAlert");%>
+                // Clear session after getting data
+                <% session.removeAttribute("successMessage"); %>
+                <% session.removeAttribute("errorMessage"); %>
+                <% session.removeAttribute("showSweetAlert");%>
 
                 if (typeof Swal !== "undefined") {
                     if (successMessage !== "") {
@@ -120,53 +527,27 @@
                             window.location.href = "<%= request.getContextPath()%>/View/LoginCustomer.jsp";
                         });
                     }
-                } else {
-                    console.error("SweetAlert2 is not loaded!");
                 }
+                
+                // Simple pagination
                 const itemsPerPage = 12;
                 const productList = document.getElementById("productList");
-                const productItems = Array.from(productList.getElementsByClassName("product-item"));
-                const paginationControls = document.getElementById("paginationControls");
-                const scrollToTopBtn = document.getElementById("scrollToTopBtn");
-                let currentPage = 1;
+                const productItems = Array.from(productList.getElementsByClassName("product-card"));
+                
                 function showPage(page) {
-                    page = parseInt(page, 10);
                     const start = (page - 1) * itemsPerPage;
                     const end = start + itemsPerPage;
 
                     productItems.forEach((item, index) => {
                         item.style.display = (index >= start && index < end) ? "block" : "none";
                     });
-
-                    updatePaginationControls(page);
                 }
-
-                function updatePaginationControls(page) {
-                    page = parseInt(page, 10);
-                    const totalPages = Math.ceil(productItems.length / itemsPerPage);
-                    paginationControls.innerHTML = "";
-
-                    for (let i = 1; i <= totalPages; i++) {
-                        const button = document.createElement("button");
-                        button.innerText = i;
-                        button.className = "btn btn-sm " + (i === page ? "btn-dark text-white" : "btn-outline-dark") + " mx-1";
-
-                        button.onclick = () => showPage(i);
-                        paginationControls.appendChild(button);
-                    }
-                }
-                showPage(currentPage);
-                checkboxes.forEach(checkbox => {
-                    checkbox.addEventListener("change", function () {
-                        filterForm.submit();
-                    });
-                });
+                
+                showPage(1);
             });
         </script>
 
-
         <%@include file="Footer.jsp"%>
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
-
     </body>
 </html>

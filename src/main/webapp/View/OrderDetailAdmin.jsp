@@ -287,10 +287,10 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-2 p-0">
-                    <%@include file="Staff/NavigationStaff.jsp" %>
+                    <%@include file="Admin/NavigationMenu.jsp" %>
                 </div>
                 <div class="col-md-10 p-0">
-                    <%@include file="Staff/HeaderStaff.jsp" %>
+                    <%@include file="Admin/HeaderAD.jsp" %>
 
                     <div class="order-detail-container">
                         <%

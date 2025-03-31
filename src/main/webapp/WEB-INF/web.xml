@@ -29,7 +29,6 @@
     <filter-mapping>
         <filter-name>StaffFilter</filter-name>
         <url-pattern>/DashBoardForStaff</url-pattern>
-        <url-pattern>/ListFeedbackForStaff</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>AdminFilter</filter-name>
@@ -187,6 +186,30 @@
         <servlet-name>HomePageController</servlet-name>
         <servlet-class>Controller.HomePageController</servlet-class>
     </servlet>
+    <!--    <servlet>
+        <servlet-name>ClearAlertServlet</servlet-name>
+        <servlet-class>Controller.ClearAlertServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ClearAlertServlet</servlet-name>
+        <url-pattern>/ClearAlertServlet</url-pattern>
+    </servlet-mapping>-->
+    <servlet>
+        <servlet-name>VNPayPaymentServlet</servlet-name>
+        <servlet-class>Controller.VNPayPaymentServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>VNPayReturnServlet</servlet-name>
+        <servlet-class>Controller.VNPayReturnServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SaveCartBeforePaymentServlet</servlet-name>
+        <servlet-class>Controller.SaveCartBeforePaymentServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrderDetailAdmin</servlet-name>
+        <servlet-class>Controller.OrderDetailAdmin</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/Logout</url-pattern>
@@ -333,6 +356,22 @@
     <servlet-mapping>
         <servlet-name>HomePageController</servlet-name>
         <url-pattern>/HomePage</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>VNPayPaymentServlet</servlet-name>
+        <url-pattern>/VNPayPayment</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>VNPayReturnServlet</servlet-name>
+        <url-pattern>/VNPayReturn</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SaveCartBeforePaymentServlet</servlet-name>
+        <url-pattern>/SaveCartBeforePayment</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrderDetailAdmin</servlet-name>
+        <url-pattern>/OrderDetailAdmin</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

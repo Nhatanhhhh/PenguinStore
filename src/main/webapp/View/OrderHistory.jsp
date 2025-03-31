@@ -31,6 +31,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="refresh" content="10">
         <title>Order History</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
@@ -294,6 +295,42 @@
             </div>
         </div>
 
+        <script>
+            // Biến lưu trạng thái hiện tại
+            let currentStatus = {
+            <% for (Order order : ordersPerPage) {%>
+                '<%= order.getOrderID()%>': '<%= order.getStatusName()%>',
+            <% }%>
+            };
+
+            // Hàm kiểm tra cập nhật
+            function checkForUpdates() {
+                fetch('<%= request.getContextPath()%>/CheckOrderUpdates?customerID=<%= customer.getCustomerID()%>&lastCheck=' + lastCheckTime)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.updated) {
+                                // Nếu có cập nhật, reload trang
+                                window.location.reload();
+                            }
+                            // Cập nhật thời gian kiểm tra lần cuối
+                            lastCheckTime = data.serverTime;
+                        });
+            }
+
+            // Kiểm tra mỗi 5 giây
+            let lastCheckTime = Date.now();
+            setInterval(checkForUpdates, 5000);
+
+            // Kiểm tra ngay khi load trang
+            window.addEventListener('load', function () {
+            // Đảm bảo không lấy từ cache
+                fetch('<%= request.getContextPath()%>/OrderHistory', {
+                    headers: {
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+            });
+        </script>
         <%@include file="Footer.jsp"%>
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>

@@ -20,15 +20,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-/**
- * CartController handles user cart operations, including viewing, updating,
- * deleting, and clearing the shopping cart.
- */
 public class CartController extends HttpServlet {
 
-    /**
-     * Handles HTTP GET requests to display the cart contents.
-     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
@@ -52,23 +45,21 @@ public class CartController extends HttpServlet {
         CartDAO cartDAO = new CartDAO();
         List<CartItem> cartItems = cartDAO.viewCart(customerID);
 
-        // Create a Map to store productID corresponding to each CartItem
         Map<CartItem, String> productIDs = new HashMap<>();
+        Map<String, Integer> stockQuantities = new HashMap<>();
+
         for (CartItem item : cartItems) {
-            String productID = cartDAO.getProductIDByItem(item);
-            if (productID != null) {
-                productIDs.put(item, productID);
-            }
+            int stockQty = cartDAO.getStockQuantityByCartItem(item.getCartID());
+            stockQuantities.put(item.getCartID().trim(), stockQty);
+            System.out.println("CartID: " + item.getCartID() + ", Stock: " + stockQty);
         }
 
         request.setAttribute("cartItems", cartItems);
         request.setAttribute("productIDs", productIDs);
+        request.setAttribute("stockQuantities", stockQuantities);
         request.getRequestDispatcher("View/Cart.jsp").forward(request, response);
     }
 
-    /**
-     * Handles HTTP POST requests for cart actions (update, delete, clear).
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -87,48 +78,47 @@ public class CartController extends HttpServlet {
         if ("update".equals(action)) {
             String cartID = request.getParameter("cartID");
             int quantity = Integer.parseInt(request.getParameter("quantity"));
-            if (quantity == 0) {
-                // Xóa sản phẩm khỏi giỏ hàng nếu quantity = 0
-                boolean deleted = cartDAO.removeFromCart(cartID);
 
-                JsonObject json = new JsonObject();
-                json.addProperty("status", deleted ? "deleted" : "failed");
-                json.addProperty("cartID", cartID);
-
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(json.toString());
-                return;
-            }
-
-            // Kiểm tra số lượng tồn kho
+            // Lấy thông tin variant và stock
+            String variantId = cartDAO.getVariantIdByCartId(cartID);
             int stockQuantity = cartDAO.getStockQuantityByCartItem(cartID);
+            int currentQuantityInCart = cartDAO.getCurrentQuantity(cartID);
 
+            // Kiểm tra số lượng mới có vượt quá stock không
             if (quantity > stockQuantity) {
-                // Send an error response indicating insufficient stock
                 JsonObject json = new JsonObject();
                 json.addProperty("status", "failed");
-                json.addProperty("message", "This product variation is not available in stock.");
+                json.addProperty("message", "Cannot update quantity. Only " + stockQuantity + " items available in stock.");
+
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(json.toString());
                 return;
             }
 
-            // Proceed with updating the cart item quantity
+            // Cập nhật số lượng
             boolean success = cartDAO.updateCartItemQuan(cartID, quantity);
-            String successMessage = success ? "success" : "failed";
-
             JsonObject json = new JsonObject();
-            json.addProperty("status", successMessage);
-            json.addProperty("cartID", cartID);
-            json.addProperty("quantity", quantity);
+
+            if (success) {
+                // Tính toán lại subtotal
+                List<CartItem> updatedCartItems = cartDAO.viewCart(customerID);
+                double subtotal = updatedCartItems.stream()
+                        .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                        .sum();
+
+                json.addProperty("status", "success");
+                json.addProperty("subtotal", subtotal);
+            } else {
+                json.addProperty("status", "failed");
+                json.addProperty("message", "Failed to update quantity.");
+            }
 
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(json.toString());
+            return;
         } else if ("delete".equals(action)) {
-            // Handle deletion as previously
             String cartID = request.getParameter("cartID");
             if (cartID != null && !cartID.isEmpty()) {
                 cartDAO.removeFromCart(cartID);
@@ -155,11 +145,6 @@ public class CartController extends HttpServlet {
         request.getRequestDispatcher("View/Cart.jsp").forward(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return A string containing servlet description.
-     */
     @Override
     public String getServletInfo() {
         return "Cart Controller handles cart operations";

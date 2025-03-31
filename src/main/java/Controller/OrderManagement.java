@@ -53,7 +53,6 @@ public class OrderManagement extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("role") == null) {
             response.sendRedirect("View/LoginManager.jsp");
@@ -61,18 +60,14 @@ public class OrderManagement extends HttpServlet {
         }
 
         String role = (String) session.getAttribute("role");
-
-        // Chỉ STAFF hoặc ADMIN mới có quyền cập nhật đơn hàng
         if (!role.equals("STAFF") && !role.equals("ADMIN")) {
             response.sendRedirect("View/AccessDenied.jsp");
             return;
         }
 
-        // Lấy thông tin từ request
         String orderID = request.getParameter("orderID");
         String statusName = request.getParameter("statusName");
-        
-        // Cập nhật trạng thái đơn hàng
+
         OrderDAO orderDAO = new OrderDAO();
         String statusOID = orderDAO.getStatusOIDByName(statusName);
 
@@ -80,14 +75,27 @@ public class OrderManagement extends HttpServlet {
             request.setAttribute("error", "Invalid status name received.");
         } else {
             boolean isUpdated = orderDAO.updateOrderStatus(orderID, statusOID);
-            request.setAttribute("message", isUpdated ? "Order status updated successfully!" : "Failed to update order status.");
+
+            // Chỉ khôi phục stock khi chuyển sang trạng thái hủy
+            if (isUpdated && ("Cancel order".equals(statusName) || "Order Cancellation Request".equals(statusName))) {
+                orderDAO.restoreStockQuantities(orderID);
+
+                // Gửi signal đến tất cả session rằng đơn hàng đã được cập nhật
+                getServletContext().setAttribute("lastOrderUpdate", System.currentTimeMillis());
+            }
+
+            if (isUpdated) {
+                request.setAttribute("message", "Order status updated successfully!");
+            } else {
+                request.setAttribute("error", "Failed to update order status. It may already be in the requested state.");
+            }
         }
 
-        // Load lại danh sách đơn hàng
+        // Load updated order list
         List<Order> orderList = orderDAO.getAllOrders();
         request.setAttribute("orderList", orderList);
 
-        // Chuyển hướng tới trang tương ứng với vai trò
+        // Forward to appropriate view
         if (role.equals("ADMIN")) {
             request.getRequestDispatcher("View/AdminOrder.jsp").forward(request, response);
         } else {

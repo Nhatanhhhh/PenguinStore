@@ -7,7 +7,7 @@
         <title>Footer Example</title>
     </head>
     <body>
-        <footer>
+        <footer class="mt-5">
             <div class="footer-content container-fuild">
                 <!-- Penguin Store Description -->
                 <div class="footer-section">

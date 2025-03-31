@@ -4,52 +4,41 @@ import DAOs.CartDAO;
 import DAOs.CheckoutDAO;
 import DAOs.ProductDAO;
 import DAOs.TypeDAO;
+import DB.DBContext;
 import Models.CartItem;
 import Models.Customer;
-import DB.DBContext;
 import Models.TempOrder;
 import Models.Type;
 import Service.EmailService;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.UUID;
+import com.vnpay.common.Config;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.UUID;
 
-//@WebServlet("/Payment")
-public class Payment extends HttpServlet {
+@WebServlet(name = "VNPayReturnServlet", urlPatterns = {"/VNPayReturn"})
+public class VNPayReturnServlet extends HttpServlet {
 
     private final EmailService emailService = new EmailService();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            response.sendRedirect("Login");
-            return;
-        }
-        response.sendRedirect("Checkout");
-    }
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            response.sendRedirect("Login");
-            return;
-        }
         ProductDAO productDAO = new ProductDAO();
         TypeDAO typeDAO = new TypeDAO();
         request.setAttribute("listProduct", productDAO.getProductCustomer());
@@ -58,106 +47,102 @@ public class Payment extends HttpServlet {
         for (Type type : listType) {
             categoryMap.computeIfAbsent(type.getCategoryName(), k -> new ArrayList<>()).add(type);
         }
-        request.setAttribute("categoryMap", categoryMap);
+        request.setAttribute("categoryMap", categoryMap);  
+        try {
+            // Xác thực chữ ký VNPay
+            System.out.println("Received VNPay callback with parameters:");
+            request.getParameterMap().forEach((k, v)
+                    -> System.out.println(k + "=" + String.join(",", v)));
 
-        // Kiểm tra nếu là callback từ VNPay
-        if (request.getParameter("vnp_ResponseCode") != null) {
-            handleVNPayCallback(request, response);
-            return;
-        }
+            // Use TreeMap for automatic parameter sorting
+            Map<String, String> fields = new TreeMap<>();
+            for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements();) {
+                String fieldName = params.nextElement();
+                String fieldValue = request.getParameter(fieldName);
+                if ((fieldValue != null) && (!fieldValue.isEmpty())) {
+                    // Skip vnp_SecureHash and vnp_SecureHashType as they shouldn't be included in hash calculation
+                    if (!fieldName.equals("vnp_SecureHash") && !fieldName.equals("vnp_SecureHashType")) {
+                        fields.put(fieldName, fieldValue);
+                    }
+                }
+            }
 
-        // Xử lý thanh toán thông thường
-        Customer customer = (Customer) session.getAttribute("user");
-        String customerID = customer.getCustomerID();
-        String paymentMethod = request.getParameter("paymentMethod");
-
-        // Lấy giỏ hàng
-        CartDAO cartDAO = new CartDAO();
-        List<CartItem> cartItems = cartDAO.viewCart(customerID);
-        if (cartItems == null || cartItems.isEmpty()) {
-            response.sendRedirect("Checkout?error=empty_cart");
-            return;
-        }
-
-        // Xử lý voucher
-        String voucherCode = request.getParameter("voucher");
-        String voucherID = null;
-        CheckoutDAO checkoutDAO = new CheckoutDAO();
-
-        if (voucherCode != null && !voucherCode.isEmpty()) {
-            voucherID = checkoutDAO.getVoucherIDByCode(voucherCode);
-            if (voucherID == null) {
-                response.sendRedirect("Checkout?error=invalid_voucher");
+            String vnp_SecureHash = request.getParameter("vnp_SecureHash");
+            if (vnp_SecureHash == null || vnp_SecureHash.isEmpty()) {
+                response.sendRedirect("Checkout?error=missing_signature");
                 return;
             }
-        }
 
-        // Tính toán tổng tiền
-        double subtotal = calculateSubtotal(cartItems);
-        double discount = voucherID != null ? checkoutDAO.getVoucherDiscount(voucherID) : 0;
-        double shippingFee = 40000; // Add this line
-        double total = subtotal + shippingFee - discount; // Include shipping fee
+            String signValue = Config.hashAllFields(fields);
 
-        // Nếu là thanh toán VNPay
-        if ("vnpay".equals(paymentMethod)) {
-            // Lưu thông tin đơn hàng tạm vào session
-            session.setAttribute("tempOrder", new TempOrder(
-                    customerID,
-                    cartItems,
-                    voucherID,
-                    subtotal,
-                    discount,
-                    total
-            ));
+            // Debug logging
+            System.out.println("Parameters being hashed: " + fields);
+            System.out.println("Calculated hash: " + signValue);
+            System.out.println("Received hash: " + vnp_SecureHash);
 
-            // Chuyển hướng đến VNPay
-            response.sendRedirect(request.getContextPath() + "/VNPayPayment?amount=" + total);
-            return;
-        }
+            // Compare hashes (case-insensitive as VNPay may send uppercase)
+            if (!signValue.equalsIgnoreCase(vnp_SecureHash)) {
+                System.err.println("Hash verification failed");
+                response.sendRedirect("Checkout?error=invalid_signature");
+                return;
+            }
 
-        // Xử lý thanh toán COD
-        processOrder(customer, cartItems, voucherID, subtotal, discount, total, response);
-    }
+            // Xử lý kết quả thanh toán
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("user") == null) {
+                response.sendRedirect("Login");
+                return;
+            }
 
-    private void handleVNPayCallback(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            response.sendRedirect("Login");
-            return;
-        }
+            Customer customer = (Customer) session.getAttribute("user");
 
-        // Kiểm tra kết quả thanh toán VNPay
-        if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
-            // Thanh toán thành công
+            // Lấy thông tin đơn hàng tạm từ session
             TempOrder tempOrder = (TempOrder) session.getAttribute("tempOrder");
             if (tempOrder == null) {
                 response.sendRedirect("Checkout?error=order_not_found");
                 return;
             }
 
-            // Xử lý tạo đơn hàng
-            processOrder(
-                    (Customer) session.getAttribute("user"),
-                    tempOrder.getCartItems(),
-                    tempOrder.getVoucherID(),
-                    tempOrder.getSubtotal(),
-                    tempOrder.getDiscount(),
-                    tempOrder.getTotal(),
-                    response
-            );
+            if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
+                // Thanh toán thành công - xử lý tạo đơn hàng
+                String orderID = processOrder(
+                        customer,
+                        tempOrder.getCartItems(),
+                        tempOrder.getVoucherID(),
+                        tempOrder.getSubtotal(),
+                        tempOrder.getDiscount(),
+                        tempOrder.getTotal(),
+                        response
+                );
 
-            // Xóa thông tin đơn hàng tạm
-            session.removeAttribute("tempOrder");
-        } else {
-            // Thanh toán thất bại
-            response.sendRedirect("Checkout?error=payment_failed");
+                if (orderID != null) {
+                    // Xóa thông tin tạm sau khi xử lý thành công
+                    session.removeAttribute("tempOrder");
+                    session.removeAttribute("vnpay_cart");
+                    session.removeAttribute("vnpay_voucher");
+
+                    // To just:
+                    session.removeAttribute("tempOrder");
+
+                    // Chuyển hướng đến trang thành công
+                    response.sendRedirect("View/CheckoutSuccess.jsp?orderID=" + orderID);
+                } else {
+                    response.sendRedirect("Checkout?error=order_failed");
+                }
+            } else {
+                // Thanh toán thất bại
+                response.sendRedirect("Checkout?error=payment_failed&code="
+                        + request.getParameter("vnp_TransactionStatus"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("Checkout?error=system_error");
         }
     }
 
-    private void processOrder(Customer customer, List<CartItem> cartItems,
+    private String processOrder(Customer customer, List<CartItem> cartItems,
             String voucherID, double subtotal, double discount,
-            double total, HttpServletResponse response) throws IOException {
+            double total, HttpServletResponse response) {
         String customerID = customer.getCustomerID();
         String orderID = UUID.randomUUID().toString();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -168,19 +153,19 @@ public class Payment extends HttpServlet {
         try ( Connection conn = DBContext.getConn()) {
             conn.setAutoCommit(false);
 
-            // 1. Thêm đơn hàng vào bảng Order
+            // 1. Thêm đơn hàng vào database
             insertOrder(conn, orderID, checkoutDAO.getPendingStatusOID(),
                     voucherID, customerID, subtotal, discount, total, orderDate);
 
-            // 2. Thêm chi tiết đơn hàng và cập nhật số lượng tồn kho
+            // 2. Thêm chi tiết đơn hàng và cập nhật tồn kho
             processOrderDetails(conn, cartItems, orderID, orderDate);
 
             conn.commit();
 
-            // 3. Xóa giỏ hàng sau khi thanh toán thành công
+            // 3. Xóa giỏ hàng
             cartDAO.clearCart(customerID);
 
-            // 4. Cập nhật trạng thái voucher nếu có
+            // 4. Cập nhật voucher nếu có
             if (voucherID != null) {
                 checkoutDAO.updateUsedVoucherStatus(customerID, voucherID);
             }
@@ -194,24 +179,19 @@ public class Payment extends HttpServlet {
                     discount,
                     total
             );
+
             if (!emailSent) {
                 System.err.println("Failed to send invoice email for order: " + orderID);
             }
 
-            response.sendRedirect("View/CheckoutSuccess.jsp?orderID=" + orderID);
+            return orderID;
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect("Checkout?error=order_failed");
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("Checkout?error=system_error");
+            return null;
         }
-    }
-
-    private double calculateSubtotal(List<CartItem> cartItems) {
-        return cartItems.stream()
-                .mapToDouble(item -> item.getPrice() * item.getQuantity())
-                .sum();
     }
 
     private void insertOrder(Connection conn, String orderID, String statusOID,
@@ -256,7 +236,7 @@ public class Payment extends HttpServlet {
                 detailStmt.setString(7, orderDate);
                 detailStmt.addBatch();
 
-                // Cập nhật số lượng tồn kho
+                // Cập nhật tồn kho
                 stockStmt.setInt(1, item.getQuantity());
                 stockStmt.setString(2, item.getProVariantID());
                 stockStmt.addBatch();
@@ -266,5 +246,4 @@ public class Payment extends HttpServlet {
             stockStmt.executeBatch();
         }
     }
-
 }

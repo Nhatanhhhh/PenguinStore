@@ -88,28 +88,45 @@ public class FeedbackDAO {
     }
 
     public static boolean saveFeedback(Feedback feedback) {
-        String sqlCheck = "SELECT COUNT(*) FROM Feedback WHERE customerID = ? AND productID = ? AND orderID = ?";
-        String sqlInsert = "INSERT INTO Feedback (feedbackID, customerID, productID, orderID, comment, rating, feedbackCreateAt, isResolved, isViewed) "
+        // First get the orderDetailID for this product in the order
+        String orderDetailSql = "SELECT orderDetailID FROM OrderDetail od "
+                + "JOIN ProductVariants pv ON od.productVariantID = pv.proVariantID "
+                + "WHERE od.orderID = ? AND pv.productID = ?";
+
+        String sqlCheck = "SELECT COUNT(*) FROM Feedback WHERE customerID = ? AND productID = ? AND orderDetailID = ?";
+        String sqlInsert = "INSERT INTO Feedback (feedbackID, customerID, productID, orderDetailID, comment, rating, feedbackCreateAt, isResolved, isViewed) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try ( Connection conn = DBContext.getConn();  PreparedStatement psCheck = conn.prepareStatement(sqlCheck);  PreparedStatement psInsert = conn.prepareStatement(sqlInsert)) {
+        try ( Connection conn = DBContext.getConn();  PreparedStatement orderDetailPs = conn.prepareStatement(orderDetailSql);  PreparedStatement psCheck = conn.prepareStatement(sqlCheck);  PreparedStatement psInsert = conn.prepareStatement(sqlInsert)) {
 
-            // Kiểm tra xem feedback đã tồn tại chưa
-            psCheck.setObject(1, UUID.fromString(feedback.getCustomerID()));
-            psCheck.setObject(2, UUID.fromString(feedback.getProductID()));
-            psCheck.setObject(3, UUID.fromString(feedback.getOrderID()));
+            // Get orderDetailID
+            orderDetailPs.setString(1, feedback.getOrderID());
+            orderDetailPs.setString(2, feedback.getProductID());
+            ResultSet rs = orderDetailPs.executeQuery();
 
-            ResultSet rs = psCheck.executeQuery();
-            if (rs.next() && rs.getInt(1) > 0) {
-                System.out.println("Feedback already exists for this product in this order.");
-                return false;  // Feedback đã tồn tại
+            if (!rs.next()) {
+                System.out.println("No matching order detail found");
+                return false;
             }
 
-            // Nếu feedback chưa tồn tại, thực hiện insert
+            String orderDetailID = rs.getString("orderDetailID");
+
+            // Check for existing feedback
+            psCheck.setString(1, feedback.getCustomerID());
+            psCheck.setString(2, feedback.getProductID());
+            psCheck.setString(3, orderDetailID);
+
+            rs = psCheck.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                System.out.println("Feedback already exists for this product in this order.");
+                return false;
+            }
+
+            // Insert new feedback
             psInsert.setString(1, feedback.getFeedbackID());
-            psInsert.setObject(2, UUID.fromString(feedback.getCustomerID()));
-            psInsert.setObject(3, UUID.fromString(feedback.getProductID()));
-            psInsert.setObject(4, UUID.fromString(feedback.getOrderID()));
+            psInsert.setString(2, feedback.getCustomerID());
+            psInsert.setString(3, feedback.getProductID());
+            psInsert.setString(4, orderDetailID);
             psInsert.setString(5, feedback.getComment());
             psInsert.setDouble(6, feedback.getRating());
             psInsert.setTimestamp(7, new java.sql.Timestamp(feedback.getFeedbackCreateAt().getTime()));

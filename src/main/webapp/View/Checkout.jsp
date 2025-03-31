@@ -1,6 +1,6 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, Models.CartItem, Models.Voucher" %>
+<%@ page import="java.util.List, Models.CartItem, Models.Voucher, Models.Customer" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -10,344 +10,562 @@
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
-        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/co.css"/>
-        <%
-            List<CartItem> cartItems = (List<CartItem>) request.getAttribute("cartItems");
-            System.out.println("Debug JSP - cartItems: " + cartItems);
-        %>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <style>
+            :root {
+                --primary-color: #000;
+                --secondary-color: #3498db;
+                --accent-color: #e74c3c;
+                --light-gray: #f8f9fa;
+                --dark-gray: #343a40;
+            }
+
+            body {
+                background-color: #f5f5f5;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            .checkout-container {
+                max-width: 1200px;
+                margin: 30px auto;
+                display: grid;
+                grid-template-columns: 1.5fr 1fr;
+                gap: 30px;
+            }
+
+            .form-section {
+                background: white;
+                border-radius: 10px;
+                padding: 30px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            }
+
+            .summary-section {
+                background: white;
+                border-radius: 10px;
+                padding: 30px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                align-self: flex-start;
+                position: sticky;
+                top: 20px;
+            }
+
+            h1 {
+                color: var(--primary-color);
+                text-align: center;
+                margin-bottom: 30px;
+                font-weight: 700;
+            }
+
+            h2 {
+                color: var(--primary-color);
+                font-size: 1.5rem;
+                margin: 20px 0 15px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #eee;
+            }
+
+            input, select {
+                width: 100%;
+                padding: 12px 15px;
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 16px;
+                transition: all 0.3s;
+            }
+
+            input:focus, select:focus {
+                border-color: var(--secondary-color);
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            }
+
+            .form-row {
+                display: flex;
+                gap: 15px;
+            }
+
+            .form-row > * {
+                flex: 1;
+            }
+
+            .product {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 20px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #eee;
+            }
+
+            .product img {
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 5px;
+                border: 1px solid #eee;
+            }
+
+            .product-info {
+                flex: 1;
+            }
+
+            .product-name {
+                font-weight: 600;
+                margin-bottom: 5px;
+                color: var(--primary-color);
+            }
+
+            .product-attr {
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 5px;
+            }
+
+            .price-row {
+                display: flex;
+                justify-content: space-between;
+                margin: 10px 0;
+                padding: 10px 0;
+                border-bottom: 1px solid #eee;
+            }
+
+            .total-row {
+                font-size: 18px;
+                font-weight: 600;
+                margin: 20px 0;
+            }
+
+            .voucher-section {
+                display: flex;
+                gap: 10px;
+                margin: 20px 0;
+            }
+
+            .voucher-input {
+                flex: 1;
+            }
+
+            .btn-apply {
+                background: var(--accent-color);
+                color: white;
+                border: none;
+                padding: 0 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .btn-apply:hover {
+                background: #c0392b;
+            }
+
+            .payment-methods {
+                margin: 25px 0;
+            }
+
+            .payment-method {
+                display: flex;
+                align-items: center;
+                padding: 15px;
+                margin-bottom: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .payment-method:hover {
+                border-color: var(--secondary-color);
+            }
+
+            .payment-method.selected {
+                border-color: var(--secondary-color);
+                background-color: rgba(52, 152, 219, 0.05);
+            }
+
+            .payment-method input {
+                margin: 0 10px 0 0;
+                width: auto;
+            }
+
+            .payment-icon {
+                margin-right: 10px;
+                font-size: 24px;
+                color: var(--primary-color);
+            }
+
+            .btn-checkout {
+                width: 100%;
+                padding: 15px;
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+                margin-top: 20px;
+            }
+
+            .btn-checkout:hover {
+                background: #1a252f;
+                transform: translateY(-2px);
+            }
+
+            .btn-voucher {
+                background: var(--secondary-color);
+                color: white;
+                padding: 8px 15px;
+                border-radius: 5px;
+                text-decoration: none;
+                display: inline-block;
+                margin-top: 10px;
+            }
+
+            .btn-voucher:hover {
+                background: #2980b9;
+                color: white;
+            }
+
+            @media (max-width: 768px) {
+                .checkout-container {
+                    grid-template-columns: 1fr;
+                }
+
+                .summary-section {
+                    position: static;
+                }
+            }
+        </style>
     </head>
-    <body style="padding: 0">
+    <body>
         <%@include file="Header.jsp"%>
-        <h1>PENGUIN Checkout</h1>
+
         <div class="container">
-            <div class="form-section">
-                <form action="<%= request.getContextPath()%>/Payment" method="post">
-                    <h2>Contact</h2>
-                    <% Customer customer = (Customer) request.getAttribute("customer");%>
-                    <input type="email" name="email" placeholder="Email Address" required 
-                           value="<%= (customer != null) ? customer.getAddress() : ""%>">
+            <h1>PENGUIN Checkout</h1>
 
-                    <h2>Delivery</h2>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" name="fullName" placeholder="Full Name" required 
-                               value="<%= (customer != null) ? customer.getFullName() : ""%>" style="width: 50%;">
-                        <input type="text" name="phoneNumber" placeholder="Phone Number" required 
-                               value="<%= (customer != null) ? customer.getPhoneNumber() : ""%>" style="width: 50%;">
-                    </div>
-                    <input type="text" name="address" placeholder="Address" required 
-                           value="<%= (customer != null) ? customer.getEmail() : ""%>">
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" name="zip" placeholder="Zip" style="width: 50%;" required 
-                               value="<%= (customer != null) ? customer.getZip() : ""%>">
-                        <input type="text" name="state" placeholder="State" style="width: 50%;" required 
-                               value="<%= (customer != null) ? customer.getState() : ""%>">
-                    </div>
+            <div class="checkout-container">
+                <div class="form-section">
+                    <form id="checkoutForm" action="<%= request.getContextPath()%>/Payment" method="post">
+                        <h2>Contact Information</h2>
+                        <% Customer customer = (Customer) request.getAttribute("customer");%>
+                        <input type="email" name="email" placeholder="Email Address" required 
+                               value="<%= (customer != null) ? customer.getEmail() : ""%>" readonly  style="background: #f8f9fa;">
 
-                    <%-- Input hidden để gửi giá trị --%>
-                    <input type="hidden" id="hiddenSubtotal" name="subtotal" value="0">
-                    <input type="hidden" id="hiddenDiscount" name="discount" value="0">
-                    <input type="hidden" id="hiddenTotal" name="total" value="0">
-                    <input type="hidden" id="hiddenVoucher" name="voucher" value="">
-                    <% if (cartItems != null && !cartItems.isEmpty()) { %>
-                    <% for (CartItem item : cartItems) {%>
-                    <input type="hidden" name="sizeName" value="<%= item.getSizeName() != null ? item.getSizeName() : ""%>">
-                    <input type="hidden" name="colorName" value="<%= item.getColorName() != null ? item.getColorName() : ""%>">
-                    <% } %>
-                    <% } %>
-                    <button type="submit" id="payNow">Order Now</button>
-                </form>
-            </div>
-            <div class="summary-section">
-                <% if (cartItems != null && !cartItems.isEmpty()) { %>
-                <% double subtotal = 0; %>
-                <% for (CartItem item : cartItems) {%>
-                <% subtotal += item.getPrice() * item.getQuantity();%>
-                <div class="product">
-                    <img src="<%= request.getContextPath()%>/Image/Product/<%= item.getFirstImage()%>" 
-                         alt="<%= item.getProductName()%>" width="80" height="80">
-                    <div>
-                        <h3><%= item.getProductName()%></h3>
+                        <h2>Shipping Address</h2>
+                        <div class="form-row">
+                            <input type="text" name="fullName" placeholder="Full Name" required 
+                                   value="<%= (customer != null) ? customer.getFullName() : ""%>" readonly style="background: #f8f9fa;">
+                            <input type="text" name="phoneNumber" placeholder="Phone Number" required 
+                                   value="<%= (customer != null) ? customer.getPhoneNumber() : ""%>" readonly style="background: #f8f9fa;">
+                        </div>
+                        <input type="text" name="address" placeholder="Address" required 
+                               value="<%= (customer != null) ? customer.getAddress() : ""%>" readonly style="background: #f8f9fa;">
+                        <div class="form-row">
+                            <input type="text" name="zip" placeholder="Zip Code" required 
+                                   value="<%= (customer != null) ? customer.getZip() : ""%>" readonly style="background: #f8f9fa;">
+                            <input type="text" name="state" placeholder="State/Province" required 
+                                   value="<%= (customer != null) ? customer.getState() : ""%>" readonly style="background: #f8f9fa;">
+                        </div>
 
-                        <% if (item.getColorName() != null && !item.getColorName().isEmpty()) {%>
-                        <p>Color: <%= item.getColorName()%></p>
+                        <h2>Payment Method</h2>
+                        <div class="payment-methods">
+                            <label for="codRadio" class="payment-method selected" id="codMethod">
+                                <input type="radio" id="codRadio" name="paymentMethod" value="cod" checked>
+                                <i class="fas fa-money-bill-wave payment-icon"></i>
+                                <span>Cash on Delivery (COD)</span>
+                            </label>
+
+                            <label for="vnpayRadio" class="payment-method" id="vnpayMethod">
+                                <input type="radio" id="vnpayRadio" name="paymentMethod" value="vnpay">
+                                <i class="fas fa-credit-card payment-icon"></i>
+                                <span>VNPay (Credit/Debit Card)</span>
+                            </label>
+                        </div>
+
+                        <%-- Input hidden để gửi giá trị --%>
+                        <input type="hidden" id="hiddenSubtotal" name="subtotal" value="0">
+                        <input type="hidden" id="hiddenDiscount" name="discount" value="0">
+                        <input type="hidden" id="hiddenTotal" name="total" value="0">
+                        <input type="hidden" id="hiddenVoucher" name="voucher" value="">
+
+                        <% List<CartItem> cartItems = (List<CartItem>) request.getAttribute("cartItems"); %>
+                        <% if (cartItems != null && !cartItems.isEmpty()) { %>
+                        <% for (CartItem item : cartItems) {%>
+                        <input type="hidden" name="productID" value="<%= item.getProductID()%>">
+                        <input type="hidden" name="quantity" value="<%= item.getQuantity()%>">
+                        <input type="hidden" name="sizeName" value="<%= item.getSizeName() != null ? item.getSizeName() : ""%>">
+                        <input type="hidden" name="colorName" value="<%= item.getColorName() != null ? item.getColorName() : ""%>">
+                        <% } %>
                         <% } %>
 
-                        <% if (item.getSizeName() != null && !item.getSizeName().isEmpty()) {%>
-                        <p>Size: <%= item.getSizeName()%></p>
-                        <% }%>
-                        <p>Quantity: <%= item.getQuantity()%></p>
-                        <p>Price: <fmt:formatNumber value="<%= item.getPrice() * item.getQuantity()%>" pattern="#,###" /> ₫</p>
+                        <button type="submit" class="btn-checkout" id="payNow">Place Order</button>
+                    </form>
+                </div>
+
+                <div class="summary-section">
+                    <h2>Order Summary</h2>
+
+                    <% if (cartItems != null && !cartItems.isEmpty()) { %>
+                    <% double subtotal = 0; %>
+                    <% for (CartItem item : cartItems) {%>
+                    <% subtotal += item.getPrice() * item.getQuantity();%>
+                    <div class="product">
+                        <img src="<%= request.getContextPath()%>/Image/Product/<%= item.getFirstImage()%>" 
+                             alt="<%= item.getProductName()%>">
+                        <div class="product-info">
+                            <h3 class="product-name"><%= item.getProductName()%></h3>
+                            <% if (item.getColorName() != null && !item.getColorName().isEmpty()) {%>
+                            <p class="product-attr">Color: <%= item.getColorName()%></p>
+                            <% } %>
+                            <% if (item.getSizeName() != null && !item.getSizeName().isEmpty()) {%>
+                            <p class="product-attr">Size: <%= item.getSizeName()%></p>
+                            <% }%>
+                            <p class="product-attr">Quantity: <%= item.getQuantity()%></p>
+                            <p class="product-attr">Price: <fmt:formatNumber value="<%= item.getPrice() * item.getQuantity()%>" pattern="#,###" /> ₫</p>
+                        </div>
                     </div>
+                    <% }%>
+
+                    <div class="price-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal"><fmt:formatNumber value="<%= subtotal%>" pattern="#,###" /> ₫</span>
+                    </div>
+
+                    <div class="voucher-section">
+                        <input type="text" id="voucher" placeholder="Voucher code" class="voucher-input">
+                        <button type="button" id="applyVoucher" class="btn-apply" style="height: 56px;">Apply</button>
+                    </div>
+
+                    <div class="price-row">
+                        <span>Discount:</span>
+                        <span id="discount">0 ₫</span>
+                    </div>
+
+                    <div class="price-row">
+                        <span>Shipping:</span>
+                        <span>40,000 ₫</span>
+                    </div>
+
+                    <div class="total-row">
+                        <span>Total:</span>
+                        <span id="total"><fmt:formatNumber value="<%= subtotal + 40000%>" pattern="#,###" /> ₫</span>
+                    </div>
+
+                    <a href="<%= request.getContextPath()%>/VVCustomer" class="btn-voucher">
+                        <i class="fas fa-tag"></i> View Available Vouchers
+                    </a>
+                    <% } else { %>
+                    <p>Your cart is empty!</p>
+                    <% }%>
                 </div>
-                <% }%>
-                <hr>
-                <p>Subtotal: <span id="subtotal"><fmt:formatNumber value="<%= subtotal%>" pattern="#,###" /> ₫</span></p>
-                <a href="<%= request.getContextPath()%>/VVCustomer" class="btn btn-primary">
-                    View Vouchers
-                </a>
-
-
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <input type="text" id="voucher" placeholder="Voucher code">
-                    <button type="button" id="applyVoucher" class="btn btn-danger btn-sm" style="width: 60px;">Apply</button>
-                </div>
-
-                <p>Voucher Discount: <span id="discount">0 ₫</span></p>
-                <p>Shipping: 40.000 ₫</p>
-                <h3>Total: <span id="total"><fmt:formatNumber value="<%= subtotal + 40000%>" pattern="#,###" /> ₫</span></h3>
-                <% } else { %>
-                <p>Your cart is empty!</p>
-                <% }%>
             </div>
-
         </div>
 
         <%@include file="Footer.jsp"%>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var discount = 0;
+                var shippingFee = 40000;
 
+                // Xử lý chọn phương thức thanh toán
+                $('.payment-method').click(function () {
+                    $('.payment-method').removeClass('selected');
+                    $(this).addClass('selected');
+                    $(this).find('input').prop('checked', true);
+                });
+
+                function updateTotal() {
+                    let subtotal = 0;
+                    let subtotalElement = document.getElementById("subtotal");
+                    if (subtotalElement) {
+                        subtotal = parseInt(subtotalElement.innerText.replace(/[^\d]/g, '')) || 0;
+                    }
+
+                    let total = subtotal + shippingFee - discount;
+
+                    // Update display
+                    let totalElement = document.getElementById("total");
+                    if (totalElement) {
+                        totalElement.innerText = total.toLocaleString('vi-VN') + " ₫";
+                    }
+
+                    let discountElement = document.getElementById("discount");
+                    if (discountElement) {
+                        discountElement.innerText = discount.toLocaleString('vi-VN') + " ₫";
+                    }
+
+                    // Cập nhật các trường ẩn
+                    document.getElementById("hiddenSubtotal").value = subtotal;
+                    document.getElementById("hiddenDiscount").value = discount;
+                    document.getElementById("hiddenTotal").value = total;
+                }
+
+                // Áp dụng voucher
+                document.getElementById("applyVoucher").addEventListener("click", function () {
+                    let voucherCode = document.getElementById("voucher").value.trim();
+                    let subtotal = parseInt(document.getElementById("subtotal").innerText.replace(/[^\d]/g, '')) || 0;
+                    if (!voucherCode) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Please enter a voucher code!',
+                            confirmButtonColor: '#2c3e50'
+                        });
+                        return;
+                    }
+
+                    $.ajax({
+                        url: "<%= request.getContextPath()%>/UseVoucher",
+                        type: "GET",
+                        data: {
+                            voucherCode: voucherCode,
+                            subtotal: subtotal
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            if (response.status === "error") {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message,
+                                    confirmButtonColor: '#2c3e50'
+                                });
+                                discount = 0;
+                            } else {
+                                discount = response.discount;
+                                document.getElementById("hiddenVoucher").value = voucherCode;
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Voucher Applied',
+                                    text: response.message,
+                                    confirmButtonColor: '#2c3e50'
+                                });
+                            }
+                            updateTotal();
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred while checking voucher!',
+                                confirmButtonColor: '#2c3e50'
+                            });
+                        }
+                    });
+                });
+
+                const codMethod = document.getElementById('codMethod');
+                const vnpayMethod = document.getElementById('vnpayMethod');
+                const codRadio = document.getElementById('codRadio');
+                const vnpayRadio = document.getElementById('vnpayRadio');
+
+                // Xử lý click và focus
+                function updatePaymentSelection(selectedMethod) {
+                    // Reset tất cả
+                    codMethod.classList.remove('selected');
+                    vnpayMethod.classList.remove('selected');
+
+                    // Thiết lập cái được chọn
+                    selectedMethod.classList.add('selected');
+
+                    // Cập nhật radio button
+                    if (selectedMethod === codMethod) {
+                        codRadio.checked = true;
+                        codRadio.focus();
+                    } else {
+                        vnpayRadio.checked = true;
+                        vnpayRadio.focus();
+                    }
+                }
+
+                // Xử lý sự kiện click
+                codMethod.addEventListener('click', function () {
+                    updatePaymentSelection(codMethod);
+                });
+
+                vnpayMethod.addEventListener('click', function () {
+                    updatePaymentSelection(vnpayMethod);
+                });
+
+                // Xử lý sự kiện keyboard
+                codRadio.addEventListener('focus', function () {
+                    updatePaymentSelection(codMethod);
+                });
+
+                vnpayRadio.addEventListener('focus', function () {
+                    updatePaymentSelection(vnpayMethod);
+                });
+
+                // Xử lý submit form - Phiên bản đã sửa
+                document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    // Kiểm tra phương thức thanh toán
+                    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+                    console.log("Phương thức thanh toán đã chọn:", paymentMethod);
+
+                    // Cập nhật tổng tiền
+                    updateTotal();
+
+                    if (paymentMethod === 'vnpay') {
+                        // Tạo form ẩn cho VNPay
+                        const vnpayForm = document.createElement('form');
+                        vnpayForm.method = 'POST';
+                        vnpayForm.action = '<%= request.getContextPath()%>/VNPayPayment'; // Đảm bảo đường dẫn đúng
+
+                        // Thêm các tham số bắt buộc
+                        addHiddenField(vnpayForm, 'amount', document.getElementById("hiddenTotal").value);
+                        addHiddenField(vnpayForm, 'customerId', "<%= customer != null ? customer.getCustomerID() : ""%>");
+
+                        // Thêm thông tin giỏ hàng
+            <% if (cartItems != null && !cartItems.isEmpty()) { %>
+            <% for (CartItem item : cartItems) {%>
+                        addHiddenField(vnpayForm, 'productID', '<%= item.getProductID()%>');
+                        addHiddenField(vnpayForm, 'quantity', '<%= item.getQuantity()%>');
+            <% } %>
+            <% }%>
+
+                        // Thêm voucher nếu có
+                        const voucherValue = document.getElementById("hiddenVoucher").value;
+                        if (voucherValue) {
+                            addHiddenField(vnpayForm, 'voucher', voucherValue);
+                        }
+
+                        // Submit form
+                        document.body.appendChild(vnpayForm);
+                        vnpayForm.submit();
+
+                    } else {
+                        // Gửi form COD bình thường
+                        this.submit();
+                    }
+                });
+
+                // Hàm helper thêm trường ẩn
+                function addHiddenField(form, name, value) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = name;
+                    input.value = value;
+                    form.appendChild(input);
+                }
+
+                // Tự động điền voucher nếu có trên URL
+                let params = new URLSearchParams(window.location.search);
+                let voucherCode = params.get("voucher");
+                if (voucherCode) {
+                    document.getElementById("voucher").value = voucherCode;
+                }
+
+                // Cập nhật tổng tiền ban đầu
+                updateTotal();
+            });
+        </script>
     </body>
 </html>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var discount = 0; // Changed from 0,00 to 0 (numeric value)
-        var shippingFee = 40000; // Fixed shipping fee
-
-        function updateSubtotal() {
-            let subtotal = 0;
-            document.querySelectorAll('.product').forEach(product => {
-                let totalElement = product.querySelector('[id^="total_"]');
-                if (totalElement) {
-                    let totalText = totalElement.innerText.replace(' ₫', '').replace(/\./g, '');
-                    subtotal += parseFloat(totalText.replace(',', '.'));
-                }
-            });
-
-            let subtotalElement = document.getElementById("subtotal");
-            if (subtotalElement) {
-                subtotalElement.innerText = subtotal.toLocaleString('vi-VN', {
-                    maximumFractionDigits: 0
-                }).replace(/\./g, ',') + " ₫";
-            }
-
-            let hiddenSubtotal = document.getElementById("hiddenSubtotal");
-            if (hiddenSubtotal) {
-                hiddenSubtotal.value = subtotal;
-            }
-
-            updateTotal();
-        }
-
-        function updateTotal() {
-            let subtotal = 0;
-            let subtotalElement = document.getElementById("subtotal");
-            if (subtotalElement) {
-                // Xử lý chuỗi tiền tệ đúng cách
-                let subtotalText = subtotalElement.innerText.replace(/[^\d]/g, ''); // Loại bỏ tất cả ký tự không phải số
-                subtotal = parseInt(subtotalText, 10) || 0; // Chuyển sang số nguyên
-            }
-
-            let total = subtotal + shippingFee - discount;
-
-            // Update display - sử dụng toLocaleString mà không cần replace thêm
-            let totalElement = document.getElementById("total");
-            if (totalElement) {
-                totalElement.innerText = total.toLocaleString('vi-VN') + " ₫";
-            }
-
-            let discountElement = document.getElementById("discount");
-            if (discountElement) {
-                discountElement.innerText = discount.toLocaleString('vi-VN') + " ₫";
-            }
-
-            // Cập nhật các trường ẩn
-            document.getElementById("hiddenSubtotal").value = subtotal;
-            document.getElementById("hiddenDiscount").value = discount;
-            document.getElementById("hiddenTotal").value = total;
-
-            console.log("Updated - Subtotal:", subtotal, "Discount:", discount, "Total:", total);
-        }
-
-
-        function changeQuantity(amount, price, cartID, stockQuantity) {
-            console.log("Updating cart - cartID:", cartID);
-            let quantityElement = document.getElementById("quantity_" + cartID);
-            let totalElement = document.getElementById("total_" + cartID);
-            let productElement = quantityElement.closest(".product"); // Lấy phần tử sản phẩm
-            let subtotalElement = document.getElementById("subtotal");
-
-            if (!quantityElement || !totalElement || !subtotalElement) {
-                console.error("Error: Element not found for cartID:", cartID);
-                return;
-            }
-
-            let currentQuantity = parseInt(quantityElement.innerText);
-            let newQuantity = currentQuantity + amount;
-
-            if (newQuantity < 0) {
-                return; // Không cho phép số âm (tránh lỗi)
-            }
-
-            // Nếu số lượng = 0, thực hiện xóa sản phẩm khỏi giỏ hàng
-            if (newQuantity === 0) {
-                $.ajax({
-                    url: "<%= request.getContextPath()%>/Cart",
-                    type: "POST",
-                    data: {
-                        action: 'update',
-                        cartID: cartID,
-                        quantity: 0
-                    },
-                    success: function (data) {
-                        if (data.status === "deleted") {
-                            productElement.remove(); // Xóa sản phẩm khỏi giao diện
-                            updateSubtotal();
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error deleting cart item:", error);
-                    }
-                });
-                return;
-            }
-
-            if (newQuantity > stockQuantity) {
-                alert("This product variation is not available in stock.");
-                return;
-            }
-
-            // Cập nhật số lượng trên giao diện
-            quantityElement.innerText = newQuantity;
-            totalElement.innerText = (price * newQuantity).toLocaleString('vi-VN', {
-                maximumFractionDigits: 0
-            }) + " ₫";
-
-            // Gửi request cập nhật số lượng
-            $.ajax({
-                url: "<%= request.getContextPath()%>/Cart",
-                type: "POST",
-                data: {
-                    action: 'update',
-                    cartID: cartID,
-                    quantity: newQuantity
-                },
-                success: function (data) {
-                    if (data.status === "success") {
-                        updateSubtotal();
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error updating cart:", error);
-                }
-            });
-        }
-
-        // Áp dụng voucher
-        document.getElementById("applyVoucher").addEventListener("click", function () {
-            let voucherCode = document.getElementById("voucher").value.trim();
-
-            if (!voucherCode) {
-                alert("Vui lòng nhập mã voucher!");
-                return;
-            }
-
-            // Lấy subtotal từ element
-            let subtotalElement = document.getElementById("subtotal");
-            let subtotal = 0;
-            if (subtotalElement) {
-                subtotalElement.innerText = subtotal.toLocaleString('vi-VN', {
-                    maximumFractionDigits: 0
-                }).replace(/\./g, ',') + " ₫";
-            }
-
-
-            $.ajax({
-                url: "<%= request.getContextPath()%>/UseVoucher",
-                type: "GET",
-                data: {
-                    voucherCode: voucherCode,
-                    subtotal: subtotal
-                },
-                dataType: "json",
-                success: function (response) {
-                    if (response.status === "error") {
-                        alert(response.message);
-                        discount = 0.00;
-                    } else {
-                        discount = response.discount; // Cập nhật giảm giá
-                        // Lưu mã voucher vào hidden field nếu có
-                        let hiddenVoucher = document.getElementById("hiddenVoucher");
-                        if (hiddenVoucher) {
-                            hiddenVoucher.value = voucherCode;
-                        }
-                    }
-                    updateTotal(); // Cập nhật tổng tiền
-                },
-                error: function () {
-                    alert("Lỗi khi kiểm tra voucher!");
-                }
-            });
-        });
-
-        // Nếu có mã voucher trên URL, tự động điền vào input
-        let params = new URLSearchParams(window.location.search);
-        let voucherCode = params.get("voucher");
-        if (voucherCode) {
-            document.getElementById("voucher").value = voucherCode;
-        }
-
-        // Cập nhật tổng tiền ban đầu
-        updateTotal();
-    });
-    function validateDeliveryFields() {
-        const address = document.querySelector('input[name="address"]').value;
-        const zip = document.querySelector('input[name="zip"]').value;
-        const state = document.querySelector('input[name="state"]').value;
-
-        // Kiểm tra null hoặc empty
-        if (address === null || address.trim() === "" ||
-                zip === null || zip.trim() === "" ||
-                state === null || state.trim() === "") {
-
-            // Tạo alert box
-            const alertBox = `
-                <div id="deliveryAlert" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-                    background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;">
-                    <div style="background: white; padding: 20px; border-radius: 5px; text-align: center; max-width: 80%;">
-                        <p style="margin-bottom: 20px; font-size: 16px;">You must enter complete shipping information</p>
-                        <button id="alertOK" style="padding: 8px 20px; background-color: #007bff; color: white; 
-                            border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">OK</button>
-                    </div>
-                </div>
-            `;
-
-            // Thêm alert box vào DOM nếu chưa có
-            if (!document.getElementById('deliveryAlert')) {
-                document.body.insertAdjacentHTML('beforeend', alertBox);
-
-                // Xử lý sự kiện khi bấm OK
-                document.getElementById('alertOK').addEventListener('click', function () {
-                    window.location.href = "<%= request.getContextPath()%>/EditProfile";
-                });
-            }
-
-            return false;
-        }
-        return true;
-    }
-// Xử lý khi bấm nút Order Now
-    document.getElementById('payNow').addEventListener('click', function (e) {
-        if (!validateDeliveryFields()) {
-            e.preventDefault(); // Ngăn form submit nếu validation fail
-        }
-        // Nếu validation pass, form sẽ submit bình thường
-    });
-    document.querySelector("form").addEventListener("submit", function (e) {
-
-        console.log("Subtotal:", document.getElementById("hiddenSubtotal").value);
-        console.log("Discount:", document.getElementById("hiddenDiscount").value);
-        console.log("Total:", document.getElementById("hiddenTotal").value);
-    });
-</script>

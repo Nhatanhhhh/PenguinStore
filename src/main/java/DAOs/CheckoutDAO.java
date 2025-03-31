@@ -66,6 +66,32 @@ public class CheckoutDAO {
         return cartItems;
     }
 
+    public double getVoucherDiscount(String voucherID) {
+        double discount = 0;
+        String sql = "SELECT discountAmount, minOrderValue, validFrom, validUntil, voucherStatus "
+                + "FROM Vouchers "
+                + "WHERE voucherID = ? "
+                + "AND voucherStatus = 1 "
+                + "AND validFrom <= GETDATE() "
+                + "AND validUntil >= GETDATE()";
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, voucherID);
+
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    // Kiểm tra ngày hiệu lực và trạng thái voucher
+                    if (rs.getInt("voucherStatus") == 1) {
+                        discount = rs.getDouble("discountAmount");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return discount;
+    }
+
     public UsedVoucher getUsedVoucherByCode(String customerID, String voucherCode) {
         String query = "SELECT uv.[usedVoucherID], uv.[voucherID], uv.[customerID], uv.[usedAt], uv.[status], "
                 + "v.[voucherCode], v.[discountPer], v.[discountAmount], v.[minOrderValue], "
@@ -132,7 +158,7 @@ public class CheckoutDAO {
 
     public Customer getCustomerByID(String customerID) {
         Customer customer = null;
-        String query = "SELECT customerID, customerName, fullName, address, email, phoneNumber, state, zip "
+        String query = "SELECT customerID, customerName, fullName, email, address, phoneNumber, state, zip "
                 + "FROM Customer WHERE customerID = ?";
 
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
@@ -145,8 +171,8 @@ public class CheckoutDAO {
                         rs.getString("customerID"),
                         rs.getString("customerName"),
                         rs.getString("fullName"),
-                        rs.getString("address"),
                         rs.getString("email"),
+                        rs.getString("address"),
                         rs.getString("phoneNumber"),
                         rs.getString("state"),
                         rs.getString("zip")
@@ -187,6 +213,27 @@ public class CheckoutDAO {
         return proVariantID;
     }
 
+    public String getProductIDByCartItem(String cartID) {
+        String productID = null;
+        String sql = "SELECT pv.productID "
+                + "FROM Cart c "
+                + "JOIN ProductVariants pv ON c.proVariantID = pv.proVariantID "
+                + "WHERE c.cartID = ?";
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, cartID);
+
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    productID = rs.getString("productID");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productID;
+    }
+
     public List<String> getProductVariantIDs(String cartID, String customerID, String productID) {
         List<String> variantIDs = new ArrayList<>();
         String sql = "SELECT proVariantID FROM Cart WHERE cartID = ? AND customerID = ? AND productID = ?";
@@ -217,6 +264,28 @@ public class CheckoutDAO {
             e.printStackTrace();
         }
         return null; // Trả về null nếu không tìm thấy
+    }
+
+    public double getProductPrice(String productID) {
+        double price = 0;
+        String sql = "SELECT price FROM Product WHERE productID = ?";
+
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, productID);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                price = rs.getDouble("price");
+            } else {
+                System.out.println("No product found with ID: " + productID);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting product price for ID: " + productID);
+            e.printStackTrace();
+        }
+
+        return price;
     }
 
 }

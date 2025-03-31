@@ -1,3 +1,4 @@
+<%@page import="Models.Manager"%>
 <%@page import="Models.Feedback"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.List"%>

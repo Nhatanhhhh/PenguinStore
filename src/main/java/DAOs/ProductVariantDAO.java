@@ -8,6 +8,7 @@ import DB.DBContext;
 import Models.Product;
 import Models.ProductVariant;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class ProductVariantDAO extends DBContext {
                 + "INNER JOIN ProductVariants PV ON P.productID = PV.productID\n"
                 + "LEFT JOIN Color C ON PV.colorID = C.colorID\n"
                 + "LEFT JOIN Size S ON PV.sizeID = S.sizeID\n"
-                + "WHERE P.productID = CONVERT(UNIQUEIDENTIFIER, ?);";
+                + "WHERE P.productID = CONVERT(UNIQUEIDENTIFIER, ?)";
         Object param[] = {proID};
         try ( ResultSet rs = execSelectQuery(sql, param)) {
             while (rs.next()) {
@@ -48,6 +49,16 @@ public class ProductVariantDAO extends DBContext {
             Logger.getLogger(ProductVariantDAO.class.getName()).log(Level.SEVERE, "Error get product variant", ex);
         }
         return productVariant;
+    }
+
+    public int getStockQuantity(String variantId) throws SQLException {
+        String sql = "SELECT stockQuantity FROM ProductVariants WHERE proVariantID = ? AND status = 1";
+        try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, variantId);
+            try ( ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        }
     }
 
     public int insertProductVariant(String productName, String[] listSize, String[] listColor) {

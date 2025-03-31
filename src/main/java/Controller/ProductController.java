@@ -24,6 +24,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -62,20 +64,40 @@ public class ProductController extends HttpServlet {
                 request.setAttribute("listProduct", productDAO.getProductCustomer());
                 request.getRequestDispatcher("/View/ViewProducts.jsp").forward(request, response);
                 break;
+            // Trong case "detail":
             case "detail":
                 if (id != null) {
-                    request.setAttribute("productDetail", productVariantDAO.viewProductDetail(id));
-                    request.setAttribute("product", productDAO.getOneProduct(id));
+                    Product product = productDAO.getOneProduct(id);
+                    if (product == null) {
+                        response.sendRedirect(request.getContextPath() + "/Product?action=view");
+                        return;
+                    }
+                    request.setAttribute("product", product);
+
+                    List<ProductVariant> variants = productVariantDAO.viewProductDetail(id)
+                            .stream()
+                            .filter(ProductVariant::isStatus)
+                            .collect(Collectors.toList());
+
+                    if (variants.isEmpty()) {
+                        request.setAttribute("error", "No available variants for this product");
+                    } else {
+                        // Tính toán tổng số lượng tồn kho
+                        int totalStock = variants.stream()
+                                .mapToInt(ProductVariant::getStockQuantity)
+                                .sum();
+
+                        request.setAttribute("productDetail", variants);
+                        request.setAttribute("totalStock", totalStock);
+                        request.setAttribute("stockQuantity", totalStock); // Mặc định hiển thị tổng stock
+                    }
+
+                    // Thông tin đánh giá
                     request.setAttribute("averageRating", FeedbackDAO.getAverageRating(id));
                     request.setAttribute("totalReviews", FeedbackDAO.getTotalReviews(id));
                     request.setAttribute("feedbackList", FeedbackDAO.getLatestFeedbacks(id));
-                    
-                    if ("success".equals(message)) {
-                        request.setAttribute("message", "Add Successful");
-                    }
+
                     request.getRequestDispatcher("/View/ProductDetail.jsp").forward(request, response);
-                } else {
-                    response.sendRedirect(request.getContextPath() + "/Product?action=view");
                 }
                 break;
             case "detailType":

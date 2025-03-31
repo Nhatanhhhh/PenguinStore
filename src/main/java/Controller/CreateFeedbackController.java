@@ -5,6 +5,7 @@
 package Controller;
 
 import DAOs.FeedbackDAO;
+import Models.Customer;
 import Models.Feedback;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -78,7 +79,7 @@ public class CreateFeedbackController extends HttpServlet {
             return;
         }
 
-        Models.Customer customer = (Models.Customer) session.getAttribute("user");
+        Customer customer = (Customer) session.getAttribute("user");
         String customerID = customer.getCustomerID();
         String productID = request.getParameter("productID");
         String orderID = request.getParameter("orderID");
@@ -124,15 +125,22 @@ public class CreateFeedbackController extends HttpServlet {
         feedback.setIsResolved(false);
         feedback.setIsViewed(false);
 
-        boolean isSaved = FeedbackDAO.saveFeedback(feedback);
+        try {
+            boolean isSaved = FeedbackDAO.saveFeedback(feedback);
 
-        if (isSaved) {
-            session.setAttribute("message", "Send the success evaluation!");
-            session.setAttribute("messageType", "success");
-        } else {
-            session.setAttribute("message", "You have already submitted feedback for this product!");
+            if (isSaved) {
+                session.setAttribute("message", "Feedback submitted successfully!");
+                session.setAttribute("messageType", "success");
+            } else {
+                session.setAttribute("message", "Failed to submit feedback. You may have already reviewed this product.");
+                session.setAttribute("messageType", "error");
+            }
+        } catch (Exception e) {
+            session.setAttribute("message", "System error: " + e.getMessage());
             session.setAttribute("messageType", "error");
+            e.printStackTrace();
         }
+
         response.sendRedirect("Feedback?orderID=" + orderID);
     }
 

@@ -74,17 +74,17 @@ public class OrderDetailDAO {
 
         String query = "SELECT img.imgName, p.productName, od.unitPrice, c.colorName, s.sizeName, "
                 + "od.quantity, o.totalAmount, o.discountAmount, o.finalAmount, o.orderDate, "
-                + "so.statusName, cu.fullName "
-                + "FROM OrderDetail od "
-                + "JOIN ProductVariants pv ON od.productVariantID = pv.proVariantID "
-                + "JOIN Product p ON pv.productID = p.productID "
-                + "JOIN Color c ON pv.colorID = c.colorID "
-                + "JOIN Size s ON pv.sizeID = s.sizeID "
-                + "JOIN [Order] o ON od.orderID = o.orderID "
-                + "JOIN StatusOrder so ON o.statusOID = so.statusOID "
+                + "so.statusName, cu.fullName, cu.email, cu.phoneNumber, o.orderID "
+                + "FROM [Order] o "
+                + "LEFT JOIN OrderDetail od ON o.orderID = od.orderID "
+                + "LEFT JOIN ProductVariants pv ON od.productVariantID = pv.proVariantID "
+                + "LEFT JOIN Product p ON pv.productID = p.productID "
+                + "LEFT JOIN Color c ON pv.colorID = c.colorID "
+                + "LEFT JOIN Size s ON pv.sizeID = s.sizeID " 
+                + "LEFT JOIN StatusOrder so ON o.statusOID = so.statusOID "
                 + "JOIN Customer cu ON o.customerID = cu.customerID "
                 + "LEFT JOIN Image img ON p.productID = img.productID "
-                + "WHERE od.orderID = ?";
+                + "WHERE o.orderID = ?";
 
         try ( Connection conn = db.getConn();  PreparedStatement ps = conn.prepareStatement(query)) {
 
@@ -104,8 +104,11 @@ public class OrderDetailDAO {
                         rs.getDouble("finalAmount"),
                         rs.getString("orderDate"),
                         rs.getString("statusName"),
-                        rs.getString("fullName") // Thêm fullName vào DTO
+                        rs.getString("fullName")
                 );
+                // Thêm email và phoneNumber vào DTO
+                detail.setEmail(rs.getString("email"));
+                detail.setPhoneNumber(rs.getString("phoneNumber"));
                 details.add(detail);
             }
         } catch (Exception e) {

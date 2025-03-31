@@ -15,6 +15,8 @@ public class OrderDetailDTO {
     private String statusOrderName;
     private String fullName;
     private String statusOID;
+    private String email;
+    private String phoneNumber;
 
     public OrderDetailDTO(double totalAmount, String dateOrder, String statusOrderName, String statusOID) {
         this.totalAmount = totalAmount;
@@ -110,5 +112,21 @@ public class OrderDetailDTO {
 
     public String getStatusOrderName() {
         return statusOrderName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }
