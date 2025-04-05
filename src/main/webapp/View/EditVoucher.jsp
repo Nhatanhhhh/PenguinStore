@@ -19,6 +19,14 @@
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $("#discountAmount").on("input", function () {
+                    $("#maxDiscountAmount").val($(this).val());
+                });
+            });
+        </script>
     </head>
     <body>
 
@@ -39,7 +47,7 @@
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header bg-warning text-white text-center">
-                                    <h3 class="text-center">Edit Type Product</h3>
+                                    <h3 class="text-center">Edit Voucher</h3>
                                 </div>
                                 <div class="card-body">
                                     <c:if test="${empty voucher}">
@@ -53,12 +61,7 @@
 
                                             <div class="mb-3">
                                                 <label for="voucherCode" class="form-label">Voucher Code:</label>
-                                                <input type="text" class="form-control" id="voucherCode" name="voucherCode" value="${voucher.voucherCode}" required>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="discountPer" class="form-label">Discount Percentage (%):</label>
-                                                <input type="number" class="form-control" id="discountPer" name="discountPer" value="${voucher.discountPer}" step="0.1" min="0" required>
+                                                <input type="text" class="form-control" id="voucherCode" name="voucherCode" value="${voucher.voucherCode}" readonly>
                                             </div>
 
                                             <div class="mb-3">
@@ -83,11 +86,6 @@
                                                 <input type="date" class="form-control" id="validUntil" name="validUntil" min="${voucher.validFrom}" value="${voucher.validUntil}" required><br>
                                             </div>
 
-                                            <div class="mb-3">
-                                                <label for="maxDiscountAmount" class="form-label">Maximum Discount Amount:</label>
-                                                <input type="number" class="form-control" id="maxDiscountAmount" name="maxDiscountAmount" value="${voucher.maxDiscountAmount}" step="0.1" min="0" required>
-                                            </div>
-
                                             <button type="submit" class="btn btn-primary">Update</button>
                                             <a href="<c:url value='/Voucher?action=list'/>" class="btn btn-secondary">Cancel</a>
                                         </form>
@@ -104,7 +102,18 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             document.getElementById("editForm").addEventListener("submit", function (event) {
-                event.preventDefault(); // Ngăn chặn gửi form ngay lập tức
+                event.preventDefault();
+
+                let minOrderValue = parseFloat(document.getElementById("minOrderValue").value);
+                let discountAmount = parseFloat(document.getElementById("discountAmount").value);
+                
+
+
+                if (minOrderValue < 0 || discountAmount < 0) {
+                    alert("Các giá trị Minimum Order Value. Vui lòng nhập lại!");
+                    return;
+                }
+
 
                 Swal.fire({
                     title: "Confirm Update",
@@ -116,7 +125,7 @@
                     confirmButtonText: "Yes, update it!"
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        event.target.submit(); // Gửi form khi xác nhận
+                        event.target.submit();
                     }
                 });
             });

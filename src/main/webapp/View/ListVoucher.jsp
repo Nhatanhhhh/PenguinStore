@@ -47,12 +47,10 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>Voucher Code</th>
-                                
                                 <th>Discount Amount</th>
                                 <th>Minimum Order Value</th>
                                 <th>Date Created</th>
                                 <th>Valid Until</th>
-                                <th>Maximum Discount Amount</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -61,14 +59,12 @@
                             <c:forEach var="voucher" items="${voucherList}">
                                 <tr class="${voucher.voucherStatus ? 'valid' : 'expired'}">
                                     <td>${voucher.voucherCode}</td>
-                                    
-                                    <td><fmt:formatNumber value="${voucher.discountAmount}" pattern="#,###" /> ₫</td>
-                                    <td><fmt:formatNumber value="${voucher.minOrderValue}" pattern="#,###" /> ₫</td>
+
+                                    <td><fmt:formatNumber value="${voucher.discountAmount}" pattern="#,###" /> VND</td>
+                                    <td><fmt:formatNumber value="${voucher.minOrderValue}" pattern="#,###" /> VND</td>
 
                                     <td>${voucher.validFrom}</td>
                                     <td>${voucher.validUntil}</td>
-                                    <td><fmt:formatNumber value="${voucher.maxDiscountAmount}" pattern="#,###" /> ₫</td>
-
                                     <td>
                                         <c:choose>
                                             <c:when test="${voucher.voucherStatus}">
@@ -174,6 +170,14 @@
                     console.error("Không tìm thấy modal với ID");
                 }
             }
+            document.getElementById("sendVoucherForm").addEventListener("submit", function (event) {
+                event.preventDefault(); // Ngăn chặn gửi form ngay lập tức
+                let confirmation = confirm("Are you sure you want to send this voucher?");
+                if (confirmation) {
+                    this.submit(); // Nếu xác nhận, gửi form
+                }
+            });
+
 
 
         </script>

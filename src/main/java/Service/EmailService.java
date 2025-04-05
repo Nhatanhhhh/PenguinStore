@@ -75,4 +75,51 @@ public class EmailService {
             return false;
         }
     }
+
+    public boolean sendVoucherEmail(String recipientEmail, String voucherCode, Double discountAmount, Double minOrderValue) throws UnsupportedEncodingException {
+        String emailContent = "<html><body>"
+                + "<h2>🎉 Chúc mừng!</h2>"
+                + "<p>Bạn đã nhận được một <strong>voucher giảm giá</strong> từ Penguin Store.</p>"
+                + "<h3 style='color:green;'>Mã Voucher: <strong>" + voucherCode + "</strong></h3>"
+                + "<h3 style='color:green;'>Giá trị Voucher: <strong>" + discountAmount + " VND</strong></h3>"
+                + "<h3 style='color:green;'>Điều kiện áp dụng: Giá trị đơn hàng phải đạt <strong>" + minOrderValue + " VND</strong> trở lên!</h3>"
+                + "<p>Sử dụng mã này khi thanh toán để được giảm giá!</p>"
+                + "<p><em>Lưu ý:</em> Mã chỉ có hiệu lực trong vòng 7 ngày.</p>"
+                + "<br><p>Trân trọng,<br><strong>Đội ngũ Penguin Store</strong></p>"
+                + "</body></html>";
+
+        return sendEmail(recipientEmail, "🎁 Voucher giảm giá từ Penguin Store!", emailContent);
+    }
+
+    private boolean sendEmail(String recipientEmail, String subject, String content) throws UnsupportedEncodingException {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.host", "smtp.gmail.com");
+        properties.put("mail.smtp.port", "587");
+        properties.put("mail.mime.charset", "UTF-8");
+
+        Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(SENDER_EMAIL, SENDER_PASSWORD);
+            }
+        });
+
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(SENDER_EMAIL, "Penguin Store", "UTF-8"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+            message.setSubject(subject, "UTF-8");
+            message.setContent(content, "text/html; charset=UTF-8");
+
+            Transport.send(message);
+            LOGGER.log(Level.INFO, "Email sent successfully to: {0}", recipientEmail);
+            return true;
+        } catch (MessagingException e) {
+            LOGGER.log(Level.SEVERE, "Failed to send email to {0}: {1}", new Object[]{recipientEmail, e.getMessage()});
+            return false;
+        }
+    }
+
 }

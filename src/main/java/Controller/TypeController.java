@@ -153,10 +153,10 @@ public class TypeController extends HttpServlet {
                     return;
                 }
 
-                // Kiểm tra tên loại đã tồn tại hay chưa
+                
                 if (typeDAO.isTypeNameExists(typeName)) {
                     request.setAttribute("error", "Type name already exists.");
-                    request.getRequestDispatcher("/Type?action=create").forward(request, response);
+                    request.getRequestDispatcher("/Type?action=list").forward(request, response);
                     return;
                 }
 
@@ -167,7 +167,7 @@ public class TypeController extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/Type?action=list");
                 } else {
                     request.setAttribute("error", "Create failed! Please try again.");
-                    request.getRequestDispatcher("/Type?action=create").forward(request, response);
+                    request.getRequestDispatcher("/Type?action=list").forward(request, response);
                 }
                 break;
 
@@ -183,7 +183,7 @@ public class TypeController extends HttpServlet {
                     return;
                 }
 
-                // Kiểm tra nếu tên đã tồn tại nhưng không phải của chính nó
+                
                 if (typeDAO.isTypeNameExists(updatedTypeName) && !typeDAO.getOnlyById(typeID).getTypeName().equals(updatedTypeName)) {
                     request.setAttribute("error", "Type name already exists.");
                     request.getRequestDispatcher("/Type?action=list").forward(request, response);

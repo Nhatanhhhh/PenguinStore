@@ -6,6 +6,7 @@ package Controller;
 
 import DAOs.VoucherDAO;
 import Models.Voucher;
+import Service.EmailService;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -49,7 +50,7 @@ public class VoucherController extends HttpServlet {
 
                 // Kiểm tra voucherID có hợp lệ không
                 if (voucherID == null || voucherID.trim().isEmpty()) {
-                    request.setAttribute("errorMessage", "Voucher ID không hợp lệ.");
+                    request.setAttribute("errorMessage", "Invalid voucher id.");
                     request.getRequestDispatcher("View/ListVoucher.jsp").forward(request, response);
                     return;
                 }
@@ -59,21 +60,14 @@ public class VoucherController extends HttpServlet {
 
                 // Kiểm tra nếu voucher không tồn tại
                 if (existingVoucher == null) {
-                    request.setAttribute("errorMessage", "Voucher không tồn tại.");
+                    request.setAttribute("errorMessage", "Voucher does not exist.");
                     request.getRequestDispatcher("View/ListVoucher.jsp").forward(request, response);
                     return;
                 }
 
                 // Kiểm tra discountAmount phải >= 0
                 if (existingVoucher.getDiscountAmount() < 0) {
-                    request.setAttribute("errorMessage", "Discount Amount phải lớn hơn hoặc bằng 0.");
-                    request.getRequestDispatcher("Voucher?action=edit&id=" + voucherID).forward(request, response);
-                    return;
-                }
-
-                // Kiểm tra discountPer phải từ 0 đến 100
-                if (existingVoucher.getDiscountPer() < 0 || existingVoucher.getDiscountPer() > 100) {
-                    request.setAttribute("errorMessage", "Discount Percentage phải nằm trong khoảng 0 - 100.");
+                    request.setAttribute("errorMessage", "Discount Amount must be greater than or equal to 0.");
                     request.getRequestDispatcher("Voucher?action=edit&id=" + voucherID).forward(request, response);
                     return;
                 }
@@ -82,7 +76,7 @@ public class VoucherController extends HttpServlet {
                 request.setAttribute("voucher", existingVoucher);
                 request.getRequestDispatcher("View/EditVoucher.jsp").forward(request, response);
             } catch (Exception e) {
-                request.setAttribute("errorMessage", "Lỗi khi chỉnh sửa voucher: " + e.getMessage());
+                request.setAttribute("errorMessage", "Error when editing voucher: " + e.getMessage());
                 request.getRequestDispatcher("View/ListVoucher.jsp").forward(request, response);
             }
             break;
@@ -116,143 +110,210 @@ public class VoucherController extends HttpServlet {
 
             case "create":
     try {
-                String voucherCode = request.getParameter("voucherCode");
-                double discountPer = Double.parseDouble(request.getParameter("discountPer"));
+                String voucherCode = request.getParameter("voucherCode").trim();
                 double discountAmount = Double.parseDouble(request.getParameter("discountAmount"));
                 double minOrderValue = Double.parseDouble(request.getParameter("minOrderValue"));
-                double maxDiscountAmount = Double.parseDouble(request.getParameter("maxDiscountAmount"));
                 LocalDate validFrom = LocalDate.parse(request.getParameter("validFrom"));
                 LocalDate validUntil = LocalDate.parse(request.getParameter("validUntil"));
 
-                // Kiểm tra voucherCode không được để trống
-                if (voucherCode == null || voucherCode.trim().isEmpty()) {
-                    request.setAttribute("errorMessage", "Voucher Code không được để trống.");
-                    request.getRequestDispatcher("Voucher?action=list").forward(request, response);
+                if (voucherCode.isEmpty() || !voucherCode.matches("^[a-zA-Z0-9]+$")) {
+                    request.setAttribute("errorMessage", "Voucher Code cannot be blank or contain special characters.");
+                    request.getRequestDispatcher("Voucher?action=create").forward(request, response);
                     return;
                 }
 
-                // Kiểm tra discountPer phải từ 0 đến 100
-                if (discountPer < 0 || discountPer > 100) {
-                    request.setAttribute("errorMessage", "Discount Percentage phải nằm trong khoảng 0 - 100.");
-                    request.getRequestDispatcher("Voucher?action=list").forward(request, response);
+                if (voucherDAO.isVoucherCodeExists(voucherCode)) {
+                    request.setAttribute("errorMessage", "Voucher Code already exists. Please choose another one.");
+                    request.getRequestDispatcher("Voucher?action=create").forward(request, response);
                     return;
                 }
 
-                // Kiểm tra discountAmount phải >= 0 và không vượt quá 500000
-                if (discountAmount < 0 || discountAmount > 500000) {
-                    request.setAttribute("errorMessage", "Discount Amount phải từ 0 đến 500000.");
-                    request.getRequestDispatcher("Voucher?action=list").forward(request, response);
+                if (discountAmount < 0 || discountAmount > 200000) {
+                    request.setAttribute("errorMessage", "Discount Amount must be between 0 and 200000.");
+                    request.getRequestDispatcher("Voucher?action=create").forward(request, response);
                     return;
                 }
 
-                // Kiểm tra minOrderValue và maxDiscountAmount phải >= 0
-                if (minOrderValue < 0 || maxDiscountAmount < 0) {
-                    request.setAttribute("errorMessage", "Min Order Value và Max Discount Amount phải >= 0.");
-                    request.getRequestDispatcher("Voucher?action=list").forward(request, response);
+                if (minOrderValue < 100000) {
+                    request.setAttribute("errorMessage", "Minimum Order Value must be >= 100000.");
+                    request.getRequestDispatcher("Voucher?action=create").forward(request, response);
                     return;
                 }
 
-                // Kiểm tra ngày hợp lệ
                 if (validFrom.isAfter(validUntil)) {
-                    request.setAttribute("errorMessage", "Valid From không thể sau Valid Until.");
-                    request.getRequestDispatcher("Voucher?action=list").forward(request, response);
+                    request.setAttribute("errorMessage", "Valid From cannot be after Valid Until.");
+                    request.getRequestDispatcher("Voucher?action=create").forward(request, response);
                     return;
                 }
 
-                // Nếu tất cả dữ liệu hợp lệ, tạo mới Voucher
-                Voucher newVoucher = new Voucher(voucherCode, discountPer, discountAmount, minOrderValue, validFrom, validUntil, maxDiscountAmount);
-                voucherDAO.create(newVoucher);
+                // Tạo voucher mới
+                Voucher newVoucher = new Voucher(voucherCode, discountAmount, minOrderValue, validFrom, validUntil);
+                int result = voucherDAO.create(newVoucher);
 
-                response.sendRedirect(request.getContextPath() + "/Voucher?action=list");
+                if (result > 0) {
+                    request.setAttribute("successMessage", "Voucher created successfully!");
+                } else {
+                    request.setAttribute("errorMessage", "Failed to create voucher. Please try again.");
+                }
+
+                request.getRequestDispatcher("Voucher?action=list").forward(request, response);
 
             } catch (NumberFormatException e) {
-                request.setAttribute("errorMessage", "Dữ liệu nhập vào không hợp lệ. Vui lòng kiểm tra lại.");
-                request.getRequestDispatcher("Voucher?action=list").forward(request, response);
+                request.setAttribute("errorMessage", "Invalid input. Please check again.");
+                request.getRequestDispatcher("Voucher?action=create").forward(request, response);
             } catch (Exception e) {
-                request.setAttribute("errorMessage", "Lỗi khi tạo voucher: " + e.getMessage());
-                request.getRequestDispatcher("Voucher?action=list").forward(request, response);
+                request.setAttribute("errorMessage", "Error creating voucher: " + e.getMessage());
+                request.getRequestDispatcher("Voucher?action=create").forward(request, response);
             }
             break;
 
+            case "checkDuplicate":
+                String codeToCheck = request.getParameter("voucherCode");
+                boolean exists = voucherDAO.isVoucherCodeExists(codeToCheck);
+                response.getWriter().write(exists ? "exists" : "available");
+                break;
+
             case "edit":
     try {
-                
                 String voucherID = request.getParameter("voucherID");
-                String voucherCode = request.getParameter("voucherCode");
-                double discountPer = Double.parseDouble(request.getParameter("discountPer"));
+                String voucherCode = request.getParameter("voucherCode").trim();
+
                 double discountAmount = Double.parseDouble(request.getParameter("discountAmount"));
                 double minOrderValue = Double.parseDouble(request.getParameter("minOrderValue"));
-                double maxDiscountAmount = Double.parseDouble(request.getParameter("maxDiscountAmount"));
 
                 LocalDate validFrom = LocalDate.parse(request.getParameter("validFrom"));
                 LocalDate validUntil = LocalDate.parse(request.getParameter("validUntil"));
 
+                
                 if (voucherID == null || voucherID.trim().isEmpty()
                         || voucherCode == null || voucherCode.trim().isEmpty()) {
-                    request.setAttribute("errorMessage", "Voucher ID và Voucher Code không được để trống.");
-                    request.getRequestDispatcher("Voucher?action=list").forward(request, response);
+                    request.setAttribute("errorMessage", "Voucher ID and Voucher Code cannot be left blank.");
+                    request.getRequestDispatcher("Voucher?action=edit&id=" + voucherID).forward(request, response);
                     return;
                 }
 
-                if (discountPer < 0 || discountPer > 100) {
-                    request.setAttribute("errorMessage", "Discount Percentage phải nằm trong khoảng 0 - 100.");
-                    request.getRequestDispatcher("Voucher?action=list").forward(request, response);
+                if (!voucherCode.matches("^[a-zA-Z0-9]+$")) {
+                    request.setAttribute("errorMessage", "Voucher Code cannot contain special characters.");
+                    request.getRequestDispatcher("Voucher?action=edit&id=" + voucherID).forward(request, response);
                     return;
                 }
 
-                if (discountAmount < 0 || discountAmount > 500000) {
-                    request.setAttribute("errorMessage", "Discount Amount phải từ 0 đến 500000.");
-                    request.getRequestDispatcher("Voucher?action=list").forward(request, response);
+                if (discountAmount < 0 || discountAmount > 200000) {
+                    request.setAttribute("errorMessage", "Discount Amount must be from 0 to 200000.");
+                    request.getRequestDispatcher("Voucher?action=edit&id=" + voucherID).forward(request, response);
                     return;
                 }
 
-                if (minOrderValue < 0 || maxDiscountAmount < 0) {
-                    request.setAttribute("errorMessage", "Min Order Value và Max Discount Amount phải >= 0.");
-                    request.getRequestDispatcher("Voucher?action=list").forward(request, response);
+                if (minOrderValue < 0) {
+                    request.setAttribute("errorMessage", "Min Order Value must be >= 0.");
+                    request.getRequestDispatcher("Voucher?action=edit&id=" + voucherID).forward(request, response);
                     return;
                 }
 
                 if (validFrom.isAfter(validUntil)) {
-                    request.setAttribute("errorMessage", "Valid From không thể sau Valid Until.");
-                    request.getRequestDispatcher("Voucher?action=list").forward(request, response);
+                    request.setAttribute("errorMessage", "Valid From cannot follow Valid Until.");
+                    request.getRequestDispatcher("Voucher?action=edit&id=" + voucherID).forward(request, response);
                     return;
                 }
 
-                // Nếu tất cả dữ liệu hợp lệ, cập nhật Voucher
-                Voucher updatedVoucher = new Voucher(voucherID, voucherCode, discountPer, discountAmount, minOrderValue, validFrom, validUntil, maxDiscountAmount, true);
-                voucherDAO.update(updatedVoucher);
-                response.sendRedirect(request.getContextPath() + "/Voucher?action=list");
+                
+                if (voucherDAO.isVoucherCodeExistsForUpdate(voucherCode, voucherID)) {
+                    request.setAttribute("errorMessage", "Voucher Code already exists. Please choose another one.");
+                    request.getRequestDispatcher("Voucher?action=edit&id=" + voucherID).forward(request, response);
+                    return;
+                }
+
+                
+                Voucher updatedVoucher = new Voucher(voucherID, voucherCode, discountAmount, minOrderValue, validFrom, validUntil, true);
+                int result = voucherDAO.update(updatedVoucher);
+
+                if (result > 0) {
+                    
+                    request.setAttribute("successMessage", "Voucher updated successfully!");
+                    response.sendRedirect(request.getContextPath() + "/Voucher?action=list");
+                } else {
+                    
+                    request.setAttribute("errorMessage", "Failed to update voucher. Please try again.");
+                    request.getRequestDispatcher("Voucher?action=edit&id=" + voucherID).forward(request, response);
+                }
 
             } catch (NumberFormatException e) {
-                request.setAttribute("errorMessage", "Dữ liệu nhập vào không hợp lệ. Vui lòng kiểm tra lại.");
-                request.getRequestDispatcher("Voucher?action=list").forward(request, response);
+                request.setAttribute("errorMessage", "Invalid input. Please check again.");
+                request.getRequestDispatcher("Voucher?action=edit&id=" + request.getParameter("voucherID")).forward(request, response);
             }
             break;
 
             case "send":
+    try {
                 String voucherID = request.getParameter("voucherID");
                 String voucherSelection = request.getParameter("voucherSelection");
 
                 Voucher voucher = voucherDAO.getOnlyById(voucherID);
-                int checkStatus = voucherDAO.isStatusUsedVoucher(voucherID);
-                LocalDate today = LocalDate.now();
-
-                System.out.println("check: " + checkStatus);
-
-                if (!voucherDAO.isVoucherSent(UUID.fromString(voucherID))
-                        && checkStatus == 0) {
+                if (voucher == null) {
+                    request.setAttribute("errorMessage", "Voucher không tồn tại.");
                     request.getRequestDispatcher("/Voucher?action=list").forward(request, response);
+                    return;
+                }
+
+                // Kiểm tra voucher có còn hiệu lực không
+                LocalDate today = LocalDate.now();
+                if (voucher.getValidUntil().isBefore(today)) {
+                    request.setAttribute("errorMessage", "Voucher đã hết hạn.");
+                    request.getRequestDispatcher("/Voucher?action=list").forward(request, response);
+                    return;
+                }
+
+                EmailService emailService = new EmailService();
+                ArrayList<String> customerEmails;
+
+                if ("all".equals(voucherSelection)) {
+                    customerEmails = voucherDAO.getAllCustomerEmails();
+                } else if ("withOrders".equals(voucherSelection)) {
+                    customerEmails = voucherDAO.getCustomersWithOrders();
                 } else {
-                    if ("all".equals(voucherSelection)) {
-                        voucherDAO.sendVoucherToAllCustomers(UUID.fromString(voucherID));
-                        response.sendRedirect(request.getContextPath() + "/Voucher?action=list");
-                    } else if ("withOrders".equals(voucherSelection)) {
-                        voucherDAO.sendVoucherTo1OrderCustomers(UUID.fromString(voucherID));
-                        response.sendRedirect(request.getContextPath() + "/Voucher?action=list");
+                    request.setAttribute("errorMessage", "Lựa chọn không hợp lệ.");
+                    request.getRequestDispatcher("/Voucher?action=list").forward(request, response);
+                    return;
+                }
+
+                int successCount = 0;
+                int failedCount = 0;
+                ArrayList<String> failedEmails = new ArrayList<>();
+
+                for (String email : customerEmails) {
+                    boolean isSent = emailService.sendVoucherEmail(
+                            email,
+                            voucher.getVoucherCode(),
+                            voucher.getDiscountAmount(),
+                            voucher.getMinOrderValue()
+                    );
+
+                    if (isSent) {
+                        // Insert voucher vào bảng UsedVoucher
+                        boolean isInserted = voucherDAO.insertUsedVoucher(UUID.fromString(voucherID), email);
+                        if (isInserted) {
+                            successCount++;
+                        } else {
+                            failedCount++;
+                            failedEmails.add(email);
+                        }
+                    } else {
+                        failedCount++;
+                        failedEmails.add(email);
                     }
                 }
 
-                break;
+                request.setAttribute("successMessage", "Đã gửi voucher đến " + successCount + " khách hàng thành công.");
+                if (failedCount > 0) {
+                    request.setAttribute("errorMessage", "Không thể gửi voucher đến " + failedCount + " khách hàng: " + String.join(", ", failedEmails));
+                }
+                request.getRequestDispatcher("/Voucher?action=list").forward(request, response);
+            } catch (Exception e) {
+                request.setAttribute("errorMessage", "Lỗi khi gửi voucher: " + e.getMessage());
+                request.getRequestDispatcher("/Voucher?action=list").forward(request, response);
+            }
+            break;
+
             default:
                 response.sendRedirect(request.getContextPath() + "/Voucher?action=list");
                 break;

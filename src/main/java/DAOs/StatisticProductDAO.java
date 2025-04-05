@@ -67,14 +67,16 @@ public class StatisticProductDAO extends DBContext {
 
     public ArrayList<StatisticProduct> getBestSellingProducts() {
         ArrayList<StatisticProduct> bestSelling = new ArrayList<>();
-        String query = "SELECT TOP 5 p.productName, sz.sizeName, c.colorName, SUM(od.quantity) AS totalSold "
-                + "FROM OrderDetail od "
-                + "JOIN ProductVariants pv ON od.productVariantID = pv.proVariantID "
-                + "JOIN Product p ON pv.productID = p.productID "
-                + "JOIN Size sz ON pv.sizeID = sz.sizeID "
-                + "JOIN Color c ON pv.colorID = c.colorID "
-                + "GROUP BY p.productName, sz.sizeName, c.colorName "
-                + "ORDER BY totalSold DESC";
+        String query = "SELECT TOP 5 p.productName, sz.sizeName, c.colorName, SUM(od.quantity) AS totalSold \n"
+                + "        FROM OrderDetail od \n"
+                + "        JOIN [Order] o ON od.orderID = o.orderID \n"
+                + "        JOIN ProductVariants pv ON od.productVariantID = pv.proVariantID \n"
+                + "        JOIN Product p ON pv.productID = p.productID \n"
+                + "        JOIN Size sz ON pv.sizeID = sz.sizeID \n"
+                + "        JOIN Color c ON pv.colorID = c.colorID \n"
+                + "        WHERE o.OrderDate >= DATEADD(DAY, -30, GETDATE()) \n"
+                + "        GROUP BY p.productName, sz.sizeName, c.colorName \n"
+                + "        ORDER BY totalSold DESC;";
 
         try ( ResultSet rs = execSelectQuery(query)) {
             while (rs.next()) {
@@ -91,6 +93,39 @@ public class StatisticProductDAO extends DBContext {
             Logger.getLogger(StatisticProductDAO.class.getName()).log(Level.SEVERE, "Error when getting best-selling products", ex);
         }
         return bestSelling;
+    }
+
+    public ArrayList<StatisticProduct> getWeeklySales() {
+        ArrayList<StatisticProduct> statistics = new ArrayList<>();
+        String query = "WITH DateRange AS (\n"
+                + "    SELECT CAST(DATEADD(DAY, number, DATEADD(DAY, -6, CAST(GETDATE() AS DATE))) AS DATE) AS timePeriod\n"
+                + "    FROM master.dbo.spt_values\n"
+                + "    WHERE type = 'P' AND number BETWEEN 0 AND 6\n"
+                + ")\n"
+                + "SELECT \n"
+                + "    d.timePeriod,\n"
+                + "    ISNULL(SUM(od.quantity), 0) AS soldQuantity\n"
+                + "FROM DateRange d\n"
+                + "LEFT JOIN [Order] o ON CAST(o.orderDate AS DATE) = d.timePeriod\n"
+                + "LEFT JOIN OrderDetail od ON o.orderID = od.orderID\n"
+                + "GROUP BY d.timePeriod\n"
+                + "ORDER BY d.timePeriod;";
+
+        try ( ResultSet rs = execSelectQuery(query)) {
+            while (rs.next()) {
+                statistics.add(new StatisticProduct(
+                        rs.getString("timePeriod"),
+                        "", 
+                        "", 
+                        "", 
+                        rs.getInt("soldQuantity"),
+                        0 
+                ));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StatisticProductDAO.class.getName()).log(Level.SEVERE, "Error when getting weekly sales data", ex);
+        }
+        return statistics;
     }
 
 }

@@ -5,9 +5,11 @@
 package Controller;
 
 import DAOs.OrderStatisticDAO;
+import DAOs.ProductDAO;
 import DAOs.RevenueDAO;
 import DAOs.StatisticProductDAO;
 import Models.OrderStatistic;
+import Models.Product;
 import Models.RevenueStatistic;
 import Models.StatisticProduct;
 import jakarta.servlet.ServletException;
@@ -16,6 +18,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +35,7 @@ public class StatisticController extends HttpServlet {
         OrderStatisticDAO dao = new OrderStatisticDAO();
         RevenueDAO revenueDAO = new RevenueDAO();
         StatisticProductDAO productDAO = new StatisticProductDAO();
+        ProductDAO pronameDAO = new ProductDAO();
 
         String action = request.getParameter("action");
         String timeUnit = request.getParameter("timeUnit");
@@ -39,8 +44,8 @@ public class StatisticController extends HttpServlet {
             action = "orderStatistic"; // Default action
         }
 
-        if (timeUnit == null || (!timeUnit.equals("day") && !timeUnit.equals("month") && !timeUnit.equals("year"))) {
-            timeUnit = "day"; // Default to daily statistics
+        if (timeUnit == null || (!timeUnit.equals("day") && !timeUnit.equals("month") && !timeUnit.equals("year") && !timeUnit.equals("week") && (!timeUnit.equals("custom")))) {
+            timeUnit = "day";
         }
 
         switch (action) {
@@ -48,6 +53,8 @@ public class StatisticController extends HttpServlet {
                 List<OrderStatistic> statistics;
                 if ("month".equals(timeUnit)) {
                     statistics = dao.getOrderStatisticsByMonth();
+                } else if ("year".equals(timeUnit)) {
+                    statistics = dao.getOrderStatisticsByYear();
                 } else {
                     statistics = dao.getOrderStatisticsByDay();
                 }
@@ -57,47 +64,54 @@ public class StatisticController extends HttpServlet {
                 break;
 
             case "revenueStatistic":
-                List<RevenueStatistic> revenuelist;
+                List<RevenueStatistic> revenueList;
+                String startDate = request.getParameter("startDate");
+                String endDate = request.getParameter("endDate");
+
                 switch (timeUnit) {
+                    case "day":
+                        revenueList = revenueDAO.getRevenueByDay();
+
+                        break;
                     case "month":
-                        revenuelist = revenueDAO.getRevenueByMonth();
+                        revenueList = revenueDAO.getRevenueByMonth();
+
                         break;
                     case "year":
-                        revenuelist = revenueDAO.getRevenueByYear();
+                        revenueList = revenueDAO.getRevenueByYear();
+
+                        break;
+                    case "week":
+                        revenueList = revenueDAO.getRevenueLastWeek();
+
+                        break;
+                    case "custom":
+                        // Kiểm tra nếu startDate hoặc endDate bị null
+                        if (startDate == null || startDate.isEmpty()) {
+                            startDate = "2025-01-01"; // Ngày mặc định
+                        }
+                        if (endDate == null || endDate.isEmpty()) {
+                            endDate = LocalDate.now().toString(); // Lấy ngày hiện tại
+                        }
+                        revenueList = revenueDAO.getRevenueByCustomRange(startDate, endDate);
                         break;
                     default:
-                        revenuelist = revenueDAO.getRevenueByDay();
+                        revenueList = revenueDAO.getRevenueLastWeek();
                         break;
                 }
-                
-                request.setAttribute("revenuelist", revenuelist);
+
+                request.setAttribute("startDate", startDate);
+                request.setAttribute("endDate", endDate);
+                request.setAttribute("revenuelist", revenueList);
                 request.setAttribute("timeUnit", timeUnit);
                 request.getRequestDispatcher("/View/RevenueStatistic.jsp").forward(request, response);
                 break;
 
-//            case "DashBoardForAdmin":
-//                
-//                switch (timeUnit) {
-//                    case "month":
-//                        revenuelist = revenueDAO.getRevenueByMonth();
-//                        break;
-//                    case "year":
-//                        revenuelist = revenueDAO.getRevenueByYear();
-//                        break;
-//                    default:
-//                        revenuelist = revenueDAO.getRevenueByDay();
-//                        break;
-//                }
-//                double totalRevenue = revenuelist.stream().mapToDouble(RevenueStatistic::getRevenue).sum();
-//                request.setAttribute("revenuelist", revenuelist);
-//                request.setAttribute("timeUnit", timeUnit);
-//                request.setAttribute("totalRevenue", totalRevenue);
-//                request.getRequestDispatcher("/View/DashBoardForAdmin.jsp").forward(request, response);
-//                break;    
             case "productStatistic":
-                List<StatisticProduct> productStatistics = productDAO.getAll(); // Thống kê nhập - xuất
-                List<StatisticProduct> bestSellingProducts = productDAO.getBestSellingProducts(); // Sản phẩm bán chạy nhất
-
+                List<StatisticProduct> productStatistics = productDAO.getAll();
+                List<StatisticProduct> bestSellingProducts = productDAO.getBestSellingProducts();
+                ArrayList<Product> productList = pronameDAO.readAll();
+                request.setAttribute("productList", productList);
                 request.setAttribute("productStatistics", productStatistics);
                 request.setAttribute("bestSellingProducts", bestSellingProducts);
 
