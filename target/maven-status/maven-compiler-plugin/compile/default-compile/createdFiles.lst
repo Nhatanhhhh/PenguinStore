@@ -1,9 +1,11 @@
 DAOs\CategoryDAO.class
+Models\ChatBotHistory.class
 Models\Size.class
 DAOs\CheckoutDAO.class
 Controller\ViewFeedbackCustomer.class
 Utils\CookieUtils.class
 Models\Category.class
+Controller\MoMoPayment.class
 DAOs\CartDAO.class
 Controller\VNPayPaymentServlet.class
 Controller\OrderManagement.class
@@ -22,6 +24,7 @@ Controller\CreateFeedbackController.class
 Controller\TypeController.class
 com\vnpay\common\Config.class
 Controller\RestockController.class
+Controller\ChatBotHistorySave.class
 Controller\ViewProfileController.class
 Controller\FeedbackController.class
 Controller\ProductController.class
@@ -55,6 +58,7 @@ Models\CartItem.class
 Controller\VVCustomerController.class
 Controller\LoginServlet.class
 DAOs\FeedbackDAO.class
+DTO\ShowCusVoucher.class
 DAOs\CustomerDAO.class
 DAOs\ManagerDAO.class
 Controller\CheckOrderUpdates.class
@@ -67,7 +71,9 @@ Controller\OrderHistory.class
 Controller\VerifyEmailController.class
 DAOs\UpdateProfileDAO.class
 Models\ViewFeedbackCus.class
+Controller\ChatBotHistoryController.class
 Controller\DashBoardForAdminServlet.class
+Controller\ProductSearchServlet.class
 Controller\VerifyEmailRSPController.class
 DAOs\SizeDAO.class
 Models\RevenueStatistic.class
@@ -93,6 +99,7 @@ DTO\ShowStaffDTO.class
 Controller\StatisticController.class
 DAOs\FeedBackReplyDAO.class
 DAOs\RevenueDAO.class
+DAOs\ChatBotHistoryDAO.class
 Models\Product.class
 DAOs\ChangePasswordDAO.class
 Filters\CustomerFilter.class
@@ -100,6 +107,7 @@ DAOs\VoucherDAO.class
 Controller\ResetPasswordController.class
 Controller\Re_De_FeedbackController.class
 Controller\VNPayReturnServlet.class
+Controller\GetUserSessionServlet.class
 DAOs\ImageDAO.class
 Controller\ViewListFeedback.class
 Models\Voucher.class
@@ -114,3 +122,4 @@ Controller\Payment.class
 Controller\UseVoucher.class
 Models\ProductVariants.class
 Filters\AdminFilter.class
+Controller\MoMoCallback.class

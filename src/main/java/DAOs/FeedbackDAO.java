@@ -183,13 +183,33 @@ public class FeedbackDAO {
         return null;
     }
 
-    public static List<Feedback> getLatestFeedbacks(String productID) {
+    public static List<Feedback> getLatestUniqueCustomerFeedbacks(String productID) {
         List<Feedback> feedbackList = new ArrayList<>();
-        String sql = "SELECT TOP 3 f.feedbackID, f.customerID, c.customerName, f.productID, f.comment, f.rating, f.feedbackCreateAt "
-                + "FROM Feedback f "
-                + "JOIN Customer c ON f.customerID = c.customerID "
-                + "WHERE f.productID = ? "
-                + "ORDER BY f.feedbackCreateAt DESC";
+        String sql = "WITH CustomerLatestFeedback AS ("
+                + "    SELECT "
+                + "        f.feedbackID, "
+                + "        f.customerID, "
+                + "        c.customerName, "
+                + "        f.productID, "
+                + "        f.comment, "
+                + "        f.rating, "
+                + "        f.feedbackCreateAt,"
+                + "        ROW_NUMBER() OVER (PARTITION BY f.customerID ORDER BY f.feedbackCreateAt DESC) AS rn "
+                + "    FROM Feedback f "
+                + "    JOIN Customer c ON f.customerID = c.customerID "
+                + "    WHERE f.productID = ? "
+                + ") "
+                + "SELECT TOP 3 "
+                + "    feedbackID, "
+                + "    customerID, "
+                + "    customerName, "
+                + "    productID, "
+                + "    comment, "
+                + "    rating, "
+                + "    feedbackCreateAt "
+                + "FROM CustomerLatestFeedback "
+                + "WHERE rn = 1 "
+                + "ORDER BY feedbackCreateAt DESC";
 
         try ( Connection conn = DBContext.getConn();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -200,7 +220,7 @@ public class FeedbackDAO {
                 Feedback feedback = new Feedback();
                 feedback.setFeedbackID(rs.getString("feedbackID"));
                 feedback.setCustomerID(rs.getString("customerID"));
-                feedback.setCustomerName(rs.getString("customerName")); // Thêm customerName vào model Feedback
+                feedback.setCustomerName(rs.getString("customerName"));
                 feedback.setProductID(rs.getString("productID"));
                 feedback.setComment(rs.getString("comment"));
                 feedback.setRating(rs.getDouble("rating"));

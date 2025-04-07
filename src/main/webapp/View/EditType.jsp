@@ -6,6 +6,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Edit Type</title>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

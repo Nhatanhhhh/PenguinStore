@@ -100,11 +100,11 @@ public class LoginServlet extends HttpServlet {
         String rememberMe = request.getParameter("remember-me");
 
         if (username != null) {
-            username = username.replaceAll("\\s+", ""); 
+            username = username.replaceAll("\\s+", "");
         }
 
         if (password != null) {
-            password = password.trim(); 
+            password = password.trim();
         }
 
         HttpSession session = request.getSession(true);
@@ -151,7 +151,16 @@ public class LoginServlet extends HttpServlet {
             }
 
             if (user != null) {
+
+                // Đặt toàn bộ object user vào session
                 session.setAttribute("user", user);
+
+                // Đặt các thuộc tính riêng lẻ nếu cần
+                if (user instanceof Customer) {
+                    Customer customer = (Customer) user;
+                    session.setAttribute("customerID", customer.getCustomerID());
+                    session.setAttribute("customerName", customer.getUserName());
+                }
                 session.setAttribute("failedAttempts", 0);
                 session.setAttribute("successMessage", "Login successful! Welcome to Penguin Store.");
                 session.setAttribute("showSweetAlert", true);

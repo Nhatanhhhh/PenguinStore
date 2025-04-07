@@ -3,6 +3,7 @@
     Created on : Feb 22, 2025, 6:35:04 PM
     Author     : Huynh Cong Nghiem - CE181351
 --%>
+<%@page import="com.google.gson.Gson"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -17,6 +18,7 @@
         <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/style.css"/>
+        <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/chatbot.css"/>
         <style>
             :root {
                 --primary-color: #2c3e50;
@@ -264,6 +266,12 @@
     </head>
     <body>
         <%@include file="Header.jsp"%>
+        <%  Customer user = (Customer) session.getAttribute("user");
+            String userJson = "null";
+            if (user != null) {
+                userJson = new Gson().toJson(user);
+            }
+        %>
         <script>
             document.getElementById('addToCartForm').addEventListener('submit', function (e) {
                 e.preventDefault();
@@ -488,6 +496,32 @@
             </div>
         </section>
 
+        <!-- ChatBOT -->
+        <div class="chatbot-container">
+            <button class="chatbot-toggler">
+                <span class="material-symbols-outlined open-icon">mode_comment</span>
+                <span class="material-symbols-outlined close-icon">close</span>
+            </button>
+            <div class="chatbot">
+                <header>
+                    <h2>PenguinBot</h2>
+                    <span class="close-btn material-symbols-outlined">close</span>
+                </header>
+                <ul class="chatbox">
+                    <li class="chat incoming">
+                        <span class="mdi mdi-penguin"></span>
+                        <p>Xin chào! Tôi là PenguinBot - trợ lý ảo của PenguinDB. Tôi có thể giúp gì cho bạn hôm nay?</p>
+                    </li>
+                </ul>
+                <div class="chat-input">
+                    <textarea placeholder="Nhập tin nhắn của bạn..." required></textarea>
+                    <span class="material-symbols-outlined">send</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- End ChatBOT -->
+
         <%@include file="Footer.jsp"%>
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
         <script>
@@ -675,7 +709,7 @@
                         });
             }
 
-// Update stock display
+            // Update stock display
             function updateStockDisplay(variantId) {
                 if (!variantId || variantId === "null") {
                     document.getElementById("stock-display").textContent = "${totalStock}";
@@ -786,7 +820,8 @@
                         });
             }
 
-
+            window.userSession = <%= userJson%>;
         </script>
+        <script src="<%= request.getContextPath()%>/Assets/Javascript/chatbot.js" defer></script>
     </body>
 </html>

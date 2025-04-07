@@ -94,8 +94,8 @@ public class CheckoutDAO {
 
     public UsedVoucher getUsedVoucherByCode(String customerID, String voucherCode) {
         String query = "SELECT uv.[usedVoucherID], uv.[voucherID], uv.[customerID], uv.[usedAt], uv.[status], "
-                + "v.[voucherCode], v.[discountPer], v.[discountAmount], v.[minOrderValue], "
-                + "v.[validFrom], v.[validUntil], v.[maxDiscountAmount] "
+                + "v.[voucherCode], v.[discountAmount], v.[minOrderValue], "
+                + "v.[validFrom], v.[validUntil] "
                 + "FROM dbo.[UsedVoucher] uv "
                 + "JOIN dbo.[Vouchers] v ON uv.[voucherID] = v.[voucherID] "
                 + "WHERE uv.[customerID] = ? AND v.[voucherCode] = ?";
@@ -112,8 +112,6 @@ public class CheckoutDAO {
                         rs.getString("voucherCode"),
                         rs.getDate("usedAt"),
                         rs.getInt("status"),
-                        rs.getDouble("discountPer"),
-                        rs.getDouble("maxDiscountAmount"),
                         rs.getDouble("discountAmount"),
                         rs.getDouble("minOrderValue"),
                         rs.getDate("validFrom"),

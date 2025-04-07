@@ -47,7 +47,7 @@ public class VNPayReturnServlet extends HttpServlet {
         for (Type type : listType) {
             categoryMap.computeIfAbsent(type.getCategoryName(), k -> new ArrayList<>()).add(type);
         }
-        request.setAttribute("categoryMap", categoryMap);  
+        request.setAttribute("categoryMap", categoryMap);
         try {
             // Xác thực chữ ký VNPay
             System.out.println("Received VNPay callback with parameters:");

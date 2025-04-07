@@ -32,7 +32,7 @@ public class GoogleLoginController extends HttpServlet {
 
     private static final String CLIENT_ID = "481523146636-vh5s2vjv8fm9hb8dtgi9e3f66711192u.apps.googleusercontent.com";
     private static final String CLIENT_SECRET = "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";
-    private static final String REDIRECT_URI = "http://localhost:9999/PenguinStore/GoogleLogin";
+    private static final String REDIRECT_URI = "http://localhost:8080/PenguinStore/GoogleLogin";
     private final JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
 
     @Override

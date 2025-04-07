@@ -46,6 +46,7 @@ public class UseVoucher extends HttpServlet {
         double subtotal = Double.parseDouble(request.getParameter("subtotal"));
 
         UsedVoucher voucher = checkoutDAO.getUsedVoucherByCode(customerID, voucherCode);
+        session.setAttribute("useVoucher", voucher);
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
@@ -54,7 +55,7 @@ public class UseVoucher extends HttpServlet {
             return;
         }
 
-// Check the validity period of the voucher
+        // Check the validity period of the voucher
         java.util.Date currentDate = new java.util.Date();
         if (voucher.getValidFrom() != null && voucher.getValidFrom().after(currentDate)) {
             out.print("{\"status\": \"error\", \"message\": \"Voucher is not yet valid\"}");
@@ -78,6 +79,8 @@ public class UseVoucher extends HttpServlet {
         } else { // Giảm số tiền cố định
             discount = voucher.getDiscountAmount();
         }
+        
+        session.setAttribute("discount", discount);
 
         out.print(
                 "{\"status\": \"success\", \"discount\": " + discount + "}");

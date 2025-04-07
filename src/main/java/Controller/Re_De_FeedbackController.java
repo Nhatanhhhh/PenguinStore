@@ -26,17 +26,17 @@ import java.util.UUID;
  * @author Thuan
  */
 @WebServlet(name = "Re_DE_FeedbackController", urlPatterns = {"/feedbackreply"})
-public class Re_De_FeedbackController extends HttpServlet{
-    
+public class Re_De_FeedbackController extends HttpServlet {
+
     private FeedBackReplyDAO feedBackReplyDAO;
     private FeedbackDAO feedBackDao;
 
     @Override
     public void init() {
-        feedBackReplyDAO = new FeedBackReplyDAO(); 
+        feedBackReplyDAO = new FeedBackReplyDAO();
         feedBackDao = new FeedbackDAO();
     }
-    
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -53,22 +53,19 @@ public class Re_De_FeedbackController extends HttpServlet{
     }
 
     private void handleDelete(String feedbackID, HttpServletRequest request, HttpServletResponse response, String redirectPage)
-        throws IOException, ServletException {
+            throws IOException, ServletException {
         boolean isDeleted = feedBackReplyDAO.deleteFeedback(feedbackID);
-
-        List<Feedback> listAllFeed = feedBackDao.getAllFeedbacks();
-        request.setAttribute("feedbacks", listAllFeed);
-
-        if (redirectPage == null || redirectPage.trim().isEmpty()) {
-            redirectPage = "View/DashBoardForStaff.jsp";
+        if (isDeleted) {
+            response.setStatus(HttpServletResponse.SC_OK); // 200 OK
+            response.getWriter().write("success");
+        } else {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500 Error
+            response.getWriter().write("error");
         }
-
-        request.getRequestDispatcher(redirectPage).forward(request, response);
     }
 
-
-     private void handleReply(HttpServletRequest request, HttpServletResponse response, String redirectPage)
-        throws ServletException, IOException {
+    private void handleReply(HttpServletRequest request, HttpServletResponse response, String redirectPage)
+            throws ServletException, IOException {
         try {
             String feedbackID = request.getParameter("feedbackID");
             String replyComment = request.getParameter("replyMessage");
@@ -78,12 +75,13 @@ public class Re_De_FeedbackController extends HttpServlet{
             String managerID = (manager != null) ? manager.getManagerID() : null;
 
             if (managerID == null || feedbackID == null || replyComment.trim().isEmpty()) {
-                response.sendRedirect("View/DashBoardForStaff.jsp");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400 Bad Request
+                response.getWriter().write("error");
                 return;
             }
 
             FeedbackReply reply = new FeedbackReply();
-            reply.setReplyId(UUID.randomUUID().toString()); 
+            reply.setReplyId(UUID.randomUUID().toString());
             reply.setFeedbackId(feedbackID);
             reply.setManagerId(managerID);
             reply.setReplyComment(replyComment);
@@ -91,18 +89,18 @@ public class Re_De_FeedbackController extends HttpServlet{
 
             boolean success = feedBackReplyDAO.insetReplyFeed(reply);
 
-            List<Feedback> listAllFeed = feedBackDao.getAllFeedbacks();
-            request.setAttribute("feedbacks", listAllFeed);
-
+            if (success) {
+                response.setStatus(HttpServletResponse.SC_OK); // 200 OK
+                response.getWriter().write("success");
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500 Error
+                response.getWriter().write("error");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("error");
         }
-
-        if (redirectPage == null || redirectPage.trim().isEmpty()) {
-            redirectPage = "View/DashBoardForStaff.jsp";
-        }
-
-        request.getRequestDispatcher(redirectPage).forward(request, response);
     }
 
 }

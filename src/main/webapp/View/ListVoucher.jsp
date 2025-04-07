@@ -26,12 +26,23 @@
         <div class="row">
             <div class="col-md-2">
                 <%@include file="Admin/NavigationMenu.jsp"%>
-
             </div>
             <div class="col-md-10">
                 <%@include file="Admin/HeaderAD.jsp"%>
                 <div class="container mt-4">
                     <h2 class="text-center">List Voucher</h2>
+
+                    <!-- Hiển thị thông báo -->
+                    <c:if test="${not empty successMessage}">
+                        <div class="alert alert-success" role="alert">
+                            ${successMessage}
+                        </div>
+                    </c:if>
+                    <c:if test="${not empty errorMessage}">
+                        <div class="alert alert-danger" role="alert">
+                            ${errorMessage}
+                        </div>
+                    </c:if>
 
                     <!-- Dropdown lọc voucher -->
                     <div class="mb-3">
@@ -47,12 +58,10 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>Voucher Code</th>
-                                
                                 <th>Discount Amount</th>
                                 <th>Minimum Order Value</th>
                                 <th>Date Created</th>
                                 <th>Valid Until</th>
-                                <th>Maximum Discount Amount</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -61,14 +70,10 @@
                             <c:forEach var="voucher" items="${voucherList}">
                                 <tr class="${voucher.voucherStatus ? 'valid' : 'expired'}">
                                     <td>${voucher.voucherCode}</td>
-                                    
-                                    <td><fmt:formatNumber value="${voucher.discountAmount}" pattern="#,###" /> ₫</td>
-                                    <td><fmt:formatNumber value="${voucher.minOrderValue}" pattern="#,###" /> ₫</td>
-
+                                    <td><fmt:formatNumber value="${voucher.discountAmount}" pattern="#,###" /> VND</td>
+                                    <td><fmt:formatNumber value="${voucher.minOrderValue}" pattern="#,###" /> VND</td>
                                     <td>${voucher.validFrom}</td>
                                     <td>${voucher.validUntil}</td>
-                                    <td><fmt:formatNumber value="${voucher.maxDiscountAmount}" pattern="#,###" /> ₫</td>
-
                                     <td>
                                         <c:choose>
                                             <c:when test="${voucher.voucherStatus}">
@@ -91,8 +96,9 @@
                                                    style="pointer-events: none; opacity: 0.6;">
                                                     Edit
                                                 </a>
-
-                                                <button class="btn btn-primary btn-sm" style="pointer-events: none; opacity: 0.6;" onclick="openSendVoucherModal('${voucher.voucherID}')">Send</button>
+                                                <button class="btn btn-primary btn-sm" 
+                                                        style="pointer-events: none; opacity: 0.6;" 
+                                                        onclick="openSendVoucherModal('${voucher.voucherID}')">Send</button>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
@@ -102,80 +108,131 @@
                     </table>
                     <a href="<c:url value='/Voucher?action=create'/>" class="btn btn-success">Create</a>
                 </div>
-
-                <script>
-                    document.getElementById("voucherFilter").addEventListener("change", function () {
-                        let filterValue = this.value;
-                        let rows = document.querySelectorAll("#voucherTable tbody tr");
-
-                        rows.forEach(row => {
-                            if (filterValue === "all") {
-                                row.style.display = "";
-                            } else if (filterValue === "valid" && row.classList.contains("valid")) {
-                                row.style.display = "";
-                            } else if (filterValue === "expired" && row.classList.contains("expired")) {
-                                row.style.display = "";
-                            } else {
-                                row.style.display = "none";
-                            }
-                        });
-                    });
-                </script>
-
             </div>
         </div>
 
+        <!-- Modal gửi voucher -->
         <div class="modal fade" id="sendVoucherModal" tabindex="-1" aria-labelledby="sendVoucherModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="sendVoucherModalLabel">Send Voucher</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-
                         <form id="sendVoucherForm" action="<c:url value='/Voucher?action=send'/>" method="POST">
                             <input type="hidden" id="voucherID" name="voucherID">
 
-
                             <div class="form-check mb-3">
-                                <input class="form-check-input" type="radio" id="selectAllUsers" name="voucherSelection" value="all" checked>
+                                <input class="form-check-input" type="checkbox" id="selectAllUsers" name="voucherSelection" value="all" checked onchange="toggleCustomerList()">
                                 <label class="form-check-label" for="selectAllUsers">
-                                    Select all users
+                                    Select all Customer
                                 </label>
                             </div>
-
 
                             <div class="form-check mb-3">
-                                <input class="form-check-input" type="radio" id="usersWithOrders" name="voucherSelection" value="withOrders">
-                                <label class="form-check-label" for="usersWithOrders">
-                                    Users with at least 1 order
+                                <input class="form-check-input" type="checkbox" id="selectSpecificUsers" name="voucherSelection" value="specific" onchange="toggleCustomerList()">
+                                <label class="form-check-label" for="selectSpecificUsers">
+                                    Select specific Customer
                                 </label>
                             </div>
 
+                            <!-- Danh sách customer với checkbox -->
+                            <div id="customerList" style="display: none; max-height: 300px; overflow-y: auto;">
+                                <c:choose>
+                                    <c:when test="${empty listCusVoucher}">
+                                        <p>No customers found.</p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:forEach items="${listCusVoucher}" var="customer">
+                                            <div class="form-check">
+                                                <input class="form-check-input customer-checkbox" 
+                                                       type="checkbox" 
+                                                       name="selectedCustomers" 
+                                                       value="${customer.email}"
+                                                       id="customer_${customer.email}">
+                                                <label class="form-check-label" for="customer_${customer.email}">
+                                                    ${customer.customerName} (${customer.email})
+                                                </label>
+                                            </div>
+                                        </c:forEach>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
 
-                            <button type="submit" class="btn btn-primary w-100">Send Voucher</button>
+                            <button type="submit" class="btn btn-primary w-100 mt-3">Send Voucher</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
 
-
         <script>
+            // Lọc bảng voucher
+            document.getElementById("voucherFilter").addEventListener("change", function () {
+                let filterValue = this.value;
+                let rows = document.querySelectorAll("#voucherTable tbody tr");
+
+                rows.forEach(row => {
+                    if (filterValue === "all") {
+                        row.style.display = "";
+                    } else if (filterValue === "valid" && row.classList.contains("valid")) {
+                        row.style.display = "";
+                    } else if (filterValue === "expired" && row.classList.contains("expired")) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            });
+
+            // Mở modal và gán voucherID
             function openSendVoucherModal(voucherID) {
                 document.getElementById("voucherID").value = voucherID;
 
-                var modalElement = document.getElementById('sendVoucherModal');
-                if (modalElement) {
-                    var modal = new bootstrap.Modal(modalElement);
-                    modal.show();
+                // Mở modal
+                var modal = new bootstrap.Modal(document.getElementById('sendVoucherModal'));
+                modal.show();
+            }
+
+            // Toggle danh sách khách hàng và đảm bảo chỉ chọn 1 trong 2 checkbox
+            function toggleCustomerList() {
+                const selectAllUsers = document.getElementById('selectAllUsers');
+                const selectSpecificUsers = document.getElementById('selectSpecificUsers');
+                const customerList = document.getElementById('customerList');
+
+                // Đảm bảo chỉ 1 trong 2 checkbox được chọn
+                if (selectAllUsers.checked && selectSpecificUsers.checked) {
+                    if (this === selectAllUsers) {
+                        selectSpecificUsers.checked = false;
+                    } else {
+                        selectAllUsers.checked = false;
+                    }
+                }
+
+                // Hiển thị danh sách khách hàng khi chọn "Select specific users"
+                if (selectSpecificUsers.checked) {
+                    customerList.style.display = 'block';
                 } else {
-                    console.error("Không tìm thấy modal với ID");
+                    customerList.style.display = 'none';
+                    document.querySelectorAll('.customer-checkbox').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
                 }
             }
 
+            // Gán sự kiện onchange cho cả hai checkbox
+            document.getElementById('selectAllUsers').addEventListener('change', toggleCustomerList);
+            document.getElementById('selectSpecificUsers').addEventListener('change', toggleCustomerList);
 
+            // Xác nhận trước khi gửi
+            document.getElementById("sendVoucherForm").addEventListener("submit", function (event) {
+                event.preventDefault();
+                let confirmation = confirm("Are you sure you want to send this voucher?");
+                if (confirmation) {
+                    this.submit();
+                }
+            });
         </script>
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>

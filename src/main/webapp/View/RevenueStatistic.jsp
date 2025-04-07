@@ -12,6 +12,7 @@
 <html>
     <head>
         <title>Revenue</title>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
 
@@ -42,6 +43,16 @@
                 background-color: lightgray;
             }
 
+            #exportExcel {
+                background-color: #28a745;
+                border-color: #28a745;
+            }
+
+            #exportPDF {
+                background-color: #dc3545;
+                border-color: #dc3545;
+            }
+
         </style>
     </head>
     <body>
@@ -60,6 +71,28 @@
                 <%@include file="Admin/HeaderAD.jsp"%>
                 <h2 class="text-center">REVENUE</h2>
 
+                <div class="text-center mt-3 mb-5">
+                    <form action="Statistic" method="get" style="display: inline;">
+                        <input type="hidden" name="action" value="exportExcel">
+                        <input type="hidden" name="timeUnit" value="${timeUnit}">
+                        <input type="hidden" name="startDate" value="${startDate}">
+                        <input type="hidden" name="endDate" value="${endDate}">
+                        <button type="submit" id="exportExcel" class="btn btn-success mr-2" 
+                                ${empty revenuelist ? 'disabled' : ''}>
+                            <i class="bi bi-file-excel"></i> Export to Excel
+                        </button>
+                    </form>
+                    <form action="Statistic" method="get" style="display: inline;">
+                        <input type="hidden" name="action" value="exportPDF">
+                        <input type="hidden" name="timeUnit" value="${timeUnit}">
+                        <input type="hidden" name="startDate" value="${startDate}">
+                        <input type="hidden" name="endDate" value="${endDate}">
+                        <button type="submit" id="exportPDF" class="btn btn-danger" 
+                                ${empty revenuelist ? 'disabled' : ''}>
+                            <i class="bi bi-file-pdf"></i> Export to PDF
+                        </button>
+                    </form>
+                </div>
                 <form action="Statistic" method="get">
                     <input type="hidden" name="action" value="revenueStatistic">
                     <label for="timeUnit">Select the time period:</label>
@@ -101,42 +134,45 @@
                         </c:otherwise>
                     </c:choose>
                 </div>
-
-                <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
-                <script>
-
-                    var labels = [];
-                    var revenueData = [];
-
-                    <c:forEach var="stat" items="${revenuelist}">
-                    labels.push("${stat.timePeriod}");
-                    revenueData.push(${stat.revenue});
-                    </c:forEach>
-
-
-                    var ctx = document.getElementById('revenueChart').getContext('2d');
-                    var revenueChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                    label: 'Revenue (VND)',
-                                    data: revenueData,
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                    borderColor: 'rgba(75, 192, 192, 1)',
-                                    borderWidth: 1
-                                }]
-                        },
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            }
-                        }
-                    });
-                </script>
             </div>
         </div>
+        <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
+        <!-- Thêm SheetJS (xlsx) và jsPDF -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+        <script>
+
+                var labels = [];
+                var revenueData = [];
+
+            <c:forEach var="stat" items="${revenuelist}">
+                labels.push("${stat.timePeriod}");
+                revenueData.push(${stat.revenue});
+            </c:forEach>
+
+
+                var ctx = document.getElementById('revenueChart').getContext('2d');
+                var revenueChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                                label: 'Revenue (VND)',
+                                data: revenueData,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+        </script>
     </body>
 </html>

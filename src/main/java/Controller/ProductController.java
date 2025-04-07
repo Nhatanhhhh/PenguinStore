@@ -95,7 +95,7 @@ public class ProductController extends HttpServlet {
                     // Thông tin đánh giá
                     request.setAttribute("averageRating", FeedbackDAO.getAverageRating(id));
                     request.setAttribute("totalReviews", FeedbackDAO.getTotalReviews(id));
-                    request.setAttribute("feedbackList", FeedbackDAO.getLatestFeedbacks(id));
+                    request.setAttribute("feedbackList", FeedbackDAO.getLatestUniqueCustomerFeedbacks(id));
 
                     request.getRequestDispatcher("/View/ProductDetail.jsp").forward(request, response);
                 }

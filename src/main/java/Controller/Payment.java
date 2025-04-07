@@ -115,6 +115,27 @@ public class Payment extends HttpServlet {
             return;
         }
 
+        // If payment method is MoMo
+        if ("momo".equals(paymentMethod)) {
+            // Save temp order to session
+            session.setAttribute("tempOrder", new TempOrder(
+                    customerID,
+                    cartItems,
+                    voucherID,
+                    subtotal,
+                    discount,
+                    total
+            ));
+
+            // Redirect to MoMo payment
+            response.sendRedirect(request.getContextPath() + "/MoMoPayment?"
+                    + "amount=" + total
+                    + "&subtotal=" + subtotal
+                    + "&discount=" + discount
+                    + "&voucher=" + (voucherID != null ? voucherID : ""));
+            return;
+        }
+
         // Xử lý thanh toán COD
         processOrder(customer, cartItems, voucherID, subtotal, discount, total, response);
     }
@@ -149,6 +170,23 @@ public class Payment extends HttpServlet {
 
             // Xóa thông tin đơn hàng tạm
             session.removeAttribute("tempOrder");
+        } else if ("0".equals(request.getParameter("errorCode"))) { // MoMo
+            TempOrder tempOrder = (TempOrder) session.getAttribute("tempOrder");
+            if (tempOrder == null) {
+                response.sendRedirect("Checkout?error=order_not_found");
+                return;
+            }
+
+            // Xử lý tạo đơn hàng
+            processOrder(
+                    (Customer) session.getAttribute("user"),
+                    tempOrder.getCartItems(),
+                    tempOrder.getVoucherID(),
+                    tempOrder.getSubtotal(),
+                    tempOrder.getDiscount(),
+                    tempOrder.getTotal(),
+                    response
+            );
         } else {
             // Thanh toán thất bại
             response.sendRedirect("Checkout?error=payment_failed");

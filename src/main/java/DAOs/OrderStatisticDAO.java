@@ -46,6 +46,23 @@ public class OrderStatisticDAO extends DBContext {
         return list;
     }
 
+    public List<OrderStatistic> getOrderStatisticsByYear() {
+        List<OrderStatistic> list = new ArrayList<>();
+        String sql = "SELECT YEAR(orderDate) AS orderYear, COUNT(*) AS orderCount "
+                + "FROM [Order] "
+                + "GROUP BY YEAR(orderDate) "
+                + "ORDER BY orderYear";
+
+        try ( ResultSet rs = execSelectQuery(sql)) {
+            while (rs.next()) {
+                list.add(new OrderStatistic(rs.getString("orderYear"), rs.getInt("orderCount")));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public int getTodayOrderCount() {
         int totalOrders = 0;
         String sql = "SELECT COUNT(*) AS orderCount FROM [Order] WHERE CAST(orderDate AS DATE) = CAST(GETDATE() AS DATE)";

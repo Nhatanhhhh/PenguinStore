@@ -11,6 +11,7 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>List Feedback</title>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
@@ -137,45 +138,153 @@
 
 
                                             <td class="row">
-                                                <form class="col-md-6" action="feedbackreply" method="POST" style="display:inline;">
+                                                <!--    <form class="col-md-6" action="feedbackreply" method="POST" style="display:inline;">
+        
+                                                            <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID()%>">
+                                                            <input type="hidden" name="redirectPage" value="View/ListFeedbackAdmin.jsp">
+                                                            <button type="submit" name="action" value="delete" class="btn btn-warning btn-sm">Delete</button>
+                                                        </form>-->
+                                                <button type="button" class="btn btn-warning btn-sm delete-btn" data-feedback-id="<%= fb.getFeedbackID()%>">Delete</button>
 
-                                                    <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID()%>">
-                                                    <input type="hidden" name="redirectPage" value="View/ListFeedbackAdmin.jsp">
-                                                    <button type="submit" name="action" value="delete" class="btn btn-warning btn-sm">Delete</button>
-                                                </form>
+                                                <button type="button" class="btn btn-primary btn-sm reply-btn" data-id="<%= fb.getFeedbackID()%>">Reply</button>
 
-                                                <button type="button" class="btn btn-primary btn-sm reply-btn col-md-6" data-id="<%= fb.getFeedbackID().trim()%>">
-                                                    Reply
-                                                </button>
-
-                                                <div id="reply-box-<%= fb.getFeedbackID().trim()%>" class="reply-box mt-2" style="display: none;">
-                                                    <form action="<%= request.getContextPath()%>/feedbackreply" method="POST">
-                                                        <input type="hidden" name="redirectPage" value="View/ListFeedbackAdmin.jsp">
-                                                        <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID()%>">
-                                                        <textarea name="replyMessage" class="form-control" placeholder="Enter your reply"></textarea>
-                                                        <button type="submit" name="action" value="reply" class="btn btn-success btn-sm mt-2">Send</button>
-                                                    </form>
-                                                </div>
+                                                <!--<%
+                                                    // Xử lý feedbackID để đảm bảo phù hợp với HTML ID
+                                                    String safeFeedbackId = fb.getFeedbackID()
+                                                            .trim() // Loại bỏ khoảng trắng đầu cuối
+                                                            .replaceAll("\\s+", "") // Loại bỏ mọi khoảng trắng
+                                                            .replaceAll("[^a-zA-Z0-9-]", ""); // Loại bỏ ký tự đặc biệt ngoại trừ gạch ngang
+                                                %>
+                                                                                                                                                                                                        <div id="reply-box-<%= safeFeedbackId%>" class="reply-box mt-2" style="display: none;">
+                                                                                                                                                                                                        <form action="<%= request.getContextPath()%>/feedbackreply" method="POST">
+                                                                                                                                                                                                        <input type="hidden" name="redirectPage" value="View/ListFeedbackAdmin.jsp">
+                                                                                                                                                                                                        <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID()%>">
+                                                                                                                                                                                                        <textarea name="replyMessage" class="form-control" placeholder="Enter your reply"></textarea>
+                                                                                                                                                                                                        <button type="submit" name="action" value="reply" class="btn btn-success btn-sm mt-2">Send</button>
+                                                                                                                                                                                                        </form>
+                                                                                                                                                                                                        </div>-->
 
                                                 <script>
                                                     document.addEventListener("DOMContentLoaded", function () {
+                                                        // Xử lý nút Delete
+                                                        document.querySelectorAll(".delete-btn").forEach(button => {
+                                                            button.addEventListener("click", function () {
+                                                                const feedbackID = this.getAttribute("data-feedback-id");
+
+                                                                Swal.fire({
+                                                                    title: 'Are you sure?',
+                                                                    text: "You won't be able to revert this!",
+                                                                    icon: 'warning',
+                                                                    showCancelButton: true,
+                                                                    confirmButtonColor: '#3085d6',
+                                                                    cancelButtonColor: '#d33',
+                                                                    confirmButtonText: 'Yes, delete it!'
+                                                                }).then((result) => {
+                                                                    if (result.isConfirmed) {
+                                                                        fetch('feedbackreply', {
+                                                                            method: 'POST',
+                                                                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                                                            body: new URLSearchParams({
+                                                                                'action': 'delete',
+                                                                                'feedbackID': feedbackID,
+                                                                                'redirectPage': 'View/ListFeedBackAdmin.jsp'
+                                                                            })
+                                                                        })
+                                                                                .then(response => response.text())
+                                                                                .then(data => {
+                                                                                    if (data.trim() === "success") {
+                                                                                        Swal.fire({
+                                                                                            icon: 'success',
+                                                                                            title: 'Deleted!',
+                                                                                            text: 'Feedback has been deleted.',
+                                                                                            timer: 1500,
+                                                                                            showConfirmButton: false
+                                                                                        }).then(() => location.reload());
+                                                                                    } else {
+                                                                                        Swal.fire({
+                                                                                            icon: 'error',
+                                                                                            title: 'Error',
+                                                                                            text: 'Failed to delete feedback.'
+                                                                                        });
+                                                                                    }
+                                                                                })
+                                                                                .catch(error => {
+                                                                                    console.error('Error:', error);
+                                                                                    Swal.fire({
+                                                                                        icon: 'error',
+                                                                                        title: 'Error',
+                                                                                        text: 'An error occurred while deleting.'
+                                                                                    });
+                                                                                });
+                                                                    }
+                                                                });
+                                                            });
+                                                        });
+
+                                                        // Xử lý nút Reply
                                                         document.querySelectorAll(".reply-btn").forEach(button => {
                                                             button.addEventListener("click", function () {
-                                                                let feedbackID = this.getAttribute("data-id");
-                                                                let replyBox = document.getElementById("reply-box-" + feedbackID);
+                                                                const feedbackID = this.getAttribute("data-id");
 
-                                                                // Ẩn tất cả các ô reply khác trước khi hiển thị ô mới
-                                                                document.querySelectorAll(".reply-box").forEach(box => {
-                                                                    if (box !== replyBox)
-                                                                        box.style.display = "none";
+                                                                Swal.fire({
+                                                                    title: 'Reply to Feedback',
+                                                                    input: 'textarea',
+                                                                    inputLabel: 'Enter your reply (at least 2 words)',
+                                                                    inputPlaceholder: 'Type your reply here...',
+                                                                    showCancelButton: true,
+                                                                    confirmButtonText: 'Send',
+                                                                    cancelButtonText: 'Cancel',
+                                                                    confirmButtonColor: '#3085d6',
+                                                                    cancelButtonColor: '#d33',
+                                                                    inputValidator: (value) => {
+                                                                        if (!value || value.trim().split(/\s+/).length < 2) {
+                                                                            return 'Reply must contain at least 2 words!';
+                                                                        }
+                                                                    }
+                                                                }).then((result) => {
+                                                                    if (result.isConfirmed) {
+                                                                        const replyMessage = result.value.trim();
+                                                                        fetch('feedbackreply', {
+                                                                            method: 'POST',
+                                                                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                                                            body: new URLSearchParams({
+                                                                                'action': 'reply',
+                                                                                'feedbackID': feedbackID,
+                                                                                'replyMessage': replyMessage,
+                                                                                'redirectPage': 'View/ListFeedBackAdmin.jsp'
+                                                                            })
+                                                                        })
+                                                                                .then(response => response.text())
+                                                                                .then(data => {
+                                                                                    if (data.trim() === "success") {
+                                                                                        Swal.fire({
+                                                                                            icon: 'success',
+                                                                                            title: 'Replied!',
+                                                                                            text: 'Your reply has been sent.',
+                                                                                            timer: 1500,
+                                                                                            showConfirmButton: false
+                                                                                        }).then(() => location.reload());
+                                                                                    } else {
+                                                                                        Swal.fire({
+                                                                                            icon: 'error',
+                                                                                            title: 'Error',
+                                                                                            text: 'Failed to send reply.'
+                                                                                        });
+                                                                                    }
+                                                                                })
+                                                                                .catch(error => {
+                                                                                    console.error('Error:', error);
+                                                                                    Swal.fire({
+                                                                                        icon: 'error',
+                                                                                        title: 'Error',
+                                                                                        text: 'An error occurred while sending reply.'
+                                                                                    });
+                                                                                });
+                                                                    }
                                                                 });
-
-
-                                                                replyBox.style.display = (replyBox.style.display === "none") ? "block" : "none";
                                                             });
                                                         });
                                                     });
-
 
                                                 </script>
 

@@ -14,6 +14,7 @@ import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -28,6 +29,9 @@ public class EmailService {
     private static final Logger LOGGER = Logger.getLogger(EmailService.class.getName());
     private static final String SENDER_EMAIL = "swp391gr4@gmail.com";  // Dùng biến môi trường thay vì hardcode
     private static final String SENDER_PASSWORD = "fwsg wyht jzyi ybcc"; // Dùng phương thức bảo mật hơn
+    private static final String COMPANY_NAME = "Penguin Store";
+    private static final String PRIMARY_COLOR = "#2a5885";
+    private static final String SECONDARY_COLOR = "#e44d26";
 
     private Session getSession() {
         Properties properties = new Properties();
@@ -97,7 +101,7 @@ public class EmailService {
         try {
             Session session = getSession();
             Message message = new MimeMessage(session);
-           message.setFrom(new InternetAddress(SENDER_EMAIL, "Penguin Store comfirm Order", "UTF-8"));
+            message.setFrom(new InternetAddress(SENDER_EMAIL, "Penguin Store comfirm Order", "UTF-8"));
             String shortOrderID = orderID.substring(0, 4).toUpperCase();
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Order Confirmation - Order ID: " + shortOrderID);
@@ -150,5 +154,90 @@ public class EmailService {
             LOGGER.log(Level.SEVERE, "Failed to send invoice email to {0}: {1}", new Object[]{toEmail, e.getMessage()});
             return false;
         }
+    }
+
+    public boolean sendVoucherEmail(String recipientEmail, String voucherCode,
+            double discountAmount, double minOrderValue, LocalDate validFrom,
+            LocalDate validUntil) {
+        String subject = "🎁 Your Exclusive Discount Voucher from " + COMPANY_NAME + "!";
+
+        String voucherDetails = "<div style='background:#f8f9fa;padding:15px;border-radius:5px;margin-bottom:20px;'>"
+                + "<h3 style='color:" + PRIMARY_COLOR + ";margin-top:0;'>Voucher Code: "
+                + "<span style='color:" + SECONDARY_COLOR + ";'>" + voucherCode + "</span></h3>"
+                + "<ul style='list-style-type:none;padding:0;margin:0;'>"
+                + "<li style='margin-bottom:8px;'><strong>Discount Amount:</strong> " + formatCurrency(discountAmount) + "</li>"
+                + "<li style='margin-bottom:8px;'><strong>Minimum Order:</strong> " + formatCurrency(minOrderValue) + "</li>"
+                + "<li style='margin-bottom:8px;'><strong>Valid From:</strong> " + validFrom.toString() + "</li>"
+                + "<li><strong>Valid Until:</strong> " + validUntil.toString() + "</li>"
+                + "</ul></div>";
+
+        String content = buildEmailTemplate(
+                "Discount Voucher",
+                "<h2 style='color:" + PRIMARY_COLOR + ";'>🎉 Congratulations!</h2>"
+                + "<p>You've received an exclusive discount voucher from " + COMPANY_NAME + "!</p>"
+                + voucherDetails
+                + "<p style='text-align:center;'>"
+                + "<a href='https://yourstore.com' style='background:" + SECONDARY_COLOR + ";color:white;"
+                + "padding:10px 20px;text-decoration:none;border-radius:5px;display:inline-block;'>"
+                + "Shop Now</a></p>"
+        );
+
+        return sendEmail(recipientEmail, subject, content);
+    }
+
+    private String buildEmailTemplate(String title, String bodyContent) {
+        return "<!DOCTYPE html>"
+                + "<html>"
+                + "<head>"
+                + "<meta charset='UTF-8'>"
+                + "<style>"
+                + "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }"
+                + ".container { max-width: 600px; margin: 0 auto; padding: 20px; }"
+                + ".header { background: " + PRIMARY_COLOR + "; padding: 20px; text-align: center; }"
+                + ".header h1 { color: white; margin: 0; }"
+                + ".content { padding: 20px; }"
+                + ".footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }"
+                + "</style>"
+                + "</head>"
+                + "<body>"
+                + "<div class='container'>"
+                + "<div class='header'>"
+                + "<h1>" + COMPANY_NAME + "</h1>"
+                + "</div>"
+                + "<div class='content'>"
+                + "<h2 style='color: " + PRIMARY_COLOR + "; margin-top: 0;'>" + title + "</h2>"
+                + bodyContent
+                + "</div>"
+                + "<div class='footer'>"
+                + "<p>© " + LocalDate.now().getYear() + " " + COMPANY_NAME + ". All rights reserved.</p>"
+                + "<p>If you have any questions, contact us at support@yourstore.com</p>"
+                + "</div>"
+                + "</div>"
+                + "</body>"
+                + "</html>";
+    }
+
+    private boolean sendEmail(String recipientEmail, String subject, String content) {
+        try {
+            Session session = getSession();
+            MimeMessage message = new MimeMessage(session);
+
+            message.setFrom(new InternetAddress(SENDER_EMAIL, COMPANY_NAME, "UTF-8"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+            message.setSubject(subject, "UTF-8");
+            message.setContent(content, "text/html; charset=UTF-8");
+
+            Transport.send(message);
+            LOGGER.log(Level.INFO, "Email sent to: {0}", recipientEmail);
+            return true;
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            LOGGER.log(Level.SEVERE, "Failed to send email to {0}: {1}",
+                    new Object[]{recipientEmail, e.getMessage()});
+            return false;
+        }
+    }
+
+    private String formatCurrency(double amount) {
+        return String.format("%,.0f₫", amount);
     }
 }

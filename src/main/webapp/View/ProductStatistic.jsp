@@ -14,6 +14,7 @@
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
         <title>Product Import/Export Statistics</title>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <style>
             .chart-container {

@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,6 +52,8 @@ public class OrderHistory extends HttpServlet {
         // Lấy danh sách đơn hàng với trạng thái mới nhất từ database
         OrderDAO orderDAO = new OrderDAO();
         List<Order> orders = orderDAO.getOrdersByCustomerID(customerID);
+        
+        Collections.sort(orders, (o1, o2) -> o2.getOrderDate().compareTo(o1.getOrderDate()));
 
         request.setAttribute("orders", orders);
         request.getRequestDispatcher("View/OrderHistory.jsp").forward(request, response);

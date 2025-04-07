@@ -71,12 +71,10 @@ public class VVCustomerDAO {
                 Voucher voucher = new Voucher();
                 voucher.setVoucherID(rs.getString("voucherID"));
                 voucher.setVoucherCode(rs.getString("voucherCode"));
-                voucher.setDiscountPer(rs.getDouble("discountPer"));
                 voucher.setDiscountAmount(rs.getDouble("discountAmount"));
                 voucher.setMinOrderValue(rs.getDouble("minOrderValue"));
                 voucher.setValidFrom(rs.getDate("validFrom").toLocalDate());
                 voucher.setValidUntil(rs.getDate("validUntil").toLocalDate());
-                voucher.setMaxDiscountAmount(rs.getDouble("maxDiscountAmount"));
                 vouchers.add(voucher);
             }
         } catch (Exception e) {

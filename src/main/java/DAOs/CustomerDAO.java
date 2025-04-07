@@ -6,6 +6,7 @@ package DAOs;
 
 import DB.DBContext;
 import DTO.ShowCusDTO;
+import DTO.ShowCusVoucher;
 import Models.Customer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -149,7 +150,7 @@ public class CustomerDAO {
 
         String query = "SELECT customerName, fullName, address, email, phoneNumber, state, zip FROM Customer";
 
-        try (ResultSet rs = dbContext.execSelectQuery(query)) {
+        try ( ResultSet rs = dbContext.execSelectQuery(query)) {
             while (rs.next()) {
                 getListCustomer.add(new ShowCusDTO(
                         rs.getString("customerName"),
@@ -159,6 +160,24 @@ public class CustomerDAO {
                         rs.getString("phoneNumber"),
                         rs.getString("state"),
                         rs.getString("zip")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return getListCustomer;
+    }
+
+    public ArrayList<ShowCusVoucher> getListCusVoucher() {
+        ArrayList<ShowCusVoucher> getListCustomer = new ArrayList<>();
+
+        String query = "SELECT customerName,email FROM Customer";
+
+        try ( ResultSet rs = dbContext.execSelectQuery(query)) {
+            while (rs.next()) {
+                getListCustomer.add(new ShowCusVoucher(
+                        rs.getString("customerName"),
+                        rs.getString("email")));
             }
         } catch (SQLException e) {
             e.printStackTrace();

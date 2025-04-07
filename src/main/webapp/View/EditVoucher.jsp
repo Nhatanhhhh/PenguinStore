@@ -13,7 +13,7 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
-        <title>Edit Type</title>
+        <title>Edit Voucher</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
@@ -65,11 +65,6 @@
                                             </div>
 
                                             <div class="mb-3">
-                                                
-                                                <input type="hidden" class="form-control" id="discountPer" name="discountPer" value="${voucher.discountPer}" step="0.1" min="0" required>
-                                            </div>
-
-                                            <div class="mb-3">
 
                                                 <label for="discountAmount" class="form-label">Discount Amount:</label>
                                                 <input type="number" class="form-control" id="discountAmount" name="discountAmount" value="${voucher.discountAmount}" step="0.1" min="0" required>
@@ -89,11 +84,6 @@
                                             <div class="mb-3">
                                                 <label for="validUntil">Valid Until:</label>
                                                 <input type="date" class="form-control" id="validUntil" name="validUntil" min="${voucher.validFrom}" value="${voucher.validUntil}" required><br>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                
-                                                <input type="hidden" class="form-control" id="maxDiscountAmount" name="maxDiscountAmount" value="${voucher.maxDiscountAmount}" step="0.1" min="0" readonly>
                                             </div>
 
                                             <button type="submit" class="btn btn-primary">Update</button>
@@ -116,11 +106,11 @@
 
                 let minOrderValue = parseFloat(document.getElementById("minOrderValue").value);
                 let discountAmount = parseFloat(document.getElementById("discountAmount").value);
-                let maxDiscountAmount = parseFloat(document.getElementById("maxDiscountAmount").value);
 
 
-                if (minOrderValue < 0 || discountAmount < 0 || maxDiscountAmount < 0) {
-                    alert("Các giá trị Minimum Order Value, Discount Amount và Maximum Discount Amount không thể là số âm. Vui lòng nhập lại!");
+
+                if (minOrderValue < 0 || discountAmount < 0) {
+                    alert("Minimum Order Value values. Please re-enter!");
                     return;
                 }
 
@@ -140,10 +130,6 @@
                 });
             });
         </script>
-
-
-
-
 
     </body>
 </html>

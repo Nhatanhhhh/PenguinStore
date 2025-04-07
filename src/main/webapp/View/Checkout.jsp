@@ -5,7 +5,8 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>PENGUIN Checkout</title>
+        <title>Checkout | Penguin Fashion</title>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
@@ -250,7 +251,13 @@
                 <div class="form-section">
                     <form id="checkoutForm" action="<%= request.getContextPath()%>/Payment" method="post">
                         <h2>Contact Information</h2>
-                        <% Customer customer = (Customer) request.getAttribute("customer");%>
+                        <%Customer customer = (Customer) request.getAttribute("customer");
+                            if (customer == null || customer.getEmail() == null || customer.getFullName() == null
+                                    || customer.getPhoneNumber() == null || customer.getAddress() == null
+                                    || customer.getZip() == null || customer.getState() == null) {
+                                response.sendRedirect(request.getContextPath() + "/EditProfile");
+                                return; // Stop further execution
+                            }%>
                         <input type="email" name="email" placeholder="Email Address" required 
                                value="<%= (customer != null) ? customer.getEmail() : ""%>" readonly  style="background: #f8f9fa;">
 
@@ -269,18 +276,20 @@
                             <input type="text" name="state" placeholder="State/Province" required 
                                    value="<%= (customer != null) ? customer.getState() : ""%>" readonly style="background: #f8f9fa;">
                         </div>
-
                         <h2>Payment Method</h2>
                         <div class="payment-methods">
                             <label for="codRadio" class="payment-method selected" id="codMethod">
                                 <input type="radio" id="codRadio" name="paymentMethod" value="cod" checked>
-                                <i class="fas fa-money-bill-wave payment-icon"></i>
+                                <i class="fas fa-money-bill-wave payment-icon" style="color: green;"></i>
                                 <span>Cash on Delivery (COD)</span>
                             </label>
 
                             <label for="vnpayRadio" class="payment-method" id="vnpayMethod">
                                 <input type="radio" id="vnpayRadio" name="paymentMethod" value="vnpay">
-                                <i class="fas fa-credit-card payment-icon"></i>
+                                <i class="fas fa-credit-card payment-icon" style="background: linear-gradient(to right, #085CA8, #EB2127);
+                                   -webkit-background-clip: text;
+                                   -webkit-text-fill-color: transparent;
+                                   display: inline;"></i>
                                 <span>VNPay (Credit/Debit Card)</span>
                             </label>
                         </div>

@@ -293,6 +293,7 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
+                // Lấy các phần tử DOM một lần để tái sử dụng
                 const editButton = document.getElementById("editProductBtn");
                 const saveButton = document.getElementById("saveProductBtn");
                 const cancelButton = document.getElementById("cancelEditBtn");
@@ -300,36 +301,49 @@
                 const inputs = document.querySelectorAll("#productName, #description, #price");
                 const thumbnails = document.querySelectorAll(".thumbnail-container img");
                 const isSaleDropdown = document.getElementById("isSale");
+                const mainImage = document.getElementById("mainImage");
+                const productImagesInput = document.getElementById("productImages");
+                const previewContainer = document.getElementById("previewContainer");
+                const hiddenFileInput = document.getElementById("hiddenFileInput");
+                const statusDropdowns = document.querySelectorAll(".status-dropdown");
+
                 let originalValues = {};
-                editButton.addEventListener("click", function () {
-                    // Lưu giá trị ban đầu
+
+                // Hàm bật/tắt chế độ chỉnh sửa
+                function toggleEditMode(isEditing) {
                     inputs.forEach(input => {
-                        originalValues[input.id] = input.value;
-                        input.removeAttribute("readonly");
+                        originalValues[input.id] = originalValues[input.id] || input.value;
+                        input.readOnly = !isEditing;
                     });
-                    editButton.style.display = "none";
-                    saveButton.style.display = "inline-block";
-                    cancelButton.style.display = "inline-block";
+                    editButton.style.display = isEditing ? "none" : "inline-block";
+                    saveButton.style.display = isEditing ? "inline-block" : "none";
+                    cancelButton.style.display = isEditing ? "inline-block" : "none";
+                }
+
+                // Xử lý nút Edit
+                editButton.addEventListener("click", () => toggleEditMode(true));
+
+                // Xử lý nút Cancel
+                cancelButton.addEventListener("click", () => {
+                    inputs.forEach(input => input.value = originalValues[input.id]);
+                    toggleEditMode(false);
                 });
-                cancelButton.addEventListener("click", function () {
-                    // Khôi phục dữ liệu gốc
-                    inputs.forEach(input => {
-                        input.value = originalValues[input.id];
-                        input.setAttribute("readonly", true);
-                    });
-                    editButton.style.display = "inline-block";
-                    saveButton.style.display = "none";
-                    cancelButton.style.display = "none";
-                });
+
+                // Xử lý submit form
                 form.addEventListener("submit", function (event) {
                     event.preventDefault();
-                    const priceInput = document.getElementById("price").value.trim();
-                    const productNameInput = document.getElementById("productName").value.trim();
-                    if (!/^\d+$/.test(priceInput) || priceInput === "") {
-                        alert("Product price must be a positive integer and must not contain special characters!");
+                    const price = document.getElementById("price").value.trim();
+                    const productName = document.getElementById("productName").value.trim();
+
+                    if (!/^\d+$/.test(price) || price === "" || parseInt(price) <= 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Price',
+                            text: 'Price must be a positive integer!'
+                        });
                         return;
                     }
-                    inputs.forEach(input => input.removeAttribute("readonly"));
+
                     const formData = new FormData(form);
                     fetch("<c:url value='/ManageProduct'/>", {
                         method: "POST",
@@ -337,185 +351,179 @@
                     })
                             .then(response => response.text())
                             .then(data => {
-                                if (data.trim() === "DuplicateName") {
-                                    alert("The product name already exists. Please choose a different name.");
-                                } else if (data.trim() === "InvalidPrice") {
-                                    alert("Product price must be a positive integer!");
-                                } else if (data.trim() === "Success") {
-                                    alert("Product updated successfully!");
-                                    location.reload();
+                                const trimmedData = data.trim();
+                                if (trimmedData === "DuplicateName") {
+                                    Swal.fire({icon: 'error', title: 'Duplicate Name', text: 'Product name already exists.'});
+                                } else if (trimmedData === "InvalidPrice") {
+                                    Swal.fire({icon: 'error', title: 'Invalid Price', text: 'Price must be a positive integer!'});
+                                } else if (trimmedData === "Success") {
+                                    Swal.fire({icon: 'success', title: 'Success!', text: 'Product updated successfully!', timer: 1500, showConfirmButton: false})
+                                            .then(() => location.reload());
                                 } else {
-                                    alert("Error updating product. Please try again.");
+                                    Swal.fire({icon: 'error', title: 'Error', text: 'Error updating product.'});
                                 }
                             })
                             .catch(error => {
-                                console.error("Error updating product:", error);
-                                alert("An error occurred while sending the request. Please try again!");
+                                console.error("Error:", error);
+                                Swal.fire({icon: 'error', title: 'Error', text: 'Failed to send request. Please try again.'});
                             });
                 });
+
+                // Xử lý click thumbnail
                 thumbnails.forEach(thumbnail => {
                     thumbnail.addEventListener("click", function () {
                         mainImage.src = this.src;
-
                         thumbnails.forEach(img => img.classList.remove("active"));
-
                         this.classList.add("active");
                     });
                 });
+
+                // Xử lý thay đổi trạng thái sale
                 isSaleDropdown.addEventListener("change", function () {
-                    let newStatus = this.value === "true";
-                    let confirmation = confirm(`Are you sure you want to change the sale status to ${newStatus ? "On Sale" : "Not On Sale"}?`);
-
-                    if (!confirmation) {
-                        this.value = this.value === "true" ? "false" : "true";
-                        return;
-                    }
-
-                    let formData = new URLSearchParams();
-                    formData.append("productID", "${product.productID}");
-                    formData.append("isSale", newStatus);
-                    formData.append("action", "updateSaleStatus");
-
-                    fetch("<c:url value='/ManageProduct'/>", {
-                        method: "POST",
-                        body: formData
-                    })
-                            .then(response => response.text())
-                            .then(data => {
-                                if (data.trim() === "Success") {
-                                    alert("Sale status updated successfully!");
-                                } else {
-                                    alert("Failed to update sale status.");
-                                    this.value = this.value === "true" ? "false" : "true"; // Khôi phục trạng thái nếu lỗi
-                                }
-                            })
-                            .catch(error => {
-                                console.error("Error updating sale status:", error);
-                                this.value = this.value === "true" ? "false" : "true"; // Khôi phục trạng thái nếu lỗi
+                    const newStatus = this.value === "true";
+                    Swal.fire({
+                        title: 'Confirm Status Change',
+                        text: `Are you sure you want to change the sale status to ${newStatus ? "On Sale" : "Not On Sale"}?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, change it!'
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            const saleFormData = new URLSearchParams({
+                                action: "updateSaleStatus",
+                                productID: form.querySelector("[name='productID']").value,
+                                isSale: newStatus
                             });
-                });
-                let priceInput = document.getElementById("price");
-                let priceValue = parseFloat(priceInput.value);
-                if (Number.isInteger(priceValue)) {
-                    priceInput.value = priceValue;
-                }
-            });
-            function deleteImage(imgID, btnElement) {
-                if (confirm("Are you sure you want to delete this image?")) {
-                    fetch("ManageProduct?action=deleteImage", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        },
-                        body: "imgID=" + encodeURIComponent(imgID)
-                    })
-                            .then(response => response.text())
-                            .then(result => {
-                                if (result.trim() === "success") {
-                                    // Xóa ảnh khỏi giao diện
-                                    let imgWrapper = btnElement.closest(".img-wrapper");
-                                    imgWrapper.remove();
-
-                                    // Nếu ảnh bị xóa là ảnh đang hiển thị lớn, cập nhật ảnh lớn mới
-                                    let mainImage = document.getElementById("mainImage");
-                                    if (mainImage.src === imgWrapper.querySelector(".thumbnail-img").src) {
-                                        let remainingImages = document.querySelectorAll(".thumbnail-container .thumbnail-img");
-                                        if (remainingImages.length > 0) {
-                                            mainImage.src = remainingImages[0].src; // Chọn ảnh đầu tiên còn lại
+                            fetch("<c:url value='/ManageProduct'/>", {
+                                method: "POST",
+                                body: saleFormData
+                            })
+                                    .then(response => response.text())
+                                    .then(data => {
+                                        if (data.trim() === "Success") {
+                                            Swal.fire({icon: 'success', title: 'Success!', text: 'Sale status updated!', timer: 1500, showConfirmButton: false});
                                         } else {
-                                            mainImage.src = ""; // Không còn ảnh nào
+                                            this.value = newStatus ? "false" : "true";
+                                            Swal.fire({icon: 'error', title: 'Error', text: 'Failed to update sale status.'});
                                         }
-                                    }
-                                } else {
-                                    alert("Failed to delete image.");
-                                }
+                                    })
+                                    .catch(error => {
+                                        this.value = newStatus ? "false" : "true";
+                                        Swal.fire({icon: 'error', title: 'Error', text: 'Failed to send request.'});
+                                    });
+                        } else {
+                            this.value = newStatus ? "false" : "true";
+                        }
+                    });
+                });
+
+                // Xử lý xóa ảnh
+                window.deleteImage = function (imgID, btnElement) { // Đặt trong window để gọi từ HTML
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            fetch("ManageProduct?action=deleteImage", {
+                                method: "POST",
+                                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                                body: "imgID=" + encodeURIComponent(imgID)
                             })
-                            .catch(error => console.error("Error deleting image:", error));
-                }
-            }
-            document.getElementById("productImages").addEventListener("change", function (event) {
-                let files = event.target.files;
-                let previewContainer = document.getElementById("previewContainer");
-                let hiddenFileInput = document.getElementById("hiddenFileInput");
+                                    .then(response => response.text())
+                                    .then(result => {
+                                        if (result.trim() === "success") {
+                                            const imgWrapper = btnElement.closest(".img-wrapper");
+                                            imgWrapper.remove();
+                                            if (mainImage.src === imgWrapper.querySelector(".thumbnail-img").src) {
+                                                const remainingImages = document.querySelectorAll(".thumbnail-container .thumbnail-img");
+                                                mainImage.src = remainingImages.length > 0 ? remainingImages[0].src : "";
+                                            }
+                                            Swal.fire({icon: 'success', title: 'Deleted!', text: 'Image deleted.', timer: 1500, showConfirmButton: false});
+                                        } else {
+                                            Swal.fire({icon: 'error', title: 'Error', text: 'Failed to delete image.'});
+                                        }
+                                    });
+                        }
+                    });
+                };
 
-                let dataTransfer = new DataTransfer();
+                // Xử lý xem trước ảnh
+                productImagesInput.addEventListener("change", function (event) {
+                    const files = event.target.files;
+                    const dataTransfer = new DataTransfer();
+                    Array.from(hiddenFileInput.files).forEach(file => dataTransfer.items.add(file));
 
-                Array.from(hiddenFileInput.files).forEach(file => dataTransfer.items.add(file));
-
-                Array.from(files).forEach(file => {
-                    if (file.type.startsWith("image/")) {
-                        let reader = new FileReader();
-
-                        reader.onload = function (e) {
-                            let imgContainer = document.createElement("div");
-                            imgContainer.classList.add("img-preview-container");
-
-                            let img = document.createElement("img");
-                            img.src = e.target.result;
-                            img.classList.add("preview-image");
-
-                            let removeBtn = document.createElement("button");
-                            removeBtn.innerHTML = "X";
-                            removeBtn.classList.add("remove-btn");
-
-                            removeBtn.onclick = function () {
-                                imgContainer.remove();
-
-                                let newFileList = Array.from(dataTransfer.files).filter(f => f.name !== file.name);
-                                let newDataTransfer = new DataTransfer();
-                                newFileList.forEach(f => newDataTransfer.items.add(f));
-
-                                hiddenFileInput.files = newDataTransfer.files;
+                    Array.from(files).forEach(file => {
+                        if (file.type.startsWith("image/")) {
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                const imgContainer = document.createElement("div");
+                                imgContainer.classList.add("img-preview-container");
+                                imgContainer.innerHTML = `
+                        <img src="${e.target.result}" class="preview-image">
+                        <button class="remove-btn">X</button>
+                    `;
+                                imgContainer.querySelector(".remove-btn").onclick = () => {
+                                    imgContainer.remove();
+                                    const newFileList = Array.from(dataTransfer.files).filter(f => f.name !== file.name);
+                                    dataTransfer.files = newFileList;
+                                    hiddenFileInput.files = dataTransfer.files;
+                                };
+                                previewContainer.appendChild(imgContainer);
                             };
-
-                            imgContainer.appendChild(img);
-                            imgContainer.appendChild(removeBtn);
-                            previewContainer.appendChild(imgContainer);
-                        };
-
-                        reader.readAsDataURL(file);
-                        dataTransfer.items.add(file);
-                    } else {
-                        alert("Only file image!");
-                    }
+                            reader.readAsDataURL(file);
+                            dataTransfer.items.add(file);
+                        } else {
+                            Swal.fire({icon: 'error', title: 'Invalid File', text: 'Only image files are allowed!'});
+                        }
+                    });
+                    hiddenFileInput.files = dataTransfer.files;
+                    event.target.value = "";
                 });
 
-                hiddenFileInput.files = dataTransfer.files;
+                // Xử lý thay đổi trạng thái biến thể
+                statusDropdowns.forEach(dropdown => {
+                    dropdown.addEventListener("change", function () {
+                        const variantID = this.getAttribute("data-variant-id");
+                        const status = this.value === "true";
+                        const formData = new URLSearchParams({
+                            variantID: variantID,
+                            status: status,
+                            action: "updateVariantStatus"
+                        });
 
-                event.target.value = "";
-            });
-
-            document.querySelectorAll(".status-dropdown").forEach(dropdown => {
-                dropdown.addEventListener("change", function () {
-                    let variantID = this.getAttribute("data-variant-id");
-                    let status = this.value === "true";
-                    let formData = new URLSearchParams();
-                    formData.append("variantID", variantID);
-                    formData.append("status", status);
-                    formData.append("action", "updateVariantStatus");
-                    fetch("<c:url value='/ManageProduct'/>", {
-                        method: "POST",
-                        body: formData
-                    })
-                            .then(response => response.text())
-                            .then(data => {
-                                console.log("Response:", data);
-                                if (data.trim() === "Success") {
-                                    alert("Status updated successfully!");
-                                } else {
-                                    alert("Failed to update status");
-                                }
-                            })
-                            .catch(error => console.error("Error updating status:", error));
+                        fetch("<c:url value='/ManageProduct'/>", {
+                            method: "POST",
+                            body: formData
+                        })
+                                .then(response => response.text())
+                                .then(data => {
+                                    if (data.trim() === "Success") {
+                                        Swal.fire({icon: 'success', title: 'Success!', text: 'Status updated!', timer: 1500, showConfirmButton: false});
+                                    } else {
+                                        Swal.fire({icon: 'error', title: 'Error', text: 'Failed to update status.'});
+                                    }
+                                })
+                                .catch(error => {
+                                    Swal.fire({icon: 'error', title: 'Error', text: 'Failed to send request.'});
+                                });
+                    });
                 });
-            });
-            document.getElementById("price").addEventListener("keypress", function (event) {
-                if (!/[0-9]/.test(event.key)) {
-                    event.preventDefault();
-                }
+
+                // Validation cho input price
+                document.getElementById("price").addEventListener("input", function (event) {
+                    this.value = this.value.replace(/[^0-9]/g, "");
+                });
             });
         </script>
-        
+
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
     </body>
 </html>

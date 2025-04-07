@@ -149,12 +149,12 @@ public class TypeController extends HttpServlet {
 
                 if (typeName == null || typeName.trim().isEmpty() || categoryID == null || categoryID.trim().isEmpty()) {
                     request.setAttribute("error", "Please enter your data.");
-                    request.getRequestDispatcher("/View/CreateType.jsp").forward(request, response);
+                    request.getRequestDispatcher("/Type?action=create").forward(request, response);
                     return;
                 }
 
                 if (typeDAO.isTypeNameExists(typeName)) {
-
+                    
                     response.sendRedirect(request.getContextPath() + "/Type?action=create");
                     request.setAttribute("error", "Type name already exists.");
                     return;
@@ -180,6 +180,12 @@ public class TypeController extends HttpServlet {
                         || typeID.trim().isEmpty() || updatedTypeName.trim().isEmpty() || updatedCategoryID.trim().isEmpty()) {
                     request.setAttribute("error", "Please fill in all fields.");
                     request.getRequestDispatcher("/View/EditType.jsp").forward(request, response);
+                    return;
+                }
+                
+                if (typeDAO.isTypeNameExists(updatedTypeName) && !typeDAO.getOnlyById(typeID).getTypeName().equals(updatedTypeName)) {
+                    request.setAttribute("error", "Type name already exists.");
+                    request.getRequestDispatcher("/Type?action=list").forward(request, response);
                     return;
                 }
 

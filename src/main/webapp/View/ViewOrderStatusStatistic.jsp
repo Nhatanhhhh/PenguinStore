@@ -6,6 +6,7 @@
 <html>
     <head>
         <title>Purchase Statistic</title>
+        <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
@@ -46,49 +47,46 @@
                     <select name="timeUnit" onchange="this.form.submit()">
                         <option value="day" ${timeUnit == 'day' ? 'selected' : ''}>Day</option>
                         <option value="month" ${timeUnit == 'month' ? 'selected' : ''}>Month</option>
-                         <option value="year" ${timeUnit == 'year' ? 'selected' : ''}>Year</option>
+                        <option value="year" ${timeUnit == 'year' ? 'selected' : ''}>Year</option>
                     </select>
                 </form>
-                    
+
                 <canvas id="orderChart" width="400" height="100"></canvas>
-                
+
                 <div class="container">
                     <c:choose>
                         <c:when test="${not empty topCustomers}">
-                           
-                                <table border="1">
+
+                            <table border="1">
+                                <tr>
+                                    <th>Completed Orders</th>
+                                    <th>Delivery Failed</th>
+                                    <th>Canceled Orders</th>
+                                </tr>
+
+                                <c:forEach var="i" begin="0" end="2"> 
                                     <tr>
-                                        <th>Completed Orders</th>
-                                        <th>Delivery Failed</th>
-                                        <th>Canceled Orders</th>
+                                        <td>
+                                            <c:if test="${i < fn:length(topCustomersCompleted)}">
+                                                <c:out value="${topCustomersCompleted[i]}" />
+
+                                            </c:if>
+                                        </td>
+                                        <td>
+                                            <c:if test="${i < fn:length(topCustomersFailed)}">
+                                                <c:out value="${topCustomersFailed[i]}" />
+
+                                            </c:if>
+                                        </td>
+                                        <td>
+                                            <c:if test="${i < fn:length(topCustomersCanceled)}">
+                                                <c:out value="${topCustomersCanceled[i]}" />
+
+                                            </c:if>
+                                        </td>
                                     </tr>
+                                </c:forEach>
 
-                                    <c:forEach var="i" begin="0" end="2"> 
-                                        <tr>
-                                            <td>
-                                                <c:if test="${i < fn:length(topCustomersCompleted)}">
-                                                    <c:out value="${topCustomersCompleted[i]}" />
-                                                     
-                                                </c:if>
-                                            </td>
-                                            <td>
-                                                <c:if test="${i < fn:length(topCustomersFailed)}">
-                                                    <c:out value="${topCustomersFailed[i]}" />
-                                                    
-                                                </c:if>
-                                            </td>
-                                            <td>
-                                                <c:if test="${i < fn:length(topCustomersCanceled)}">
-                                                    <c:out value="${topCustomersCanceled[i]}" />
-                                                   
-                                                </c:if>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </table>
-
-
-                               
                                 <tr>
                                     <td><c:out value="${completedOrders}" escapeXml="false" /></td>
                                     <td><c:out value="${deliveryFailed}" escapeXml="false" /></td>
@@ -103,9 +101,9 @@
 
 
                 </div>
-                
+
                 <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
-                
+
                 <script>
                     var labels = [];
                     var completedOrders = [];
@@ -113,10 +111,10 @@
                     var canceledOrders = [];
 
                     <c:forEach var="stat" items="${statistics}">
-                        labels.push("${stat.orderDate}");
-                        completedOrders.push(${stat.completedOrders});
-                        deliveryFailed.push(${stat.deliveryFailed});
-                        canceledOrders.push(${stat.canceledOrders});
+                    labels.push("${stat.orderDate}");
+                    completedOrders.push(${stat.completedOrders});
+                    deliveryFailed.push(${stat.deliveryFailed});
+                    canceledOrders.push(${stat.canceledOrders});
                     </c:forEach>
 
                     var ctx = document.getElementById('orderChart').getContext('2d');

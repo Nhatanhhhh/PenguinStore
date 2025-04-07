@@ -97,6 +97,21 @@
                             </ul>
                         </li>
 
+                        <!-- ChatBOT Dropdown -->
+                        <li class="nav-item">
+                            <a href="#chatbotMenu" class="nav-link dropdown-toggle" data-bs-toggle="collapse">
+                                <strong>ChatBOT History</strong>
+                            </a>
+                            <ul id="chatbotMenu" class="nav flex-column collapse">
+                                <li>
+                                    <a class="nav-link ${param.action == 'list' or empty param.action ? 'active' : ''}" 
+                                       href="<c:url value='/ChatBotHistory'/>"> <!-- Bỏ ?action=list -->
+                                        ChatBOT History
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
                         <!-- Statistic Dropdown -->
                         <li class="nav-item">
                             <a href="#statisticMenu" class="nav-link dropdown-toggle" data-bs-toggle="collapse">

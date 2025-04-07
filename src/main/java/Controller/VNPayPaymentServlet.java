@@ -4,6 +4,7 @@ import DAOs.CartDAO;
 import Models.CartItem;
 import Models.Customer;
 import Models.TempOrder;
+import Models.UsedVoucher;
 import com.vnpay.common.Config;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -50,6 +51,19 @@ public class VNPayPaymentServlet extends HttpServlet {
                 return;
             }
 
+            double discountAmount = 0.0;
+            UsedVoucher usedVoucher = (UsedVoucher) session.getAttribute("useVoucher");
+            if (usedVoucher != null && usedVoucher.getDiscountAmount() != 0) {
+                discountAmount += usedVoucher.getDiscountAmount();
+            }
+
+            String voucherID = null;
+            if (usedVoucher != null
+                    && usedVoucher.getVoucherID() != null
+                    && !usedVoucher.getVoucherID().isEmpty()) {
+                voucherID = usedVoucher.getVoucherID();
+            }
+
             // Lấy tổng tiền từ request hoặc tính toán lại
             String totalAmountParam = request.getParameter("amount");
             double totalAmount;
@@ -62,6 +76,8 @@ public class VNPayPaymentServlet extends HttpServlet {
                         .sum();
             }
 
+            double subtotal = totalAmount + discountAmount - 40000;
+
             // Lưu thông tin giỏ hàng vào session để sử dụng sau khi thanh toán
             session.setAttribute("vnpay_cart", cartItems);
             session.setAttribute("vnpay_customer", customer);
@@ -70,11 +86,13 @@ public class VNPayPaymentServlet extends HttpServlet {
             session.setAttribute("tempOrder", new TempOrder(
                     customer.getCustomerID(),
                     cartItems,
-                    null, // voucherID if available  
-                    totalAmount, // subtotal
-                    0, // discount
+                    voucherID, // voucherID if available  
+                    subtotal, // subtotal
+                    discountAmount, // discount
                     totalAmount // total
             ));
+
+            session.removeAttribute("useVoucher");
 
             // Chuẩn bị tham số cho VNPay
             String vnp_Version = "2.1.0";
