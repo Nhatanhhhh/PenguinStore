@@ -182,9 +182,9 @@
                                         <div style="width: 25px; height: 25px; border-radius: 50%; border: 2px solid gray; background-color: ${restock.colorName}; margin: auto;"></div>
                                     </td>
                                     <td>${restock.quantity}</td>
-                                    <td><fmt:formatNumber value="${restock.price}" pattern="#,###" /> ₫</td>
-                                <td><fmt:formatNumber value="${restock.totalCost}" pattern="#,###" /> ₫</td>
-                                <td>${restock.restockDay}</td>
+                                    <td><fmt:formatNumber value="${restock.price}" pattern="#,###" /> VND</td>
+                                    <td><fmt:formatNumber value="${restock.totalCost}" pattern="#,###" /> VND</td>
+                                    <td>${restock.restockDay}</td>
                                 </tr>
                             </c:forEach>
                         </table>

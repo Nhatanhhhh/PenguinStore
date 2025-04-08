@@ -391,7 +391,7 @@
         <section id="featured-products" class="container py-5 animate__animated animate__fadeInUp">
             <h2 class="section-title text-center mb-5">Featured Products</h2>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="productList">
-                <c:forEach var="product" items="${listProduct}">
+                <c:forEach var="product" items="${listProduct}" varStatus="loop" begin="0" end="8">
                     <div class="col mt-5">
                         <div class="product-card h-100">
                             <c:if test="${not empty product.imgName}">

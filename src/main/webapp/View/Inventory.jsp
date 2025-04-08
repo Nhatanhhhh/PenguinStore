@@ -4,6 +4,7 @@
     Author     : Huynh Cong Nghiem - CE181351
 --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -173,7 +174,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label><strong>Price:</strong></label>
-                                        <p class="text-muted">${product.price}</p>
+                                        <p class="text-muted"><fmt:formatNumber value="${product.price}" pattern="#,###" /> </p>
                                     </div>
                                     <div class="form-group">
                                         <label><strong>Category:</strong></label>

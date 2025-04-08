@@ -51,6 +51,7 @@
                     <select name="timeUnit" onchange="this.form.submit()">
                         <option value="day" ${timeUnit == 'day' ? 'selected' : ''}>Day</option>
                         <option value="month" ${timeUnit == 'month' ? 'selected' : ''}>Month</option>
+                        <option value="year" ${timeUnit == 'year' ? 'selected' : ''}>Year</option>
                     </select>
                 </form>
                 <div class="container">

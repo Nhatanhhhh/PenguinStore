@@ -13,7 +13,7 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
-        <title>Edit Voucher</title>
+        <title>Edit Type</title>
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/base.css"/>
@@ -110,7 +110,7 @@
 
 
                 if (minOrderValue < 0 || discountAmount < 0) {
-                    alert("Minimum Order Value values. Please re-enter!");
+                    alert("Các giá trị Minimum Order Value. Vui lòng nhập lại!");
                     return;
                 }
 

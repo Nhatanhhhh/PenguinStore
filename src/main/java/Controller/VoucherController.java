@@ -223,7 +223,7 @@ public class VoucherController extends HttpServlet {
             break;
 
             case "send":
-                try {
+    try {
                 String voucherID = request.getParameter("voucherID");
                 String voucherSelection = request.getParameter("voucherSelection");
 
@@ -235,26 +235,30 @@ public class VoucherController extends HttpServlet {
                 }
 
                 if (voucher.getValidUntil().isBefore(LocalDate.now())) {
-                    request.setAttribute("errorMessage", "Voucher has expired.");
+                    request.setAttribute("errorMessage", "Voucher has expired and cannot be sent.");
                     request.getRequestDispatcher("/Voucher?action=list").forward(request, response);
                     return;
                 }
 
                 EmailService emailService = new EmailService();
-                ArrayList<String> customerEmails;
+                ArrayList<String> customerEmails = new ArrayList<>();
 
+                // Determine the list of customers to send the voucher to
                 if ("all".equals(voucherSelection)) {
                     customerEmails = voucherDAO.getAllCustomerEmails();
-                } else {
+                } else if ("specific".equals(voucherSelection)) {
                     String[] selectedCustomers = request.getParameterValues("selectedCustomers");
-                    customerEmails = new ArrayList<>();
-                    if (selectedCustomers != null) {
+                    if (selectedCustomers != null && selectedCustomers.length > 0) {
                         customerEmails.addAll(Arrays.asList(selectedCustomers));
+                    } else {
+                        request.setAttribute("errorMessage", "Please select at least one customer.");
+                        request.getRequestDispatcher("/Voucher?action=list").forward(request, response);
+                        return;
                     }
                 }
 
                 if (customerEmails.isEmpty()) {
-                    request.setAttribute("errorMessage", "No customers selected.");
+                    request.setAttribute("errorMessage", "No customer selected to send the voucher to.");
                     request.getRequestDispatcher("/Voucher?action=list").forward(request, response);
                     return;
                 }
@@ -266,13 +270,13 @@ public class VoucherController extends HttpServlet {
                 UUID voucherUUID = UUID.fromString(voucherID);
 
                 for (String email : customerEmails) {
-                    // Kiểm tra xem voucher đã được gửi cho email này chưa
+                    // Check if the voucher has already been sent to this customer
                     if (voucherDAO.isVoucherSentToCustomer(voucherUUID, email)) {
                         alreadySentEmails.add(email);
                         continue;
                     }
 
-                    // Gửi email
+                    // Send email
                     boolean isSent = emailService.sendVoucherEmail(
                             email,
                             voucher.getVoucherCode(),
@@ -283,7 +287,7 @@ public class VoucherController extends HttpServlet {
                     );
 
                     if (isSent) {
-                        // Lưu vào bảng UsedVoucher
+                        // Save to UsedVoucher table
                         boolean isSaved = voucherDAO.insertUsedVoucher(voucherUUID, email);
                         if (isSaved) {
                             successCount++;
@@ -295,16 +299,16 @@ public class VoucherController extends HttpServlet {
                     }
                 }
 
-                // Thiết lập thông báo
+                // Set success and error messages
                 if (successCount > 0) {
-                    request.setAttribute("successMessage", "Sent to " + successCount + " customers successfully.");
+                    request.setAttribute("successMessage", "Successfully sent the voucher to " + successCount + " customer(s).");
                 }
                 StringBuilder errorMessage = new StringBuilder();
                 if (!failedEmails.isEmpty()) {
-                    errorMessage.append("Failed to send to ").append(failedEmails.size()).append(" customers: ").append(failedEmails.toString()).append(". ");
+                    errorMessage.append("Failed to send the voucher to ").append(failedEmails.size()).append(" customer(s): ").append(String.join(", ", failedEmails)).append(". ");
                 }
                 if (!alreadySentEmails.isEmpty()) {
-                    errorMessage.append("Voucher already sent to ").append(alreadySentEmails.size()).append(" customers: ").append(alreadySentEmails.toString()).append(".");
+                    errorMessage.append("The voucher has already been sent to ").append(alreadySentEmails.size()).append(" customer(s): ").append(String.join(", ", alreadySentEmails)).append(".");
                 }
                 if (errorMessage.length() > 0) {
                     request.setAttribute("errorMessage", errorMessage.toString());
@@ -313,7 +317,7 @@ public class VoucherController extends HttpServlet {
                 request.getRequestDispatcher("/Voucher?action=list").forward(request, response);
 
             } catch (Exception e) {
-                request.setAttribute("errorMessage", "Error sending vouchers: " + e.getMessage());
+                request.setAttribute("errorMessage", "Error sending voucher: " + e.getMessage());
                 request.getRequestDispatcher("/Voucher?action=list").forward(request, response);
             }
             break;

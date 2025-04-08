@@ -40,7 +40,7 @@ public class HomePageController extends HttpServlet {
             throws ServletException, IOException {
         ProductDAO productDAO = new ProductDAO();
         TypeDAO typeDAO = new TypeDAO();
-        request.setAttribute("listProduct", productDAO.getProductCustomer());
+        request.setAttribute("listProduct", productDAO.getProduct());
         List<Type> listType = typeDAO.getAll();
         Map<String, List<Type>> categoryMap = new LinkedHashMap<>();
         for (Type type : listType) {

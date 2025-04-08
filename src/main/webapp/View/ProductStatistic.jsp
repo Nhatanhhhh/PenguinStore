@@ -13,7 +13,7 @@
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
-        <title>Product Import/Export Statistics</title>
+        <title>Product Statistics</title>
         <link rel="icon" type="image/png" href="<%= request.getContextPath()%>/Image/Account/penguin.png">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <style>
@@ -49,6 +49,27 @@
                 top: 0;
             }
 
+            .btn-bestsales {
+                position: absolute;
+                top: 70px;
+                right: 20px;
+                background: linear-gradient(45deg, #ff6b6b, #ffa502);
+                color: white;
+                font-weight: bold;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 8px;
+                box-shadow: 0 4px 10px rgba(255, 107, 107, 0.5);
+                transition: all 0.3s ease-in-out;
+            }
+
+            .btn-bestsales:hover {
+                background: linear-gradient(45deg, #ff4757, #ff9f1a);
+                box-shadow: 0 6px 15px rgba(255, 107, 107, 0.7);
+                transform: translateY(-3px);
+            }
+
+
         </style>
     </head>
     <body>
@@ -66,7 +87,21 @@
                 </div>
                 <div class="col-md-10">
                     <%@include file="Admin/HeaderAD.jsp"%>
-                    <h2 class="text-center">Product Import/Export Statistics</h2>
+                    <h2 class="text-center">Product Statistics</h2>
+
+                    <button type="button" class="btn btn-bestsales" data-bs-toggle="modal" data-bs-target="#bestSalesModal">
+                        Best Sales
+                    </button>
+
+                    <div class="text-center my-3">
+                        <label for="productFilter">Filter by Product:</label>
+                        <select id="productFilter" class="form-select w-auto d-inline-block">
+                            <option value="all">All Products</option>
+                            <c:forEach var="product" items="${productList}">
+                                <option value="${product.productName}">${product.productName}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
 
 
 
@@ -106,31 +141,44 @@
                     </div>
 
 
-                    <h2 class="text-center" style="margin-top: 30px;">Best Selling Products </h2>
-
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Size</th>
-                                    <th>Color</th>
-                                    <th>Quantity Sold</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="product" items="${bestSellingProducts}">
-                                    <tr>
-                                        <td>${product.productName}</td>
-                                        <td>${product.sizeName}</td>
-                                        <td><div style="width: 25px; height: 25px; border-radius: 50%; border: 2px solid gray; background-color: ${product.colorName}; margin: auto;"></div></td>
-
-                                        <td>${product.soldQuantity}</td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
+                    <!-- Best Sales Modal -->
+                    <div class="modal fade" id="bestSalesModal" tabindex="-1" aria-labelledby="bestSalesModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="bestSalesModalLabel">Best Selling Products</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Product</th>
+                                                    <th>Size</th>
+                                                    <th>Color</th>
+                                                    <th>Quantity Sold</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <c:forEach var="product" items="${bestSellingProducts}">
+                                                    <tr>
+                                                        <td>${product.productName}</td>
+                                                        <td>${product.sizeName}</td>
+                                                        <td>
+                                                            <div style="width: 25px; height: 25px; border-radius: 50%; border: 2px solid gray; background-color: ${product.colorName}; margin: auto;"></div>
+                                                        </td>
+                                                        <td>${product.soldQuantity}</td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
 
                     <script>
                         document.addEventListener("DOMContentLoaded", function () {

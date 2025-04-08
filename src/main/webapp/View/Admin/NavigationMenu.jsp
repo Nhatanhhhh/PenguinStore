@@ -26,7 +26,7 @@
                         <!-- Type Dropdown -->
                         <li class="nav-item">
                             <a href="#typeMenu" class="nav-link dropdown-toggle" data-bs-toggle="collapse">
-                                <strong>Type</strong>
+                                <strong><i class="mdi mdi-shape me-2"></i> Type</strong>
                             </a>
                             <ul id="typeMenu" class="nav flex-column collapse">
                                 <li><a class="nav-link" href="<c:url value='/Type?action=list'/>">View Types</a></li>
@@ -37,7 +37,7 @@
                         <!-- Product Dropdown -->
                         <li class="nav-item">
                             <a href="#productMenu" class="nav-link dropdown-toggle" data-bs-toggle="collapse">
-                                <strong>Product</strong>
+                                <strong><i class="bi bi-box-seam me-2"></i> Product</strong>
                             </a>
                             <ul id="productMenu" class="nav flex-column collapse">
                                 <li><a class="nav-link" href="<c:url value='/ManageProduct?action=view'/>">View Products</a></li>
@@ -48,7 +48,7 @@
                         <!-- Staff Dropdown -->
                         <li class="nav-item">
                             <a href="#staffMenu" class="nav-link dropdown-toggle" data-bs-toggle="collapse">
-                                <strong>Staff</strong>
+                                <strong><i class="fa-solid fa-users me-2"></i> Staff</strong>
                             </a>
                             <ul id="staffMenu" class="nav flex-column collapse">
                                 <li><a class="nav-link" href="<c:url value='/Staff?action=list'/>">View Staffs</a></li>
@@ -59,7 +59,7 @@
                         <!-- Order Dropdown -->
                         <li class="nav-item">
                             <a href="#orderMenu" class="nav-link dropdown-toggle" data-bs-toggle="collapse">
-                                <strong>Order</strong>
+                                <strong><i class="lnr lnr-cart me-2"></i> Order</strong>
                             </a>
                             <ul id="orderMenu" class="nav flex-column collapse">
                                 <li><a class="nav-link" href="<c:url value='/OrderManagement'/>">View Orders</a></li>
@@ -69,7 +69,7 @@
                         <!-- Voucher Dropdown -->
                         <li class="nav-item">
                             <a href="#voucherMenu" class="nav-link dropdown-toggle" data-bs-toggle="collapse">
-                                <strong>Voucher</strong>
+                                <strong><i class="bi bi-ticket-perforated me-2"></i> Voucher</strong>
                             </a>
                             <ul id="voucherMenu" class="nav flex-column collapse">
                                 <li><a class="nav-link" href="<c:url value='/Voucher?action=view'/>">View Vouchers</a></li>
@@ -80,7 +80,7 @@
                         <!-- Feedback Dropdown -->
                         <li class="nav-item">
                             <a href="#feedbackMenu" class="nav-link dropdown-toggle" data-bs-toggle="collapse">
-                                <strong>Feedback</strong>
+                                <strong><i class="fa-solid fa-comment-dots me-2"></i> Feedback</strong>
                             </a>
                             <ul id="feedbackMenu" class="nav flex-column collapse">
                                 <li><a class="nav-link" href="ViewListFeedback">View Feedbacks</a></li>
@@ -90,7 +90,7 @@
                         <!-- Customer Dropdown -->
                         <li class="nav-item">
                             <a href="#customerMenu" class="nav-link dropdown-toggle" data-bs-toggle="collapse">
-                                <strong>Customer</strong>
+                                <strong><i class="mdi mdi-account-group me-2"></i> Customer</strong>
                             </a>
                             <ul id="customerMenu" class="nav flex-column collapse">
                                 <li><a class="nav-link" href="<c:url value='/Customer?action=list'/>">View Customers</a></li>
@@ -100,7 +100,7 @@
                         <!-- ChatBOT Dropdown -->
                         <li class="nav-item">
                             <a href="#chatbotMenu" class="nav-link dropdown-toggle" data-bs-toggle="collapse">
-                                <strong>ChatBOT History</strong>
+                                <strong><i class="lnr lnr-bubble me-2"></i> ChatBOT History</strong>
                             </a>
                             <ul id="chatbotMenu" class="nav flex-column collapse">
                                 <li>
@@ -115,7 +115,7 @@
                         <!-- Statistic Dropdown -->
                         <li class="nav-item">
                             <a href="#statisticMenu" class="nav-link dropdown-toggle" data-bs-toggle="collapse">
-                                <strong>Statistic</strong>
+                                <strong><i class="fa-solid fa-chart-line me-2"></i> Statistic</strong>
                             </a>
                             <ul id="statisticMenu" class="nav flex-column collapse">
                                 <li><a class="nav-link" href="<c:url value='/Statistic?action=revenueStatistic'/>">Revenue</a></li>

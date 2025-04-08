@@ -7,6 +7,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -32,25 +33,13 @@
                 <div class="container mt-4">
                     <h2 class="text-center">List Voucher</h2>
 
-                    <!-- Hiển thị thông báo -->
-                    <c:if test="${not empty successMessage}">
-                        <div class="alert alert-success" role="alert">
-                            ${successMessage}
-                        </div>
-                    </c:if>
-                    <c:if test="${not empty errorMessage}">
-                        <div class="alert alert-danger" role="alert">
-                            ${errorMessage}
-                        </div>
-                    </c:if>
-
-                    <!-- Dropdown lọc voucher -->
+                    <!-- Dropdown to filter vouchers -->
                     <div class="mb-3">
                         <label for="voucherFilter" class="form-label">Filter Vouchers:</label>
                         <select id="voucherFilter" class="form-select">
-                            <option value="all">All Voucher</option>
+                            <option value="all">All Vouchers</option>
                             <option value="valid">Still Valid</option>
-                            <option value="expired">Expire</option>
+                            <option value="expired">Expired</option>
                         </select>
                     </div>
 
@@ -80,7 +69,7 @@
                                                 <span style="color: green; font-weight: bold;">Still Valid</span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span style="color: red; font-weight: bold;">Expire</span>
+                                                <span style="color: red; font-weight: bold;">Expired</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
@@ -111,7 +100,7 @@
             </div>
         </div>
 
-        <!-- Modal gửi voucher -->
+        <!-- Modal to send voucher -->
         <div class="modal fade" id="sendVoucherModal" tabindex="-1" aria-labelledby="sendVoucherModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -124,34 +113,34 @@
                             <input type="hidden" id="voucherID" name="voucherID">
 
                             <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="selectAllUsers" name="voucherSelection" value="all" checked onchange="toggleCustomerList()">
+                                <input class="form-check-input" type="radio" id="selectAllUsers" name="voucherSelection" value="all" onchange="toggleCustomerList()">
                                 <label class="form-check-label" for="selectAllUsers">
-                                    Select all Customer
+                                    Send to All Customers
                                 </label>
                             </div>
 
                             <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="selectSpecificUsers" name="voucherSelection" value="specific" onchange="toggleCustomerList()">
+                                <input class="form-check-input" type="radio" id="selectSpecificUsers" name="voucherSelection" value="specific" onchange="toggleCustomerList()">
                                 <label class="form-check-label" for="selectSpecificUsers">
-                                    Select specific Customer
+                                    Send to Specific Customers
                                 </label>
                             </div>
 
-                            <!-- Danh sách customer với checkbox -->
-                            <div id="customerList" style="display: none; max-height: 300px; overflow-y: auto;">
+                            <!-- Customer list with radio buttons (to allow only one selection) -->
+                            <div id="customerList" style="display: block; max-height: 300px; overflow-y: auto;">
                                 <c:choose>
                                     <c:when test="${empty listCusVoucher}">
                                         <p>No customers found.</p>
                                     </c:when>
                                     <c:otherwise>
-                                        <c:forEach items="${listCusVoucher}" var="customer">
+                                        <c:forEach items="${listCusVoucher}" var="customer" varStatus="loop">
                                             <div class="form-check">
                                                 <input class="form-check-input customer-checkbox" 
-                                                       type="checkbox" 
+                                                       type="checkbox"  
                                                        name="selectedCustomers" 
                                                        value="${customer.email}"
-                                                       id="customer_${customer.email}">
-                                                <label class="form-check-label" for="customer_${customer.email}">
+                                                       id="customer_${loop.index}">
+                                                <label class="form-check-label" for="customer_${loop.index}">
                                                     ${customer.customerName} (${customer.email})
                                                 </label>
                                             </div>
@@ -168,7 +157,7 @@
         </div>
 
         <script>
-            // Lọc bảng voucher
+            // Filter voucher table
             document.getElementById("voucherFilter").addEventListener("change", function () {
                 let filterValue = this.value;
                 let rows = document.querySelectorAll("#voucherTable tbody tr");
@@ -186,52 +175,116 @@
                 });
             });
 
-            // Mở modal và gán voucherID
+            // Open modal and set voucherID
             function openSendVoucherModal(voucherID) {
                 document.getElementById("voucherID").value = voucherID;
 
-                // Mở modal
+                // Reset all selections
+                document.getElementById('selectAllUsers').checked = false;
+                document.getElementById('selectSpecificUsers').checked = false;
+                document.getElementById('customerList').style.display = 'none';
+                document.querySelectorAll('.customer-checkbox').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+
+                // Open modal
                 var modal = new bootstrap.Modal(document.getElementById('sendVoucherModal'));
                 modal.show();
             }
 
-            // Toggle danh sách khách hàng và đảm bảo chỉ chọn 1 trong 2 checkbox
+            // Toggle customer list and ensure only one option is selected
             function toggleCustomerList() {
                 const selectAllUsers = document.getElementById('selectAllUsers');
                 const selectSpecificUsers = document.getElementById('selectSpecificUsers');
                 const customerList = document.getElementById('customerList');
 
-                // Đảm bảo chỉ 1 trong 2 checkbox được chọn
-                if (selectAllUsers.checked && selectSpecificUsers.checked) {
-                    if (this === selectAllUsers) {
-                        selectSpecificUsers.checked = false;
-                    } else {
-                        selectAllUsers.checked = false;
-                    }
-                }
-
-                // Hiển thị danh sách khách hàng khi chọn "Select specific users"
+                // Show customer list when "Send to Specific Customer" is checked
                 if (selectSpecificUsers.checked) {
                     customerList.style.display = 'block';
-                } else {
+                    selectAllUsers.checked = false;
+                } else if (selectAllUsers.checked) {
                     customerList.style.display = 'none';
+                    selectSpecificUsers.checked = false;
                     document.querySelectorAll('.customer-checkbox').forEach(checkbox => {
                         checkbox.checked = false;
                     });
+                } else {
+                    customerList.style.display = 'none';
                 }
             }
-
-            // Gán sự kiện onchange cho cả hai checkbox
+            // Attach onchange event to both checkboxes
             document.getElementById('selectAllUsers').addEventListener('change', toggleCustomerList);
             document.getElementById('selectSpecificUsers').addEventListener('change', toggleCustomerList);
 
-            // Xác nhận trước khi gửi
+            // Validate form before submission
             document.getElementById("sendVoucherForm").addEventListener("submit", function (event) {
                 event.preventDefault();
-                let confirmation = confirm("Are you sure you want to send this voucher?");
-                if (confirmation) {
-                    this.submit();
+
+                const selectAllUsers = document.getElementById('selectAllUsers');
+                const selectSpecificUsers = document.getElementById('selectSpecificUsers');
+                const customerCheckboxes = document.querySelectorAll('.customer-checkbox:checked');
+
+                // Validation: Ensure at least one option is selected
+                if (!selectAllUsers.checked && !selectSpecificUsers.checked) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Please select an option: Send to all customers or specific customers.',
+                    });
+                    return;
                 }
+
+                // Validation: If specific customer is selected, ensure at least one customer is chosen
+                if (selectSpecificUsers.checked && customerCheckboxes.length === 0) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Please select at least one customer to send the voucher to.',
+                    });
+                    return;
+                }
+
+                // Confirm before sending
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to send this voucher?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, send it!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
+
+            // Display success/error messages using SweetAlert
+            <c:if test="${not empty successMessage}">
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '${successMessage}',
+                confirmButtonText: 'OK'
+            });
+            </c:if>
+            <c:if test="${not empty errorMessage}">
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '${errorMessage}',
+                confirmButtonText: 'OK'
+            });
+            </c:if>
+
+            $('#sendVoucherModal').on('hidden.bs.modal', function () {
+                document.getElementById("sendVoucherForm").reset();
+                document.getElementById('customerList').style.display = 'none';
+                document.querySelectorAll('.customer-checkbox').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
             });
         </script>
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>

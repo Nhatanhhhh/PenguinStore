@@ -96,12 +96,29 @@
                 <form action="Statistic" method="get">
                     <input type="hidden" name="action" value="revenueStatistic">
                     <label for="timeUnit">Select the time period:</label>
-                    <select name="timeUnit" onchange="this.form.submit()">
+                    <select name="timeUnit" id="timeUnit" onchange="this.form.submit(); handleTimeUnitChange();">
+
                         <option value="day" ${timeUnit == 'day' ? 'selected' : ''}>Day</option>
-                        <option value="month" ${timeUnit == 'month' ? 'selected' : ''}>Month</option>
+                        <option value="week" ${timeUnit == 'week' ? 'selected' : ''}>Week</option>
+                        <option value="month" ${timeUnit == 'month' ? 'selected' : ''}>Month of the Year</option>
                         <option value="year" ${timeUnit == 'year' ? 'selected' : ''}>Year</option>
+                        <option value="custom" ${timeUnit == 'custom' ? 'selected' : ''}>Custom Range</option>
                     </select>
+
+
+                    <div id="customDateRange" style="display: none;">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate" name="startDate" value="${startDate}">
+
+                        <label for="endDate">End Date:</label>
+                        <input type="date" id="endDate" name="endDate" value="${endDate}">
+
+                        <button type="submit">Filter</button>
+                        <button type="button" onclick="resetForm()">Reset</button>
+                    </div>
                 </form>
+
+
                 <div class="container">
                     <c:choose>
                         <c:when test="${not empty revenuelist}">
@@ -119,7 +136,7 @@
                                     <c:forEach var="stat" items="${revenuelist}">
                                         <tr>
                                             <td>${stat.timePeriod}</td> 
-                                            <td><fmt:formatNumber value="${stat.revenue}" pattern="#,###" /> ₫</td>
+                                            <td><fmt:formatNumber value="${stat.revenue}" pattern="#,###" /> VND</td>
                                         </tr>
                                         <c:set var="totalRevenue" value="${totalRevenue + stat.revenue}"/>
 
@@ -127,52 +144,81 @@
                                 </table>
                             </div>
 
-                            <h3>Total Revenue: <fmt:formatNumber value="${totalRevenue}" pattern="#,###" /> ₫</h3>
+                            <h3>Total Revenue: <fmt:formatNumber value="${totalRevenue}" pattern="#,###" /> VND</h3>
                         </c:when>
                         <c:otherwise>
                             <p>There are no statistical data for this time period.</p>
                         </c:otherwise>
                     </c:choose>
                 </div>
-            </div>
-        </div>
-        <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
-        <!-- Thêm SheetJS (xlsx) và jsPDF -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-        <script>
 
-                var labels = [];
-                var revenueData = [];
+                <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
 
-            <c:forEach var="stat" items="${revenuelist}">
-                labels.push("${stat.timePeriod}");
-                revenueData.push(${stat.revenue});
-            </c:forEach>
+                <script>
+                    function handleTimeUnitChange() {
+                        var timeUnit = document.getElementById("timeUnit").value;
+                        var customDateRange = document.getElementById("customDateRange");
 
-
-                var ctx = document.getElementById('revenueChart').getContext('2d');
-                var revenueChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                                label: 'Revenue (VND)',
-                                data: revenueData,
-                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                borderColor: 'rgba(75, 192, 192, 1)',
-                                borderWidth: 1
-                            }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
+                        if (timeUnit === "custom") {
+                            customDateRange.style.display = "block";
+                        } else {
+                            customDateRange.style.display = "none";
                         }
                     }
-                });
-        </script>
+
+                    function resetForm() {
+                        window.location.href = "Statistic?action=revenueStatistic"; // Thay bằng URL bạn muốn điều hướng đến
+                    }
+
+
+                    window.onload = function () {
+                        handleTimeUnitChange();
+                    };
+
+                </script>
+
+                <script>
+
+                    var labels = [];
+                    var revenueData = [];
+
+                    <c:forEach var="stat" items="${revenuelist}">
+                    labels.push("${stat.timePeriod}");
+                    revenueData.push(${stat.revenue});
+                    </c:forEach>
+
+
+                    var ctx = document.getElementById('revenueChart').getContext('2d');
+                    var revenueChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                    label: 'Revenue (VND)',
+                                    data: revenueData,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    borderWidth: 1
+                                }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    min: 0,
+                                    ticks: {
+                                        stepSize: 200000, // Chia step 100,000 VND
+                                        callback: function (value) {
+                                            return value.toLocaleString() + ' ₫'; // Hiển thị số có dấu phẩy
+                                        }
+                                    },
+                                    suggestedMax: Math.ceil(Math.max(...revenueData) / 500000) * 500000
+                                }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+        </div>
     </body>
 </html>

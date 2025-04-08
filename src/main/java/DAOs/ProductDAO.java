@@ -56,6 +56,35 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
+    
+    public ArrayList<Product> getProduct() {
+        ArrayList<Product> products = new ArrayList<>();
+        String sql = "SELECT p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName, \n"
+                + "       STRING_AGG(i.imgName, ', ') AS imgName\n"
+                + "FROM Product p\n"
+                + "JOIN TypeProduct tp ON p.typeID = tp.typeID\n"
+                + "JOIN Category c ON tp.categoryID = c.categoryID\n"
+                + "LEFT JOIN Image i ON p.productID = i.productID\n"
+                + "WHERE p.isSale = 1\n"
+                + "GROUP BY p.productID, p.productName, p.description, p.price, tp.typeName, c.categoryName, p.dateCreate\n"
+                + "ORDER BY p.dateCreate DESC;";
+        try ( ResultSet rs = execSelectQuery(sql)) {
+            while (rs.next()) {
+                String productID = rs.getString("productID");
+                String productName = rs.getString("productName");
+                String description = rs.getString("description");
+                double price = rs.getDouble("price");
+                String typeName = rs.getString("typeName");
+                String categoryName = rs.getString("categoryName");
+                String imgName = rs.getString("imgName");
+                Product product = new Product(productID, productName, description, price, typeName, categoryName, imgName);
+                products.add(product);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, "Error get product", ex);
+        }
+        return products;
+    }
 
     public ArrayList<Product> getProductCustomer() {
         ArrayList<Product> products = new ArrayList<>();

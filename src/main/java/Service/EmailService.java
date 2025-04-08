@@ -237,6 +237,21 @@ public class EmailService {
         }
     }
 
+    public boolean sendVoucherEmail(String recipientEmail, String voucherCode, Double discountAmount, Double minOrderValue) throws UnsupportedEncodingException {
+        String emailContent = "<html><body>"
+                + "<h2>🎉 Congratulations!</h2>"
+                + "<p>You have received a <strong>discount voucher</strong> from Penguin Store.</p>"
+                + "<h3 style='color:green;'>Voucher Code: <strong>" + voucherCode + "</strong></h3>"
+                + "<h3 style='color:green;'>Voucher Value: <strong>" + discountAmount + " VND</strong></h3>"
+                + "<h3 style='color:green;'>Condition: Minimum order value must be <strong>" + minOrderValue + " VND</strong> or more!</h3>"
+                + "<p>Use this code at checkout to enjoy your discount!</p>"
+                + "<p><em>Note:</em> This code is valid for 7 days only.</p>"
+                + "<br><p>Best regards,<br><strong>The Penguin Store Team</strong></p>"
+                + "</body></html>";
+
+        return sendEmail(recipientEmail, "🎁 Discount Voucher from Penguin Store!", emailContent);
+    }
+
     private String formatCurrency(double amount) {
         return String.format("%,.0f₫", amount);
     }

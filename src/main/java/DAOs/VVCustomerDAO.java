@@ -56,12 +56,11 @@ public class VVCustomerDAO {
         List<Voucher> vouchers = new ArrayList<>();
         String query = "SELECT V.* "
                 + "FROM Vouchers V "
-                + "WHERE V.voucherStatus = 1 "
+                + "JOIN UsedVoucher UV ON V.voucherID = UV.voucherID "
+                + "WHERE UV.customerID = ? "
+                + "AND V.voucherStatus = 1 "
                 + "AND V.validUntil >= GETDATE() "
-                + "AND V.voucherID NOT IN ("
-                + "    SELECT UV.voucherID FROM UsedVoucher UV "
-                + "    WHERE UV.customerID = ? AND UV.status = 1"
-                + ")";
+                + "AND UV.status = 0"; // Only show unused vouchers
 
         try ( PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, customerID);

@@ -123,6 +123,16 @@
                 animation: blink 1.5s infinite;
             }
 
+            canvas {
+                margin-left: 100px;
+                margin-top: 50px;
+                max-width: 1000px;
+                max-height: 400px;
+                width: 100%;
+                height: auto;
+            }
+
+
 
         </style>
     </head>
