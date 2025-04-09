@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Controller;
 
 import DAOs.OrderStatisticDAO;
@@ -83,18 +79,22 @@ public class StatisticController extends HttpServlet {
 
         String action = request.getParameter("action");
         String timeUnit = request.getParameter("timeUnit");
+        String startDate = request.getParameter("startDate");
+        String endDate = request.getParameter("endDate");
 
         if ("exportExcel".equals(action)) {
-            exportExcel(request, response, timeUnit);
+            exportExcel(request, response, timeUnit, startDate, endDate);
+            return; // Stop further processing after sending the Excel file
         } else if ("exportPDF".equals(action)) {
-            exportPDF(request, response, timeUnit);
+            exportPDF(request, response, timeUnit, startDate, endDate);
+            return; // Stop further processing after sending the PDF file
         }
 
         if (action == null || action.isEmpty()) {
             action = "orderStatistic"; // Default action
         }
 
-        if (timeUnit == null || (!timeUnit.equals("day") && !timeUnit.equals("month") && !timeUnit.equals("year"))) {
+        if (timeUnit == null || (!timeUnit.equals("day") && !timeUnit.equals("week") && !timeUnit.equals("month") && !timeUnit.equals("year") && !timeUnit.equals("custom"))) {
             timeUnit = "day"; // Default to daily statistics
         }
 
@@ -115,34 +115,40 @@ public class StatisticController extends HttpServlet {
 
             case "revenueStatistic":
                 List<RevenueStatistic> revenueList;
-                String startDate = request.getParameter("startDate");
-                String endDate = request.getParameter("endDate");
                 switch (timeUnit) {
                     case "day":
                         revenueList = revenueDAO.getRevenueByDay();
-
                         break;
                     case "month":
                         revenueList = revenueDAO.getRevenueByMonth();
-
                         break;
                     case "year":
                         revenueList = revenueDAO.getRevenueByYear();
-
                         break;
                     case "week":
                         revenueList = revenueDAO.getRevenueLastWeek();
-
                         break;
                     case "custom":
-                        // Kiểm tra nếu startDate hoặc endDate bị null
+                        // Validate dates
                         if (startDate == null || startDate.isEmpty()) {
                             startDate = "2025-01-01"; // Ngày mặc định
                         }
                         if (endDate == null || endDate.isEmpty()) {
                             endDate = LocalDate.now().toString(); // Lấy ngày hiện tại
                         }
-                        revenueList = revenueDAO.getRevenueByCustomRange(startDate, endDate);
+                        try {
+                            LocalDate start = LocalDate.parse(startDate);
+                            LocalDate end = LocalDate.parse(endDate);
+                            if (start.isAfter(end)) {
+                                request.setAttribute("error", "Start date cannot be after end date.");
+                                revenueList = new ArrayList<>();
+                            } else {
+                                revenueList = revenueDAO.getRevenueByCustomRange(startDate, endDate);
+                            }
+                        } catch (Exception e) {
+                            request.setAttribute("error", "Invalid date format. Please use YYYY-MM-DD.");
+                            revenueList = new ArrayList<>();
+                        }
                         break;
                     default:
                         revenueList = revenueDAO.getRevenueLastWeek();
@@ -225,19 +231,57 @@ public class StatisticController extends HttpServlet {
                 .toList();
     }
 
-    private void exportExcel(HttpServletRequest request, HttpServletResponse response, String timeUnit) throws IOException {
+    private void exportExcel(HttpServletRequest request, HttpServletResponse response, String timeUnit, String startDate, String endDate) throws IOException {
         try {
             // 1. Reset response trước khi ghi
             response.reset();
 
             RevenueDAO revenueDAO = new RevenueDAO();
-            List<RevenueStatistic> revenueList = revenueDAO.getRevenueStatistic(timeUnit);
+            List<RevenueStatistic> revenueList;
+
+            // Fetch data based on timeUnit
+            switch (timeUnit) {
+                case "day":
+                    revenueList = revenueDAO.getRevenueByDay();
+                    break;
+                case "month":
+                    revenueList = revenueDAO.getRevenueByMonth();
+                    break;
+                case "year":
+                    revenueList = revenueDAO.getRevenueByYear();
+                    break;
+                case "week":
+                    revenueList = revenueDAO.getRevenueLastWeek();
+                    break;
+                case "custom":
+                    // Validate dates
+                    if (startDate == null || startDate.isEmpty()) {
+                        startDate = "2025-01-01"; // Ngày mặc định
+                    }
+                    if (endDate == null || endDate.isEmpty()) {
+                        endDate = LocalDate.now().toString(); // Lấy ngày hiện tại
+                    }
+                    try {
+                        LocalDate start = LocalDate.parse(startDate);
+                        LocalDate end = LocalDate.parse(endDate);
+                        if (start.isAfter(end)) {
+                            throw new IllegalArgumentException("Start date cannot be after end date.");
+                        }
+                        revenueList = revenueDAO.getRevenueByCustomRange(startDate, endDate);
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException("Invalid date format or range: " + e.getMessage());
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid time unit: " + timeUnit);
+            }
+
             double totalRevenue = revenueList.stream().mapToDouble(RevenueStatistic::getRevenue).sum();
 
             try ( Workbook workbook = new XSSFWorkbook()) {
                 Sheet sheet = workbook.createSheet("Revenue");
 
-                // 2. Tạo style (giữ nguyên như bạn đã định nghĩa)
+                // 2. Tạo style
                 CellStyle headerStyle = workbook.createCellStyle();
                 org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
                 headerFont.setBold(true);
@@ -323,10 +367,48 @@ public class StatisticController extends HttpServlet {
         }
     }
 
-    private void exportPDF(HttpServletRequest request, HttpServletResponse response, String timeUnit) throws IOException {
+    private void exportPDF(HttpServletRequest request, HttpServletResponse response, String timeUnit, String startDate, String endDate) throws IOException {
         try {
             RevenueDAO revenueDAO = new RevenueDAO();
-            List<RevenueStatistic> revenueList = revenueDAO.getRevenueStatistic(timeUnit);
+            List<RevenueStatistic> revenueList;
+
+            // Fetch data based on timeUnit
+            switch (timeUnit) {
+                case "day":
+                    revenueList = revenueDAO.getRevenueByDay();
+                    break;
+                case "month":
+                    revenueList = revenueDAO.getRevenueByMonth();
+                    break;
+                case "year":
+                    revenueList = revenueDAO.getRevenueByYear();
+                    break;
+                case "week":
+                    revenueList = revenueDAO.getRevenueLastWeek();
+                    break;
+                case "custom":
+                    // Validate dates
+                    if (startDate == null || startDate.isEmpty()) {
+                        startDate = "2025-01-01"; // Ngày mặc định
+                    }
+                    if (endDate == null || endDate.isEmpty()) {
+                        endDate = LocalDate.now().toString(); // Lấy ngày hiện tại
+                    }
+                    try {
+                        LocalDate start = LocalDate.parse(startDate);
+                        LocalDate end = LocalDate.parse(endDate);
+                        if (start.isAfter(end)) {
+                            throw new IllegalArgumentException("Start date cannot be after end date.");
+                        }
+                        revenueList = revenueDAO.getRevenueByCustomRange(startDate, endDate);
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException("Invalid date format or range: " + e.getMessage());
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid time unit: " + timeUnit);
+            }
+
             double totalRevenue = revenueList.stream().mapToDouble(RevenueStatistic::getRevenue).sum();
 
             // 1. Tạo PDF
@@ -361,7 +443,7 @@ public class StatisticController extends HttpServlet {
             document.add(pdfChartImage);
             document.add(Chunk.NEWLINE);
 
-            // 5. Bảng dữ liệu (giữ nguyên như cũ)
+            // 5. Bảng dữ liệu
             PdfPTable table = createRevenueTable(revenueList, totalRevenue);
             document.add(table);
 
@@ -397,7 +479,7 @@ public class StatisticController extends HttpServlet {
                 .mapToDouble(RevenueStatistic::getRevenue)
                 .toArray();
 
-        // 2. Tạo biểu đồ sử dụng JFreeChart (thay thế cho Chart.js ở server-side)
+        // 2. Tạo biểu đồ sử dụng JFreeChart
         JFreeChart chart = ChartFactory.createBarChart(
                 "Revenue by Day", // Tiêu đề
                 "Date", // Trục X
@@ -427,7 +509,7 @@ public class StatisticController extends HttpServlet {
         return dataset;
     }
 
-    // Hàm tạo bảng dữ liệu (tách riêng để code sạch hơn)
+    // Hàm tạo bảng dữ liệu
     private PdfPTable createRevenueTable(List<RevenueStatistic> revenueList, double totalRevenue) {
         PdfPTable table = new PdfPTable(2);
         table.setWidthPercentage(100);
@@ -438,51 +520,51 @@ public class StatisticController extends HttpServlet {
         com.itextpdf.text.Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE);
         PdfPCell headerCell1 = new PdfPCell(new Phrase("TIME PERIOD", headerFont));
         PdfPCell headerCell2 = new PdfPCell(new Phrase("REVENUE (VND)", headerFont));
-        
+
         headerCell1.setBackgroundColor(new BaseColor(70, 130, 180)); // SteelBlue
         headerCell1.setHorizontalAlignment(Element.ALIGN_CENTER);
         headerCell1.setPadding(5);
-        
+
         headerCell2.setBackgroundColor(new BaseColor(70, 130, 180));
         headerCell2.setHorizontalAlignment(Element.ALIGN_CENTER);
         headerCell2.setPadding(5);
-        
+
         table.addCell(headerCell1);
         table.addCell(headerCell2);
 
         // Dữ liệu
         com.itextpdf.text.Font dataFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
         NumberFormat formatter = NumberFormat.getNumberInstance(Locale.US);
-        
+
         for (RevenueStatistic stat : revenueList) {
             PdfPCell timeCell = new PdfPCell(new Phrase(stat.getTimePeriod(), dataFont));
             timeCell.setPadding(5);
             timeCell.setBorderWidthBottom(0.5f);
-            
+
             PdfPCell revenueCell = new PdfPCell(
-                new Phrase(formatter.format(stat.getRevenue()) + " ₫", dataFont));
+                    new Phrase(formatter.format(stat.getRevenue()) + " ₫", dataFont));
             revenueCell.setPadding(5);
             revenueCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             revenueCell.setBorderWidthBottom(0.5f);
-            
+
             table.addCell(timeCell);
             table.addCell(revenueCell);
         }
 
         // Tổng
-        PdfPCell totalLabelCell = new PdfPCell(new Phrase("TOTAL REVENUE", 
-            FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
+        PdfPCell totalLabelCell = new PdfPCell(new Phrase("TOTAL REVENUE",
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
         totalLabelCell.setBackgroundColor(new BaseColor(255, 255, 150)); // Light yellow
         totalLabelCell.setPadding(5);
         totalLabelCell.setBorderWidthTop(1f);
-        
-        PdfPCell totalValueCell = new PdfPCell(new Phrase(formatter.format(totalRevenue) + " ₫", 
-            FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
+
+        PdfPCell totalValueCell = new PdfPCell(new Phrase(formatter.format(totalRevenue) + " ₫",
+                FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
         totalValueCell.setBackgroundColor(new BaseColor(255, 255, 150));
         totalValueCell.setPadding(5);
         totalValueCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         totalValueCell.setBorderWidthTop(1f);
-        
+
         table.addCell(totalLabelCell);
         table.addCell(totalValueCell);
 
@@ -493,10 +575,14 @@ public class StatisticController extends HttpServlet {
         switch (timeUnit) {
             case "day":
                 return "Day";
+            case "week":
+                return "Week";
             case "month":
                 return "Month";
             case "year":
                 return "Year";
+            case "custom":
+                return "Custom Range";
             default:
                 return timeUnit;
         }

@@ -36,7 +36,7 @@
                 border: 1px solid black;
                 padding: 10px;
                 text-align: center;
-                white-space: nowrap; /* Ngăn chữ bị xuống dòng */
+                white-space: nowrap;
             }
 
             th {
@@ -52,7 +52,6 @@
                 background-color: #dc3545;
                 border-color: #dc3545;
             }
-
         </style>
     </head>
     <body>
@@ -93,11 +92,11 @@
                         </button>
                     </form>
                 </div>
-                <form action="Statistic" method="get">
+
+                <form id="timeUnitForm" action="Statistic" method="get" onsubmit="return validateDates();">
                     <input type="hidden" name="action" value="revenueStatistic">
                     <label for="timeUnit">Select the time period:</label>
-                    <select name="timeUnit" id="timeUnit" onchange="this.form.submit(); handleTimeUnitChange();">
-
+                    <select name="timeUnit" id="timeUnit" onchange="handleTimeUnitChange();">
                         <option value="day" ${timeUnit == 'day' ? 'selected' : ''}>Day</option>
                         <option value="week" ${timeUnit == 'week' ? 'selected' : ''}>Week</option>
                         <option value="month" ${timeUnit == 'month' ? 'selected' : ''}>Month of the Year</option>
@@ -105,21 +104,23 @@
                         <option value="custom" ${timeUnit == 'custom' ? 'selected' : ''}>Custom Range</option>
                     </select>
 
-
-                    <div id="customDateRange" style="display: none;">
+                    <div id="customDateRange" style="display: ${timeUnit == 'custom' ? 'block' : 'none'};">
                         <label for="startDate">Start Date:</label>
                         <input type="date" id="startDate" name="startDate" value="${startDate}">
 
                         <label for="endDate">End Date:</label>
                         <input type="date" id="endDate" name="endDate" value="${endDate}">
 
-                        <button type="submit">Filter</button>
-                        <button type="button" onclick="resetForm()">Reset</button>
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
                     </div>
                 </form>
 
 
                 <div class="container">
+                    <c:if test="${not empty error}">
+                        <p style="color: red;">${error}</p>
+                    </c:if>
                     <c:choose>
                         <c:when test="${not empty revenuelist}">
 
@@ -159,25 +160,33 @@
                         var timeUnit = document.getElementById("timeUnit").value;
                         var customDateRange = document.getElementById("customDateRange");
 
-                        if (timeUnit === "custom") {
-                            customDateRange.style.display = "block";
-                        } else {
-                            customDateRange.style.display = "none";
+                        customDateRange.style.display = (timeUnit === "custom") ? "block" : "none";
+
+                        if (timeUnit !== "custom") {
+                            document.getElementById("timeUnitForm").submit();
                         }
                     }
 
-                    function resetForm() {
-                        window.location.href = "Statistic?action=revenueStatistic"; // Thay bằng URL bạn muốn điều hướng đến
+                    function validateDates() {
+                        var startDate = document.getElementById("startDate").value;
+                        var endDate = document.getElementById("endDate").value;
+
+                        if (!startDate || !endDate) {
+                            alert("Please select both start and end dates.");
+                            return false;
+                        }
+
+                        if (new Date(startDate) > new Date(endDate)) {
+                            alert("Start date cannot be after end date.");
+                            return false;
+                        }
+
+                        return true;
                     }
 
-
-                    window.onload = function () {
-                        handleTimeUnitChange();
-                    };
-
-                </script>
-
-                <script>
+                    function resetForm() {
+                        window.location.href = "Statistic?action=revenueStatistic";
+                    }
 
                     var labels = [];
                     var revenueData = [];
@@ -207,9 +216,9 @@
                                     beginAtZero: true,
                                     min: 0,
                                     ticks: {
-                                        stepSize: 200000, // Chia step 100,000 VND
+                                        stepSize: 200000,
                                         callback: function (value) {
-                                            return value.toLocaleString() + ' ₫'; // Hiển thị số có dấu phẩy
+                                            return value.toLocaleString() + ' ₫';
                                         }
                                     },
                                     suggestedMax: Math.ceil(Math.max(...revenueData) / 500000) * 500000

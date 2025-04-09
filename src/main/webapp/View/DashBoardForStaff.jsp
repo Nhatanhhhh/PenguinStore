@@ -1,7 +1,6 @@
 <%@page import="Models.Manager"%>
 <%@page import="Models.Feedback"%>
 <%@page import="java.util.List"%>
-<%@page import="java.util.List"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,41 +15,80 @@
         <%@include file="/Assets/CSS/bootstrap.css.jsp"%>
         <%@include file="/Assets/CSS/icon.jsp"%>
         <link rel="stylesheet" href="<%= request.getContextPath()%>/Assets/CSS/Admin/DashBoard.css"/>
+        <!-- Add SweetAlert2 CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
         <style>
             #layoutSidenav {
-                display: flex;  /* Đảm bảo layout không bị lệch */
+                display: flex;
             }
 
             .col-md-10 {
                 flex-grow: 1;
-                max-width: calc(100% - 250px);  /* Tránh bị lệch */
+                max-width: calc(100% - 250px);
                 padding-left: 0 !important;
                 margin-left: 0 !important;
             }
 
-            /* Màu nền đậm như table-dark */
-            #feedbackTable thead {
-                background-color: #343a40 !important; /* Màu đen nhạt của Bootstrap */
-                color: white !important; /* Chữ trắng */
+            /* Table styling */
+            #feedbackTable {
+                width: 100%;
+                margin-bottom: 1rem;
+                background-color: transparent;
+                border-collapse: collapse;
             }
 
-            /* Căn giữa nội dung trong các cột */
-            #feedbackTable th {
-                text-align: center !important;
-                vertical-align: middle !important;
+            #feedbackTable thead {
+                background-color: #343a40;
+                color: white;
+            }
+
+            #feedbackTable th, 
+            #feedbackTable td {
+                padding: 0.75rem;
+                vertical-align: middle;
+                border: 1px solid #dee2e6;
+                text-align: center;
+            }
+
+            #feedbackTable tbody tr:nth-child(even) {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+
+            #feedbackTable tbody tr:hover {
+                background-color: rgba(0, 0, 0, 0.075);
             }
 
             .text-success {
-                color: green !important;
-                font-weight: bold !important;
+                color: green;
+                font-weight: bold;
             }
 
             .text-danger {
-                color: red !important;
-                font-weight: bold !important;
+                color: red;
+                font-weight: bold;
             }
 
+            .action-buttons {
+                display: flex;
+                gap: 5px;
+                justify-content: center;
+            }
 
+            .btn-action {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            /* Card styling */
+            .card-header {
+                background-color: #343a40;
+                color: white;
+            }
+
+            /* Ensure z-index for SweetAlert */
+            .swal2-container {
+                z-index: 99999 !important;
+            }
         </style>
     </head>
     <body class="sb-nav-fixed">
@@ -59,8 +97,6 @@
             String managerName = (manager != null) ? manager.getManagerName() : "Guest";
             String managerEmail = (manager != null) ? manager.getEmail() : "No Email";
         %>
-
-
 
         <!-- Error or Success Messages -->
         <%
@@ -77,9 +113,6 @@
         <%
             }
         %>
-
-
-
 
         <div class="container-fluid">
             <div class="row">
@@ -105,209 +138,195 @@
                                 Customer Feedback
                             </div>
                             <div class="card-body">
-                                <table id="feedbackTable" class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Customer Name</th>
-                                            <th>Product Name</th>
-                                            <th>Comment</th>
-                                            <th>Rating</th>
-                                            <th>Date</th>
-                                            <th>Resolved</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        <%
-                                            List<Feedback> feedbacks = (List<Feedback>) request.getAttribute("feedbacks");
-                                            if (feedbacks != null) {
-                                                for (Feedback fb : feedbacks) {
-                                        %>
-                                        <tr>
-                                            <td><%= fb.getCustomerName()%></td>
-                                            <td><%= fb.getProductName()%></td>
-                                            <td><%= fb.getComment()%></td>
-                                            <td><%= fb.getRating()%></td>
+                                <div class="table-responsive">
+                                    <table id="feedbackTable" class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Customer Name</th>
+                                                <th>Product Name</th>
+                                                <th>Comment</th>
+                                                <th>Rating</th>
+                                                <th>Date</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
                                             <%
-                                                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                                                List<Feedback> feedbacks = (List<Feedback>) request.getAttribute("feedbacks");
+                                                if (feedbacks != null && !feedbacks.isEmpty()) {
+                                                    for (Feedback fb : feedbacks) {
                                             %>
-                                            <td><%= sdf.format(fb.getFeedbackCreateAt())%></td>
-                                            <td class="<%= fb.isIsResolved() ? "text-success" : "text-danger"%>">
-                                                <%= fb.isIsResolved() ? "<i class='fa fa-check-circle text-success'></i> Resolved" : "<i class='fa fa-hourglass-half text-warning'></i> Pending"%>
-                                            </td>
-
-                                            <td>
-                                                <!--<form action="feedbackreply" method="POST" style="display:inline;">
-                                                        <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID()%>">
-                                                        <button type="submit" name="action" value="delete" class="btn btn-warning btn-sm">Delete</button>
-                                                        <input type="hidden" name="redirectPage" value="View/DashBoardForStaff.jsp">
-                                                    </form>-->
-                                                <button type="button" class="btn btn-warning btn-sm delete-btn" data-feedback-id="<%= fb.getFeedbackID()%>">Delete</button>
-
-                                                <button type="button" class="btn btn-primary btn-sm reply-btn" data-id="<%= fb.getFeedbackID()%>">Reply</button>
-
-                                                <!-- <%
-                                                    // Xử lý feedbackID để đảm bảo phù hợp với HTML ID
-                                                    String safeFeedbackId = fb.getFeedbackID()
-                                                            .trim() // Loại bỏ khoảng trắng đầu cuối
-                                                            .replaceAll("\\s+", "") // Loại bỏ mọi khoảng trắng
-                                                            .replaceAll("[^a-zA-Z0-9-]", ""); // Loại bỏ ký tự đặc biệt ngoại trừ gạch ngang
+                                            <tr>
+                                                <td><%= fb.getCustomerName()%></td>
+                                                <td><%= fb.getProductName()%></td>
+                                                <td><%= fb.getComment()%></td>
+                                                <td><%= fb.getRating()%></td>
+                                                <%
+                                                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
                                                 %>
-                                                                                                <div id="reply-box-<%= safeFeedbackId%>" class="reply-box mt-2" style="display: none;">
-                                                                                                    <form action="feedbackreply" method="POST">
-                                                                                                        <input type="hidden" name="feedbackID" value="<%= fb.getFeedbackID()%>">
-                                                                                                        <input type="hidden" name="redirectPage" value="View/DashBoardForStaff.jsp">
-                                                                                                        <textarea name="replyMessage" class="form-control" placeholder="Enter your reply"></textarea>
-                                                                                                        <button type="submit" name="action" value="reply" class="btn btn-success btn-sm mt-2">Send</button>
-                                                                                                    </form>
-                                                                                                </div> -->
-
-
-
-                                                <script>
-                                                    document.addEventListener("DOMContentLoaded", function () {
-                                                        document.querySelectorAll(".delete-btn").forEach(button => {
-                                                            button.addEventListener("click", function () {
-                                                                const feedbackID = this.getAttribute("data-feedback-id");
-
-                                                                Swal.fire({
-                                                                    title: 'Are you sure?',
-                                                                    text: "You won't be able to revert this!",
-                                                                    icon: 'warning',
-                                                                    showCancelButton: true,
-                                                                    confirmButtonColor: '#3085d6',
-                                                                    cancelButtonColor: '#d33',
-                                                                    confirmButtonText: 'Yes, delete it!'
-                                                                }).then((result) => {
-                                                                    if (result.isConfirmed) {
-                                                                        // Gửi yêu cầu xóa bằng fetch
-                                                                        fetch('feedbackreply', {
-                                                                            method: 'POST',
-                                                                            headers: {
-                                                                                'Content-Type': 'application/x-www-form-urlencoded',
-                                                                            },
-                                                                            body: new URLSearchParams({
-                                                                                'action': 'delete',
-                                                                                'feedbackID': feedbackID,
-                                                                                'redirectPage': 'View/DashBoardForStaff.jsp'
-                                                                            })
-                                                                        })
-                                                                                .then(response => {
-                                                                                    if (response.ok) {
-                                                                                        Swal.fire({
-                                                                                            icon: 'success',
-                                                                                            title: 'Deleted!',
-                                                                                            text: 'Feedback has been deleted.',
-                                                                                            timer: 1500,
-                                                                                            showConfirmButton: false
-                                                                                        }).then(() => {
-                                                                                            // Tải lại trang sau khi xóa thành công
-                                                                                            location.reload();
-                                                                                        });
-                                                                                    } else {
-                                                                                        Swal.fire({
-                                                                                            icon: 'error',
-                                                                                            title: 'Error',
-                                                                                            text: 'Failed to delete feedback.'
-                                                                                        });
-                                                                                    }
-                                                                                })
-                                                                                .catch(error => {
-                                                                                    console.error('Error:', error);
-                                                                                    Swal.fire({
-                                                                                        icon: 'error',
-                                                                                        title: 'Error',
-                                                                                        text: 'An error occurred while deleting.'
-                                                                                    });
-                                                                                });
-                                                                    }
-                                                                });
-                                                            });
-                                                        });
-
-                                                        document.querySelectorAll(".reply-btn").forEach(button => {
-                                                            button.addEventListener("click", function () {
-                                                                const feedbackID = this.getAttribute("data-id");
-                                                                Swal.fire({
-                                                                    title: 'Reply to Feedback',
-                                                                    input: 'textarea',
-                                                                    inputLabel: 'Enter your reply (at least 2 words)',
-                                                                    inputPlaceholder: 'Type your reply here...',
-                                                                    showCancelButton: true,
-                                                                    confirmButtonText: 'Send',
-                                                                    cancelButtonText: 'Cancel',
-                                                                    confirmButtonColor: '#3085d6',
-                                                                    cancelButtonColor: '#d33',
-                                                                    inputValidator: (value) => {
-                                                                        if (!value || value.trim().split(/\s+/).length < 2) {
-                                                                            return 'Reply must contain at least 2 words!';
-                                                                        }
-                                                                    }
-                                                                }).then((result) => {
-                                                                    if (result.isConfirmed) {
-                                                                        const replyMessage = result.value.trim();
-                                                                        fetch('feedbackreply', {
-                                                                            method: 'POST',
-                                                                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                                                                            body: new URLSearchParams({
-                                                                                'action': 'reply',
-                                                                                'feedbackID': feedbackID,
-                                                                                'replyMessage': replyMessage,
-                                                                                'redirectPage': 'View/DashBoardForStaff.jsp'
-                                                                            })
-                                                                        })
-                                                                                .then(response => response.text())
-                                                                                .then(data => {
-                                                                                    if (data.trim() === "success") {
-                                                                                        Swal.fire({
-                                                                                            icon: 'success',
-                                                                                            title: 'Replied!',
-                                                                                            text: 'Your reply has been sent.',
-                                                                                            timer: 1500,
-                                                                                            showConfirmButton: false
-                                                                                        }).then(() => location.reload());
-                                                                                    } else {
-                                                                                        Swal.fire({
-                                                                                            icon: 'error',
-                                                                                            title: 'Error',
-                                                                                            text: 'Failed to send reply.'
-                                                                                        });
-                                                                                    }
-                                                                                })
-                                                                                .catch(error => {
-                                                                                    console.error('Error:', error);
-                                                                                    Swal.fire({
-                                                                                        icon: 'error',
-                                                                                        title: 'Error',
-                                                                                        text: 'An error occurred while sending reply.'
-                                                                                    });
-                                                                                });
-                                                                    }
-                                                                });
-                                                            });
-                                                        });
-                                                    });
-
-
-                                                </script>
-
-                                            </td>
-
-                                        </tr>
-                                        <% }
-                                            }%>
-                                    </tbody>
-                                </table>
-
+                                                <td><%= sdf.format(fb.getFeedbackCreateAt())%></td>
+                                                <td class="<%= fb.isIsResolved() ? "text-success" : "text-danger"%>">
+                                                    <%= fb.isIsResolved() ? "<i class='fa fa-check-circle text-success'></i> Resolved" : "<i class='fa fa-hourglass-half text-warning'></i> Pending"%>
+                                                </td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <button type="button" class="btn btn-warning btn-sm btn-action delete-btn" 
+                                                                data-feedback-id="<%= fb.getFeedbackID()%>">
+                                                            Delete
+                                                        </button>
+                                                        <button type="button" class="btn btn-primary btn-sm btn-action reply-btn" 
+                                                                data-feedback-id="<%= fb.getFeedbackID()%>">
+                                                            Reply
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <%
+                                                    }
+                                                } else {
+                                            %>
+                                            <tr>
+                                                <td colspan="7" class="text-center">No feedback found.</td>
+                                            </tr>
+                                            <%
+                                                }
+                                            %>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div> <!-- End px-4 -->
-                </div> <!-- End col-md-10 -->
-            </div> <!-- End row -->
+                    </div>
+                </div>
+            </div>
         </div>
 
+        <!-- Include jQuery and SweetAlert2 -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <jsp:include page="/Assets/CSS/bootstrap.js.jsp"/>
-        <script src="<%= request.getContextPath()%>/Assets/Javascript/Staff/scripts.js"></script>
+        
+        <script>
+            $(document).ready(function() {
+                // Xử lý sự kiện Delete
+                $('.delete-btn').click(function() {
+                    const feedbackID = $(this).data('feedback-id');
+                    const button = $(this);
+                    
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Tạo form ẩn để gửi POST request
+                            const form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = '<%= request.getContextPath()%>/feedbackreply';
+                            
+                            const actionInput = document.createElement('input');
+                            actionInput.type = 'hidden';
+                            actionInput.name = 'action';
+                            actionInput.value = 'delete';
+                            form.appendChild(actionInput);
+                            
+                            const idInput = document.createElement('input');
+                            idInput.type = 'hidden';
+                            idInput.name = 'feedbackID';
+                            idInput.value = feedbackID;
+                            form.appendChild(idInput);
+                            
+                            const redirectInput = document.createElement('input');
+                            redirectInput.type = 'hidden';
+                            redirectInput.name = 'redirectPage';
+                            redirectInput.value = 'ViewListFeedback';
+                            form.appendChild(redirectInput);
+                            
+                            document.body.appendChild(form);
+                            form.submit();
+                        }
+                    });
+                });
+                
+                // Xử lý sự kiện Reply
+                $('.reply-btn').click(function() {
+                    const feedbackID = $(this).data('feedback-id');
+                    
+                    Swal.fire({
+                        title: 'Reply to Feedback',
+                        input: 'textarea',
+                        inputLabel: 'Enter your reply (at least 2 words)',
+                        inputPlaceholder: 'Type your reply here...',
+                        showCancelButton: true,
+                        confirmButtonText: 'Send',
+                        cancelButtonText: 'Cancel',
+                        inputValidator: (value) => {
+                            if (!value || value.trim().split(/\s+/).length < 2) {
+                                return 'Reply must contain at least 2 words!';
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const replyMessage = result.value.trim();
+                            
+                            // Tạo form ẩn để gửi POST request
+                            const form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = '<%= request.getContextPath()%>/feedbackreply';
+                            
+                            const actionInput = document.createElement('input');
+                            actionInput.type = 'hidden';
+                            actionInput.name = 'action';
+                            actionInput.value = 'reply';
+                            form.appendChild(actionInput);
+                            
+                            const idInput = document.createElement('input');
+                            idInput.type = 'hidden';
+                            idInput.name = 'feedbackID';
+                            idInput.value = feedbackID;
+                            form.appendChild(idInput);
+                            
+                            const messageInput = document.createElement('input');
+                            messageInput.type = 'hidden';
+                            messageInput.name = 'replyMessage';
+                            messageInput.value = replyMessage;
+                            form.appendChild(messageInput);
+                            
+                            const redirectInput = document.createElement('input');
+                            redirectInput.type = 'hidden';
+                            redirectInput.name = 'redirectPage';
+                            redirectInput.value = 'ViewListFeedback';
+                            form.appendChild(redirectInput);
+                            
+                            document.body.appendChild(form);
+                            form.submit();
+                        }
+                    });
+                });
+                
+                // Hiển thị thông báo từ session nếu có
+                <% if (request.getSession().getAttribute("message") != null) { %>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: '<%= request.getSession().getAttribute("message") %>',
+                        timer: 3000
+                    });
+                    <% request.getSession().removeAttribute("message"); %>
+                <% } else if (request.getSession().getAttribute("error") != null) { %>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '<%= request.getSession().getAttribute("error") %>'
+                    });
+                    <% request.getSession().removeAttribute("error"); %>
+                <% } %>
+            });
+        </script>
     </body>
 </html>

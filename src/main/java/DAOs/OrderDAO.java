@@ -198,57 +198,28 @@ public class OrderDAO {
                     + "FROM OrderDetail od "
                     + "WHERE od.orderID = ?";
 
-            // 2. Query để lấy giá nhập gần nhất từ bảng Restock
-            String getLatestPriceSQL = "SELECT TOP 1 price FROM Restock "
-                    + "WHERE proVariantID = ? "
-                    + "ORDER BY restockDate DESC";
-
-            try ( PreparedStatement stmt = conn.prepareStatement(getDetailsSQL);  PreparedStatement priceStmt = conn.prepareStatement(getLatestPriceSQL)) {
+            try ( PreparedStatement stmt = conn.prepareStatement(getDetailsSQL)) {
 
                 stmt.setString(1, orderID);
                 ResultSet rs = stmt.executeQuery();
 
-                // 3. Khôi phục số lượng tồn kho
+                // 2. Khôi phục số lượng tồn kho
                 String updateStockSQL = "UPDATE ProductVariants "
                         + "SET stockQuantity = stockQuantity + ? "
                         + "WHERE proVariantID = ?";
 
-                // 4. Ghi lại lịch sử nhập kho với giá nhập gần nhất
-                String insertRestockSQL = "INSERT INTO Restock (restockID, proVariantID, quantity, price, totalCost, restockDate) "
-                        + "VALUES (NEWID(), ?, ?, ?, ?, GETDATE())";
-
-                try ( PreparedStatement updateStmt = conn.prepareStatement(updateStockSQL);  PreparedStatement insertStmt = conn.prepareStatement(insertRestockSQL)) {
+                try ( PreparedStatement updateStmt = conn.prepareStatement(updateStockSQL)) {
 
                     while (rs.next()) {
                         String productVariantID = rs.getString("productVariantID");
                         int quantity = rs.getInt("quantity");
-
-                        // Lấy giá nhập gần nhất
-                        double latestPrice = 0;
-                        priceStmt.setString(1, productVariantID);
-                        ResultSet priceRs = priceStmt.executeQuery();
-                        if (priceRs.next()) {
-                            latestPrice = priceRs.getDouble("price");
-                        }
-                        priceRs.close();
-
-                        double totalCost = quantity * latestPrice;
-
                         // Khôi phục số lượng tồn kho
                         updateStmt.setInt(1, quantity);
                         updateStmt.setString(2, productVariantID);
                         updateStmt.addBatch();
-
-                        // Ghi lại lịch sử nhập kho với giá nhập gần nhất
-                        insertStmt.setString(1, productVariantID);
-                        insertStmt.setInt(2, quantity);
-                        insertStmt.setDouble(3, latestPrice);
-                        insertStmt.setDouble(4, totalCost);
-                        insertStmt.addBatch();
                     }
 
                     updateStmt.executeBatch();
-                    insertStmt.executeBatch();
                 }
 
                 conn.commit();
@@ -269,21 +240,6 @@ public class OrderDAO {
                 } catch (SQLException e) {
                 }
             }
-        }
-    }
-
-    /**
-     * Records the restock operation in the Restock table
-     */
-    private void recordRestock(Connection conn, String orderID) throws SQLException {
-        String restockSQL = "INSERT INTO Restock (restockID, proVariantID, quantity, restockDate) "
-                + "SELECT NEWID(), od.productVariantID, od.quantity, GETDATE() "
-                + "FROM OrderDetail od "
-                + "WHERE od.orderID = ?";
-
-        try ( PreparedStatement stmt = conn.prepareStatement(restockSQL)) {
-            stmt.setString(1, orderID);
-            stmt.executeUpdate();
         }
     }
 

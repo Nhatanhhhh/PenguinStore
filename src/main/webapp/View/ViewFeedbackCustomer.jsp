@@ -83,14 +83,29 @@
                         <tbody>
                             <%
                                 List<ViewFeedbackCus> viewFeedbackCus = (List<ViewFeedbackCus>) request.getAttribute("feedbackList");
+                                boolean hasData = false;
                                 if (viewFeedbackCus != null && !viewFeedbackCus.isEmpty()) {
                                     for (ViewFeedbackCus feedback : viewFeedbackCus) {
+                                        // Check if all required fields are not null
+                                        if (feedback.getManagerNam() != null
+                                                && feedback.getComment() != null
+                                                && feedback.getProductName() != null
+                                                && feedback.getCreateAt() != null) {
+                                            hasData = true;
                             %>
                             <tr>
                                 <td><%= feedback.getManagerNam()%></td>
                                 <td><%= feedback.getComment()%></td>
                                 <td><%= feedback.getProductName()%></td>
                                 <td><%= feedback.getCreateAt()%></td>
+                            </tr>
+                            <%
+                                    }
+                                }
+                                if (!hasData) {
+                            %>
+                            <tr>
+                                <td colspan="4" class="text-center">No complete feedback available</td>
                             </tr>
                             <%
                                 }

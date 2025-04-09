@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  * @author Do Van Luan - CE180457
  */
 public class RevenueDAO extends DBContext {
-    
+
     private static final Logger LOGGER = Logger.getLogger(StatisticController.class.getName());
 
     public List<RevenueStatistic> getRevenueByDay() {
