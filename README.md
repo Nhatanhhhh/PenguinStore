@@ -66,8 +66,6 @@ Data export (Excel)
 
 ![FireShot Capture 040 - Purchase Statistic -  localhost](https://github.com/user-attachments/assets/73be5f14-92d9-4864-be82-e7e0e5a41868)
 
-![FireShot Capture 003 - Your PenguinStore Verification Code - nguyennhatanhnnacm@gmail com _ -  mail google com](https://github.com/user-attachments/assets/54615eb4-c105-4321-8922-f127dbea17d8)
-
 🔗 Related Documents
 
 SDS: [G4-OCS_SDS_final.pdf](https://github.com/user-attachments/files/19690413/G4-OCS_SDS_final.pdf)
