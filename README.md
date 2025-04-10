@@ -64,7 +64,9 @@ Data export (Excel)
 
 ![FireShot Capture 052 - Order Detail -  localhost](https://github.com/user-attachments/assets/a03e4ff1-0f96-42a4-a6a3-46b4b8eb0869)
 
-![FireShot Capture 040 - Purchase Statistic -  localhost](https://github.com/user-attachments/assets/73be5f14-92d9-4864-be82-e7e0e5a41868)
+![FireShot Capture 057 - Admin Dashboard -  localhost](https://github.com/user-attachments/assets/2650c03e-1002-438d-a7b8-1ff411b95f7c)
+
+![FireShot Capture 059 - Product Statistics -  localhost](https://github.com/user-attachments/assets/a17f5de1-7131-449c-9498-7bfdc03ca0bc)
 
 🔗 Related Documents
 
