@@ -60,6 +60,8 @@ Data export (Excel)
 
 ![FireShot Capture 045 - Sunice Performance Apparel - Penguin Fashion -  localhost](https://github.com/user-attachments/assets/da2d4001-6620-457d-b400-f0628d9edfc9)
 
+![FireShot Capture 060 - View Products - Penguin Fashion -  localhost](https://github.com/user-attachments/assets/9f242f5d-5a27-4748-abb3-0a37ff0f0b4e)
+
 ![FireShot Capture 051 - Create Product -  localhost](https://github.com/user-attachments/assets/e03435da-465a-4b83-8616-c87aabc220db)
 
 ![FireShot Capture 052 - Order Detail -  localhost](https://github.com/user-attachments/assets/a03e4ff1-0f96-42a4-a6a3-46b4b8eb0869)
