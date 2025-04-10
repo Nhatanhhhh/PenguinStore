@@ -1,4 +1,4 @@
-[G4-OCS_RDS_final.pdf](https://github.com/user-attachments/files/19690397/G4-OCS_RDS_final.pdf)[G4-OCS_SDS_final.pdf](https://github.com/user-attachments/files/19690379/G4-OCS_SDS_final.pdf)🛍️ Online Clothing Store (OCS) - Final Release
+🛍️ Online Clothing Store (OCS) - Final Release
 Can Tho, March 2025
 A complete e-commerce solution for clothing retailers built with Java EE (JSP/Servlet) on Apache Tomcat 10.
 🚀 Installation Guide
@@ -58,12 +58,21 @@ Order tracking
 
 Data export (Excel)
 
-arel - Penguin Fashion - localhost](https://github.com/user-attachments/assets/1de15163-e204-45fb-9d1c-bd4bdb2d537c)
+![FireShot Capture 045 - Sunice Performance Apparel - Penguin Fashion -  localhost](https://github.com/user-attachments/assets/da2d4001-6620-457d-b400-f0628d9edfc9)
+
+![FireShot Capture 051 - Create Product -  localhost](https://github.com/user-attachments/assets/e03435da-465a-4b83-8616-c87aabc220db)
+
+![FireShot Capture 052 - Order Detail -  localhost](https://github.com/user-attachments/assets/a03e4ff1-0f96-42a4-a6a3-46b4b8eb0869)
+
+![FireShot Capture 040 - Purchase Statistic -  localhost](https://github.com/user-attachments/assets/73be5f14-92d9-4864-be82-e7e0e5a41868)
 
 ![FireShot Capture 003 - Your PenguinStore Verification Code - nguyennhatanhnnacm@gmail com _ -  mail google com](https://github.com/user-attachments/assets/54615eb4-c105-4321-8922-f127dbea17d8)
 
 🔗 Related Documents
+
 SDS: [G4-OCS_SDS_final.pdf](https://github.com/user-attachments/files/19690413/G4-OCS_SDS_final.pdf)
+
 RDS: [Uploading [G4-OCS_RDS_final.pdf](https://github.com/user-attachments/files/19690386/G4-OCS_RDS_final.pdf)
+
 Final Release Document: [G4-OCS_Final Release Document.pdf](https://github.com/user-attachments/files/19690396/G4-OCS_Final.Release.Document.pdf)
 
