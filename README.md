@@ -30,8 +30,13 @@ A complete e-commerce solution for clothing retailers built with **Java EE (JSP/
 2. **Configure Tomcat**:  
    `Tools → Servers → Add Tomcat 10`
 
-3. **Run Project**:  
-   - Open project in NetBeans  
+3. **Install SQL Server 2022**:  
+   - Download from [SQL Server Downloads](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
+   - Create a database named `PenguinDB` and import provided schema/data if available
+
+4. **Run Project**:  
+   - Open project in NetBeans
+   - Configure database connection (username, password, DB URL)
    - Right-click project → `Run`
 
 ---
