@@ -6,7 +6,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Contributions](https://img.shields.io/badge/Contributions-Welcome-brightgreen)
 ![Issues](https://img.shields.io/badge/Good%20First%20Issue-Yes-yellow)
-![Location](https://img.shields.io/badge/Developed%20In-Can%20Tho-red)
+![Location](https://img.shields.io/badge/Developed%20In-SQL%20Server2022-red)
 
 **📍 Can Tho, March 2025**
 
@@ -20,6 +20,8 @@ A complete e-commerce solution for clothing retailers built with **Java EE (JSP/
 - ✅ JDK 17+
 - ✅ Apache NetBeans 13
 - ✅ Apache Tomcat 10
+- ✅ Microsoft SQL Server 2022 (Developer Edition)
+- ✅ SQL Server Management Studio (SSMS) 19+
 
 ### 🛠 Setup Steps
 1. **Configure JDK**:  
