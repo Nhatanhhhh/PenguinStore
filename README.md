@@ -6,7 +6,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Contributions](https://img.shields.io/badge/Contributions-Welcome-brightgreen)
 ![Issues](https://img.shields.io/badge/Good%20First%20Issue-Yes-yellow)
-![Location](https://img.shields.io/badge/Developed%20In-SQL%20Server2022-red)
+![Location](https://img.shields.io/badge/Database-SQL%20Server2022-red)
 
 **📍 Can Tho, March 2025**
 
