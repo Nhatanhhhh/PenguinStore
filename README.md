@@ -112,9 +112,4 @@ For security-related issues, please contact the team privately or file an issue 
 
 ---
 
-## © License
-
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
-
----
 
