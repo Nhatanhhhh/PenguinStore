@@ -3,7 +3,6 @@
 ![Java EE](https://img.shields.io/badge/Java%20EE-JSP%2FServlet-blue)
 ![Platform](https://img.shields.io/badge/Platform-Apache%20Tomcat%2010-lightgrey)
 ![Status](https://img.shields.io/badge/Release-Final-success)
-![License](https://img.shields.io/badge/License-MIT-green)
 ![Contributions](https://img.shields.io/badge/Contributions-Welcome-brightgreen)
 ![Issues](https://img.shields.io/badge/Good%20First%20Issue-Yes-yellow)
 ![Location](https://img.shields.io/badge/Database-SQL%20Server2022-red)
