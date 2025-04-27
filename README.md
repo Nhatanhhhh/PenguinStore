@@ -86,19 +86,6 @@ A complete e-commerce solution for clothing retailers built with **Java EE (JSP/
 
 ---
 
-## 📄 Related Documents
-
-- 📘 **Software Design Specification (SDS)**:  
-  [G4-OCS_SDS_final.pdf](https://github.com/user-attachments/files/19690413/G4-OCS_SDS_final.pdf)
-
-- 📗 **Requirement Design Specification (RDS)**:  
-  [G4-OCS_RDS_final.pdf](https://github.com/user-attachments/files/19690386/G4-OCS_RDS_final.pdf)
-
-- 📙 **Final Release Document**:  
-  [G4-OCS_Final_Release_Document.pdf](https://github.com/user-attachments/files/19690396/G4-OCS_Final.Release.Document.pdf)
-
----
-
 ## 🙌 How to Contribute
 
 We welcome all contributions! Try the system, report bugs, suggest features, or send a pull request.
