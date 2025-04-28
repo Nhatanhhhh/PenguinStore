@@ -79,10 +79,14 @@ A complete e-commerce solution for clothing retailers built with **Java EE (JSP/
 
 ![View 1 - Homepage](https://github.com/user-attachments/assets/da2d4001-6620-457d-b400-f0628d9edfc9)
 ![View 2 - Product List](https://github.com/user-attachments/assets/9f242f5d-5a27-4748-abb3-0a37ff0f0b4e)
-![View 3 - Create Product](https://github.com/user-attachments/assets/e03435da-465a-4b83-8616-c87aabc220db)
-![View 4 - Order Detail](https://github.com/user-attachments/assets/a03e4ff1-0f96-42a4-a6a3-46b4b8eb0869)
-![View 5 - Admin Dashboard](https://github.com/user-attachments/assets/2650c03e-1002-438d-a7b8-1ff411b95f7c)
-![View 6 - Product Statistics](https://github.com/user-attachments/assets/a17f5de1-7131-449c-9498-7bfdc03ca0bc)
+![View 3 - Shopping Cart](https://github.com/user-attachments/assets/6bcb8bc0-9324-493f-a54d-22e8cdfc4f63)
+![View 4 - Chọn phương thức thanh toán (Test) -  sandbox vnpayment vn](https://github.com/user-attachments/assets/4db1b50d-79a9-4508-90a9-af5d8d9facf8)
+![View 5 - Create Product](https://github.com/user-attachments/assets/e03435da-465a-4b83-8616-c87aabc220db)
+![View 6 - Order Detail](https://github.com/user-attachments/assets/a03e4ff1-0f96-42a4-a6a3-46b4b8eb0869)
+![View 7 - Admin Dashboard](https://github.com/user-attachments/assets/2650c03e-1002-438d-a7b8-1ff411b95f7c)
+![View 8 - Product Statistics](https://github.com/user-attachments/assets/a17f5de1-7131-449c-9498-7bfdc03ca0bc)
+
+
 
 ---
 
